@@ -2,11 +2,12 @@
   "name": "moefetch-client",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host --port 2345",
     "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview"
   },
   "dependencies": {
+    "@vueuse/core": "^6.9.2",
     "vue": "^3.2.16",
     "vue-router": "^4.0.12"
   },
