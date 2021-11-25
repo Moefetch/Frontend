@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite --host --port 2345",
     "build": "vue-tsc --noEmit && vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "deploy":"deploy.bat"
   },
   "dependencies": {
     "@vueuse/core": "^6.9.2",
