@@ -10,7 +10,7 @@
 <script setup lang="ts">
     import Button from "../misc/Button.vue";
     import CollectionDropMenu from "../misc/CollectionDropMenu.vue";
-    import { ICollection } from "../../services/types";
+    import type { ICollection } from "../../services/types";
     import SearchBar from "../misc/SearchBar.vue";
 
     const shit1: ICollection[] = [
