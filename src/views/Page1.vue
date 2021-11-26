@@ -1,3 +1,3 @@
 <template>
-    <h2>sexx</h2>
+    <h2>page1</h2>
 </template>
