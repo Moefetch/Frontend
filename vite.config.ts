@@ -8,5 +8,5 @@ export default defineConfig({
     vue(),
     WindiCSS(),
   ],
-  base: '/moefetch-client/' 
+  //base: '/moefetch-client/' 
 })
