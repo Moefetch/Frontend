@@ -1,5 +1,5 @@
 <template>
-  <img class="icon h-full w-full" :src="`${modeProd? '' : ''}/icons/${icon}.svg`" style="aspect-ratio: 1 / 1" :alt="icon" />
+  <img class="icon h-full w-full" :src="`${modeProd? '' : ''}/icons/${icon}.svg`" style="aspect-ratio: 1 / 1; object-fit: contain;" :alt="icon" />
 </template>
 
 <script setup lang="ts">import { ref } from "vue";

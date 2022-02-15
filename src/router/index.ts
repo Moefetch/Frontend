@@ -17,6 +17,14 @@ const routes = [
           title: "Page1",
         },
       },
+      {
+        path: "/album/:album_name",
+        name: ":album",
+        component: () => import("../views/Album.vue"),
+        meta: {
+          title: "Moefetch | :album",
+        },
+      },
 ]
 
 const router = createRouter({

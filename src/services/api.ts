@@ -1,3 +1,5 @@
+import type {ITableOfContents} from "./types";
+
 class API {
 
     constructor(){
@@ -5,7 +7,7 @@ class API {
 
     };
 
-    public shit = async (shit: string) => this.backendRequest("post", "/cbt");
+    public getTableOfContents = async () => this.backendRequest<{table: [ITableOfContents]}>("get", "/table");
 
     private async backendRequest<T>(method: string, endpoint: string, body?: object): Promise<T> {
         const url = `http://localhost:2234${endpoint}`;

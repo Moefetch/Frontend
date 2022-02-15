@@ -12,11 +12,7 @@
         
         
       />
-      <img
-        :src="searchString.length != 0 ? './icons/x.svg' : './icons/search.svg'"
-        :class="{ activeImg: searchString.length != 0 }"
-        
-      />
+      <Icon :icon="searchString.length != 0 ? 'x' : 'search'" />
     </div>
     
   </div>
@@ -25,7 +21,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useDebounceFn } from '@vueuse/core'
-
+import Icon from "./icon.vue";
 let searchRes = ref();
 let focused = ref(false);
 let searchString = ref('');
@@ -42,38 +38,6 @@ const typingTimeOut = useDebounceFn( ()=>{
 
 
 
-/* 
-
-let doneTyping = ref(async () => {
-  if (searchString.value == "") return;
-  //this.searchRes = await this.api.user.search(this.searchString.trim());
-  console.log(searchRes);
-})
-let typingTimer = ref(() {
-  if (timer.value != null) clearTimeout(timer);
-  return (timer.value = timer.value(doneTyping.value, 500));
-})
-let clearTimer ref(() => {
-  this.searchPaused = false;
-  clearTimeout(this.timer);
-})
-let clearSearchDrop = ref(() => {
-  this.searchRes = null;
-  this.searchPaused = true;
-  this.searchString = "";
-})
-let clearSearchClicked = ref(() => {
-  this.searchRes = null;
-  this.searchPaused = true;
-})
-
-let onClickSearchBar = ref((event: Event) => {
-  this.$emit("clicked", "someValue");
-})
-let onBlurSearchBar = ref((event: Event) => {
-  if (this.searchString.length == 0) this.$emit("unClicked", "someValue");
-})
- */
 </script>
 
 <style lang="postcss" scoped>
@@ -86,14 +50,16 @@ let onBlurSearchBar = ref((event: Event) => {
 }
 
 .search {
-  @apply z-10 self-start flex w-72 flex-col gap-2 max-h-600px p-2 transition-width duration-200 ease;
+  @apply z-10 self-start flex w-72 flex-col gap-2 max-h-600px p-2 duration-200 ease;
 }
 
 .search:focus-within,
 .search.focused {
   @apply w-400px;
 }
-
+.bar img{
+  color: rgb(218, 218, 218, 1);
+}
 .inputField.active {
   width: 500px !important;
 }
@@ -106,20 +72,21 @@ h1.noResult {
   line-height: 100%;
   display: flex;
   align-items: center;
-  color: var(--black);
 }
 
 .bar {
-  @apply flex w-full h-full items-center justify-center gap-2 relative bg-dark-700 rounded-4px;
+  @apply flex w-full h-full items-center justify-center gap-2 relative rounded-4px;
 }
 
 .inputField {
-  @apply outline-none w-full h-full box-content transition transition-width duration-100 ease rounded-4px font-medium text-12px text-white border-none px-6px py-2;
+  @apply outline-none w-full h-full box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 bg-dark-700 placeholder-white-400;
   font-family: "Work Sans", sans-serif;
+  color: white;
 }
 
 img {
-  @apply w-4 h-4 absolute right-4px top-1/2 filter invert opacity-30 transform -translate-y-1/2;
+  @apply w-4 h-4 absolute right-4px top-1/2 filter transform -translate-y-1/2;
+  color: rgb(218, 218, 218, 1);
 }
 
 img.activeImg {
@@ -127,6 +94,6 @@ img.activeImg {
 }
 
 .inputField::placeholder {
-  @apply text-alpha-60;
+  @apply text-opacity-100;
 }
 </style>

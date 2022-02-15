@@ -5,6 +5,6 @@
     </div>
 </template>
 <script setup lang="ts">
-    import { ICollection } from "../../services/types";
+    import type { ICollection } from "../../services/types";
     const props = defineProps<{collectionItem: ICollection}>();
 </script>

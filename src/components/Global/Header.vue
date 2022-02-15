@@ -2,7 +2,9 @@
     <div class="flex flex-row  bg-dark-400 items-center">
         <Button icon="home" />
         <CollectionDropMenu :collectionArray="shit1" />
-        <SearchBar/>
+        <div class="m-auto">
+            <SearchBar/>
+        </div>
         <Button icon="plus" @click=""/>
     </div>
 </template>
@@ -12,6 +14,15 @@
     import CollectionDropMenu from "../misc/CollectionDropMenu.vue";
     import type { ICollection } from "../../services/types";
     import SearchBar from "../misc/SearchBar.vue";
+
+    
+    import api from "../../services/api" ;
+    import { onMounted, ref } from "vue";
+    import type { ITableOfContents } from "../../services/types";
+    let dataReady = ref(false);
+    let resTable = ref<[ITableOfContents]>();
+    onMounted(async () => {resTable.value = (await api.getTableOfContents()).table; dataReady.value = true;})
+
 
     const shit1: ICollection[] = [
         {imageURL: "https://cdn.discordapp.com/attachments/881632596298170399/901766516058509332/7e30eb81cc06fbf442a63d8e8d72adedb2c3a0ed.jpg",
