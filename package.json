@@ -5,19 +5,20 @@
     "dev": "vite --host --port 2345",
     "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview",
-    "deploy":"deploy.sh"
+    "deploy": "deploy.sh"
   },
   "dependencies": {
     "@vueuse/core": "^6.9.2",
-    "vue": "^3.2.16",
+    "nanoid": "^3.3.0",
+    "vue": "^3.2.31",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^1.9.3",
-    "typescript": "^4.4.3",
-    "vite": "^2.6.4",
-    "vite-plugin-windicss": "^1.5.1",
+    "@vitejs/plugin-vue": "^1.10.2",
+    "typescript": "^4.5.5",
+    "vite": "^2.8.3",
+    "vite-plugin-windicss": "^1.7.0",
     "vue-tsc": "^0.3.0",
-    "windicss": "^3.1.9"
+    "windicss": "^3.4.3"
   }
 }
