@@ -1,18 +1,21 @@
 <template>
-    <div class="container">
-        <img :src="thumbnail"/>
+    <router-link class="container" :to="`/album/${router}`">
+        <img :src="(backendUrl + thumbnail)"/>
         <div class="h-[20%] flex items-center w-full align-center">
             <div class="text_container">
                 <h1>{{name}}</h1>
             </div>
         </div>
-    </div>
+    </router-link>
 </template>
 
 <script  setup lang="ts">
+const backendUrl = localStorage.getItem("backendUrl") as string;
+
 defineProps<{
   name: string;
   thumbnail?: string;
+  router: string;
 }>();
 
 </script>
@@ -25,6 +28,8 @@ border-radius: 4px;
 display: flex;
 flex-direction: column;
 align-items: center;
+margin: auto;
+
 }
 .container img {
     @apply w-full h-[80%];
@@ -44,7 +49,7 @@ align-items: center;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-style: normal;
     font-weight: 600;
-    font-size: 18px;
+    font-size: 2.8vh;
     line-height: 175%;
     align-items: center;
     color: #FFFFFF;

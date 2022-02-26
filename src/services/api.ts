@@ -1,4 +1,4 @@
-import type {ITableOfContents} from "./types";
+import type {ICollection, IAnimePic, INewAlbum} from "./types";
 
 class API {
 
@@ -7,7 +7,29 @@ class API {
 
     };
 
-    public getTableOfContents = async () => this.backendRequest<{table: [ITableOfContents]}>("get", "/table");
+    public getTableOfContents = async () => this.backendRequest<[ICollection]>("get", "/albums");
+
+    public getModelTypes = async () => this.backendRequest<[string]>("get", "/types-of-models");
+
+
+    public async createNewAlbum(data: INewAlbum) {
+        const {name, thumbnail_file, type} = data;
+        
+        const formData = new FormData();
+        
+        name && formData.append("name", name);
+        type && formData.append("type", type);
+        thumbnail_file && formData.append("thumbnail_file", thumbnail_file);
+
+        
+        this.backendRequest("post", "/create-album" , formData);
+        //add error handling or whatever tf idk
+
+    };
+
+    public getAnimePicsInAlbum = async (album: string) => {
+        this.backendRequest<[IAnimePic]>("get", `/album/${album}`)
+    }
 
     private async backendRequest<T>(method: string, endpoint: string, body?: object): Promise<T> {
         const url = `http://localhost:2234${endpoint}`;
@@ -35,9 +57,9 @@ class API {
             body: body instanceof FormData ? body : JSON.stringify(body),
         };
 
-        console.log(url)
+        //console.log(url)  //was for debugging now bloat lmao
         const response = await fetch(url, options);
-        const data = await response.json().catch((err) => {console.log(err); console.log(options)});
+        const data = await response.json().catch((err) => {/* console.log(err); console.log(options) */});
 
         return data;
     }

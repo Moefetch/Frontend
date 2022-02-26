@@ -5,6 +5,8 @@
 </template>
 <script setup lang="ts">
 import Header from './components/Global/Header.vue'
+
+localStorage.setItem("backendUrl","http://localhost:2234/")
 </script>
 
 <style>

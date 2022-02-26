@@ -18,7 +18,7 @@ const routes = [
         },
       },
       {
-        path: "/album/:album_name",
+        path: "/album/:albumName",
         name: ":album",
         component: () => import("../views/Album.vue"),
         meta: {

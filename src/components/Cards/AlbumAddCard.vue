@@ -1,7 +1,6 @@
 <template>
-    <div class="container flex-col gap-[4px] align-center m-auto">
-        <div class="m-auto flex flex-col items-center align-center m-auto">
-
+    <div class="container">
+        <div class="flex flex-col items-center align-center m-auto">
             <Icon icon="plus" class="h-[70px] w-[70px]"/>
             <h1>Create</h1>
         </div>
@@ -15,14 +14,17 @@ import Icon from "../misc/Icon.vue";
 <style scoped>
 .container {
 @apply bg-[#3D3D3D] border-[3px] border-[#254EE0] gap-[14px] w-[32vh] h-[40vh];
+@apply flex-col gap-[4px] align-center;
 box-shadow: 0px 2px 4px rgba(255, 255, 255, 0.12);
 border-radius: 4px;
 display: flex;
 flex-direction: column;
 align-items: center;
+cursor: pointer;
+margin: auto;
 }
 .container img {
-    @apply h-[80px] w-[80px];
+    @apply h-[12.4vh] w-[12.4vh];
     object-fit: cover;
     border-radius: 4px;
 }
@@ -39,7 +41,7 @@ align-items: center;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-style: normal;
     font-weight: 600;
-    font-size: 26px;
+    font-size: 4vh;
     line-height: 175%;
     color: #FFFFFF;
     text-indent: -2px;
