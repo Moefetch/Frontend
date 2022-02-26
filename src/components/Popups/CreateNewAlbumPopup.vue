@@ -92,7 +92,7 @@ async function submit() {
         thumbnail_file: newAlbumCover,
     })
 
-    emit("newAlbumSubmitted");
+    emit('newAlbumSubmitted');
 
 }
 
