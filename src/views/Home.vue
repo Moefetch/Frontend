@@ -4,7 +4,7 @@
             
             <AlbumCard v-for="item in resTable" :name="item.name" :thumbnail="item.albumCoverImage" :router="item.uuid" /> 
             
-            <AlbumAddCard @click="toggleCreateAlbumPopup()"/>
+            <AlbumAddCard @click="toggleCreateAlbumPopup()" @newAlbumSubmitted="toggleCreateAlbumPopup()"/>
             
             <div class="pop_out h-[93vh] top-[7vh] w-[100vw] absolute left-0" v-if="addAlbumToggled" @click="toggleCreateAlbumPopup()">
             </div>

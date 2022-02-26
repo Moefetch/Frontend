@@ -92,6 +92,8 @@ async function submit() {
         thumbnail_file: newAlbumCover,
     })
 
+    emit("newAlbumSubmitted");
+
 }
 
 function nameEmpty() {
