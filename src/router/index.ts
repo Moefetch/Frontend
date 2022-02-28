@@ -10,14 +10,6 @@ const routes = [
         },
       },
       {
-        path: "/page1",
-        name: "page1",
-        component: () => import("../views/Page1.vue"),
-        meta: {
-          title: "Page1",
-        },
-      },
-      {
         path: "/album/:albumName",
         name: ":album",
         component: () => import("../views/Album.vue"),
@@ -25,7 +17,15 @@ const routes = [
           title: "Moefetch | :album",
         },
       },
-]
+      {
+        path: "/album/undefined",
+        redirect: "/"
+      },
+      {
+        path: "/album/",
+        redirect: "/"
+      },
+    ]
 
 const router = createRouter({
     history: createWebHistory(),

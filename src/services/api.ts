@@ -1,4 +1,4 @@
-import type {ICollection, IAnimePic, INewAlbum} from "./types";
+import type {ICollection, IAnimePic, INewAlbum, INewPic} from "./types";
 
 class API {
 
@@ -11,7 +11,9 @@ class API {
 
     public getModelTypes = async () => this.backendRequest<[string]>("get", "/types-of-models");
 
-
+    public async addPicture(data: INewPic) {
+        this.backendRequest("post", "/add-picture", data)
+    }
     public async createNewAlbum(data: INewAlbum) {
         const {name, thumbnail_file, type} = data;
         
@@ -27,8 +29,8 @@ class API {
 
     };
 
-    public getAnimePicsInAlbum = async (album: string) => {
-        this.backendRequest<[IAnimePic]>("get", `/album/${album}`)
+    public getPicsInAlbum = async (album: string) => {
+        return this.backendRequest<[IAnimePic]>("get", `/album/${album}`)
     }
 
     private async backendRequest<T>(method: string, endpoint: string, body?: object): Promise<T> {

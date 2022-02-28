@@ -15,7 +15,7 @@ const backendUrl = localStorage.getItem("backendUrl") as string;
 defineProps<{
   name: string;
   thumbnail?: string;
-  router: string;
+  router: string | undefined;
 }>();
 
 </script>

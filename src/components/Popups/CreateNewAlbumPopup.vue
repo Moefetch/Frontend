@@ -22,7 +22,8 @@
                     min="1" max="64"
                     @click="albumFormError.albumNameError = false"/>
                 </div>
-                    <ModelTypeDropMenu :modelTypesArray="modelTypesArray" :selectedType="albumForm.type" @type-selected="typeSelect" :class="`${albumFormError.albumTypeError? 'error': ''} box-content`" @click="albumFormError.albumTypeError = false"/>
+                    <BaseDropMenu :dropdownItemsArray="modelTypesArray" :selectedType="albumForm.type" @item-selected="typeSelect" :class="`${albumFormError.albumTypeError? 'error': ''} box-content`" @click="albumFormError.albumTypeError = false"/>
+                    <h2 class="text-red-500 indent-2px text-14px" :style="`${albumFormError.albumAlreadyExistError? '' : 'display: none;'}`">Album already exists, please enter a different name</h2>
                     <Button text="Submit" color="#4d6d8d" class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]" @click="submit()"/>
             </div>
     </div>
@@ -30,16 +31,16 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import ModelTypeDropMenu from "../misc/ModelTypeDropMenu.vue";
+import BaseDropMenu from "../misc/BaseDropMenu.vue";
 import Button from "../misc/Button.vue";
 
 import api from "../../services/api";
-import type { INewAlbum } from "../../services/types";
+import type { INewAlbum, AlbumSchemaType, ICollection } from "../../services/types";
 
 const emit = defineEmits(['newAlbumSubmitted']);
 
 
-const AlbumCollection = JSON.parse(localStorage.getItem('albums') as string);
+const albumCollection = (JSON.parse(localStorage.getItem('albums') as string) as ICollection[]);
 
 const newAlbumCoverPreview = ref<string>('/icons/upload.svg');
 const albumCover = ref<HTMLDivElement | undefined>(undefined);
@@ -48,13 +49,14 @@ const modelTypesArray = ref(["Select type"]);
 const albumForm = ref<INewAlbum>({
     name: "",
     thumbnail_file: '',
-    type: "",
+    type: undefined,
 });
 
-const albumFormError = ref({
+const albumFormError = ref<any>({
     albumNameError: false,
     albumCoverError: false,
-    albumTypeError: false
+    albumTypeError: false,
+    albumAlreadyExistError: false
 })
 
 const nameErrorMessage = ref<string>("");
@@ -70,20 +72,25 @@ const OnAlbumCoverChange = (event: any) => {
     newAlbumCoverPreview.value = URL.createObjectURL(newAlbumCover);
 }
 
-function typeSelect(a: string) {
-    albumForm.value.type = a
+function typeSelect(a: AlbumSchemaType) {
+    if (a as string == "Select type") albumForm.value.type = undefined;
+    else albumForm.value.type = a;
 }
 
 //garbage checks for incorrect entries
 
 async function submit() {
     //name errors brrrrrr
-    if (!albumForm.value.name) return nameEmpty();
-    else if (albumForm.value.name[0].match(/[0-9]/)) return startsWithNumOrSpecial();
-    else if (albumForm.value.name.match(/\W/)) return containsSpecialChar();
+    if (!albumForm.value.name) nameEmpty();
+    else if (albumForm.value.name[0].match(/[0-9]/)) startsWithNumOrSpecial();
+    else if (albumForm.value.name.match(/\W/)) containsSpecialChar();
 
     //album type errors brrrrrrrrrrrrrrrrrr
-    if (!albumForm.value.type) return noTypeSelected();
+    if (!albumForm.value.type) noTypeSelected();
+
+    if (albumCollection.filter(a => a.name == albumForm.value.name)) albumFormError.value.albumAlreadyExistError = true;
+
+    if (albumFormError.value.albumAlreadyExistError || albumFormError.value.albumCoverError || albumFormError.value.albumTypeError || albumFormError.value.albumNameError) return;
 
     //the actual submit function
     await api.createNewAlbum({

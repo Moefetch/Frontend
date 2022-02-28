@@ -30,7 +30,7 @@ let addAlbumToggled = ref(false);
 
 let resTable = ref<[ICollection]>();
 
-onMounted(async () => {resTable.value = (await api.getTableOfContents()); console.log(resTable.value)})
+onMounted(async () => {resTable.value = (await api.getTableOfContents())})
 
 </script>
 
@@ -44,7 +44,6 @@ onMounted(async () => {resTable.value = (await api.getTableOfContents()); consol
     max-width: 100%;
     width: 100%;
     justify-content: center;
-    align-content: center;
 
 }
 </style>

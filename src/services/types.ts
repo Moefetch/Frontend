@@ -1,7 +1,7 @@
 export interface ICollection {
     albumCoverImage: string;
     name: string;
-    uuid: string;
+    uuid: string | undefined;
     type?: string;
 }
 
@@ -40,13 +40,25 @@ export interface IAnimePic {
     has_results: boolean;
     pixiv_post_id?: number;
 }
+export type AlbumSchemaType = "Anime Pic";
 
 export interface INewAlbum {
     name: string;
-    type: string;
+    type: AlbumSchemaType | undefined;
     thumbnail_file: "" | File ;
 }
 
+export interface INewPic {
+    file?: string;
+    old_file?: string;
+    thumbnail_file?: string;
+    url?: string;
+    has_results?: boolean;
+    type?: AlbumSchemaType;
+    album: string | undefined;
+}
+
+export type PicTypes = IAnimePic;
 
 
 
