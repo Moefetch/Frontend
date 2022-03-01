@@ -62,7 +62,6 @@ let defaultAlbumCollection: ICollection = {
 let albumCollection: ICollection[] = (JSON.parse(localStorage.getItem('albums') as string))
 albumCollection.unshift(defaultAlbumCollection)
 let albumsArray = albumCollection.map(a => a.name);
-console.log(albumCollection)
 
 const picPreview = ref<string>('/icons/image.svg');
 const picHTMLElement = ref<HTMLDivElement | undefined>(undefined);
@@ -105,7 +104,7 @@ function typeSelect(a: AlbumSchemaType) {
 }
 
 function albumSelect(a: string) {
-    if (a as string == "Select Album") picForm.value.album = undefined;
+    if (a as string == "Select Album") picForm.value.album = "";
     else picForm.value.album = a;
 }
 
@@ -134,6 +133,14 @@ async function submit() {
 
     if (picFormError.value.picAlbumError || picFormError.value.picNameError || picFormError.value.picTypeError) return;
 
+    
+    if (createAlbumToggle.value) 
+    await api.createNewAlbum({
+        name: picForm.value.album,
+        type: picForm.value.type,
+        thumbnail_file: "",
+    })
+
 
     //the actual submit function
     await api.addPicture({
@@ -143,7 +150,6 @@ async function submit() {
     }) 
 
     emit('newPicSubmitted');
-
 }
 
 function urlEmpty() {

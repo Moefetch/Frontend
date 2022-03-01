@@ -21,7 +21,8 @@ import type { Ref } from "vue";
 
 import type { ICollection } from "../../services/types";
 import Icon from "./Icon.vue";
-import baseDropMenuItem  from "./BaseDropMenuItem.vue";
+import BaseDropMenuItem  from "./BaseDropMenuItem.vue";
+
 
 let toggled = ref(false);
 
@@ -39,7 +40,6 @@ const currentItem = ref(props.dropdownItemsArray[0]);
 
 const emit = defineEmits(['item-selected', "special-item-selected"]);
 
-import BaseDropMenuItem from "./BaseDropMenuItem.vue";
 const shittyClick = ref (async () => {
     //const response = await api.shit("cock"); 
     toggled.value = !toggled.value;

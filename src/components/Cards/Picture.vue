@@ -12,9 +12,7 @@ defineProps<{
 .picture_card {
 
   @apply max-h-[150px] max-w-[280px];
-  
-  
-  box-shadow: 0px 2px 4px rgba(255, 255, 255, 0.12);
+
   border-radius: 4px;
   object-fit: cover;
   border-radius: 4px;

@@ -15,7 +15,7 @@
       v-if="addPicPopup"
       @click="toggleaddPicPopup()"
     ></div>
-    <AddNewPicturePopup v-if="addPicPopup" @newPicSubmitted=""/>
+    <AddNewPicturePopup v-if="addPicPopup" @newPicSubmitted="toggleaddPicPopup"/>
   </div>
 </template>
 

@@ -52,10 +52,10 @@ export interface INewPic {
     file?: string;
     old_file?: string;
     thumbnail_file?: string;
-    url?: string;
+    url: string;
     has_results?: boolean;
     type?: AlbumSchemaType;
-    album: string | undefined;
+    album: string;
 }
 
 export type PicTypes = IAnimePic;

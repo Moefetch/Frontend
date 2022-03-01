@@ -24,7 +24,7 @@ class API {
         thumbnail_file && formData.append("thumbnail_file", thumbnail_file);
 
         
-        this.backendRequest("post", "/create-album" , formData);
+        await this.backendRequest("post", "/create-album" , formData);
         //add error handling or whatever tf idk
 
     };
