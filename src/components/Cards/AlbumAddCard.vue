@@ -13,9 +13,8 @@ import Icon from "../misc/Icon.vue";
 
 <style scoped>
 .container {
-@apply bg-[#3D3D3D] border-[3px] border-[#254EE0] gap-[14px] w-[32vh] h-[40vh];
+@apply bg-[#3D3D3D] gap-[14px] w-[32vh] h-[40vh];
 @apply flex-col gap-[4px] align-center;
-box-shadow: 0px 2px 4px rgba(255, 255, 255, 0.12);
 border-radius: 4px;
 display: flex;
 flex-direction: column;

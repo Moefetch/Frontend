@@ -22,8 +22,7 @@ defineProps<{
 
 <style>
 .container {
-@apply bg-[#3D3D3D] border-[3px] border-[#254EE0] w-[32vh] h-[40vh];
-box-shadow: 0px 2px 4px rgba(255, 255, 255, 0.12);
+@apply bg-[#3D3D3D]  w-[32vh] h-[40vh];
 border-radius: 4px;
 display: flex;
 flex-direction: column;
