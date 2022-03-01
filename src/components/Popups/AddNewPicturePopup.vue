@@ -103,6 +103,8 @@ async function submit() {
 
     if (!picForm.value.album) noAlbumelected();
 
+    if (picFormError.value.picAlbumError || picFormError.value.picNameError || picFormError.value.picTypeError) return;
+
 
     //the actual submit function
     await api.addPicture({

@@ -30,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+///////////////////////////////////// start of declarations afaik
 import { onMounted, ref } from "vue";
 import BaseDropMenu from "../misc/BaseDropMenu.vue";
 import Button from "../misc/Button.vue";
@@ -41,6 +42,7 @@ const emit = defineEmits(['newAlbumSubmitted']);
 
 
 const albumCollection = (JSON.parse(localStorage.getItem('albums') as string) as ICollection[]);
+
 
 const newAlbumCoverPreview = ref<string>('/icons/upload.svg');
 const albumCover = ref<HTMLDivElement | undefined>(undefined);
@@ -76,6 +78,8 @@ function typeSelect(a: AlbumSchemaType) {
     if (a as string == "Select type") albumForm.value.type = undefined;
     else albumForm.value.type = a;
 }
+///////////////////////////////////// end of declarations afaik
+
 
 //garbage checks for incorrect entries
 
@@ -83,12 +87,12 @@ async function submit() {
     //name errors brrrrrr
     if (!albumForm.value.name) nameEmpty();
     else if (albumForm.value.name[0].match(/[0-9]/)) startsWithNumOrSpecial();
-    else if (albumForm.value.name.match(/\W/)) containsSpecialChar();
+    else if (albumForm.value.name.match(/[^A-Za-z0-9_\s]/g)) containsSpecialChar();
 
     //album type errors brrrrrrrrrrrrrrrrrr
     if (!albumForm.value.type) noTypeSelected();
 
-    if (albumCollection.filter(a => a.name == albumForm.value.name)) albumFormError.value.albumAlreadyExistError = true;
+    if (albumCollection.some(a => a.name == albumForm.value.name)) albumFormError.value.albumAlreadyExistError = true;
 
     if (albumFormError.value.albumAlreadyExistError || albumFormError.value.albumCoverError || albumFormError.value.albumTypeError || albumFormError.value.albumNameError) return;
 
