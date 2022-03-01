@@ -1,7 +1,9 @@
 
 <template>
   <Header class="h-[7vh]"/>
-  <router-view class=" h-[93vh] "/>
+  <div class="h-[93vh] ">
+    <router-view/>
+  </div>
 </template>
 <script setup lang="ts">
 import Header from './components/Global/Header.vue'

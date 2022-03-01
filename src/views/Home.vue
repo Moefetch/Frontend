@@ -1,11 +1,8 @@
 <template>
   <div class="page-container flex align-center">
         <div class="albums_container grid align-center m-auto gap">
-            
+            <AlbumAddCard @click="toggleCreateAlbumPopup()"/>            
             <AlbumCard v-for="item in resTable" :name="item.name" :thumbnail="item.albumCoverImage" :router="item.uuid" /> 
-            
-            <AlbumAddCard @click="toggleCreateAlbumPopup()"/>
-            
             <div class="pop_out h-[93vh] top-[7vh] w-[100vw] absolute left-0" v-if="addAlbumToggled" @click="toggleCreateAlbumPopup()">
             </div>
                 <CreateNewAlbumPopup v-if="addAlbumToggled"  @newAlbumSubmitted="toggleCreateAlbumPopup"/>
@@ -22,11 +19,11 @@ import AlbumCard from "../components/Cards/AlbumCard.vue";
 import AlbumAddCard from "../components/Cards/AlbumAddCard.vue"
 import CreateNewAlbumPopup from "../components/Popups/CreateNewAlbumPopup.vue"
 
+let addAlbumToggled = ref(false);
+
 function toggleCreateAlbumPopup() {
     addAlbumToggled.value = !addAlbumToggled.value
 }
-
-let addAlbumToggled = ref(false);
 
 let resTable = ref<[ICollection]>();
 

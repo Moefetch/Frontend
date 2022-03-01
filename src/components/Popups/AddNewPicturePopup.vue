@@ -169,8 +169,9 @@ top: calc((100vh - var(--popup_height) + 7vh)/2)
     border-radius: 4px;}
 
 
-.inputField {
-    @apply outline-none w-[16rem] h-[1rem] box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 bg-dark-700 placeholder-white-400;
+.inputField[type="text"] {
+    @apply outline-none w-[16rem] h-[1rem] box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 placeholder-white-400;
+    background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
     font-family: "Work Sans", sans-serif;
     color: white;
 }

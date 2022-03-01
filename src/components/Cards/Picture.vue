@@ -11,8 +11,8 @@ defineProps<{
 <style>
 .picture_card {
 
-  @apply max-h-[280px] max-w-[280px];
-  @apply bg-[#3D3D3D] border-[3px] border-[#254EE0] ;
+  @apply max-h-[150px] max-w-[280px];
+  
   
   box-shadow: 0px 2px 4px rgba(255, 255, 255, 0.12);
   border-radius: 4px;

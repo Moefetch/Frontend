@@ -22,16 +22,7 @@ const picsInAlbum = ref<IAnimePic[] | undefined>(undefined);
 <style>
     
 .pictures_container {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    row-gap: 2rem;
-    column-gap: 1rem;
-    padding: 2rem;
-    height: 100%;
-    min-width: fit-content;
-    max-width: 100%;
-    width: 100%;
-    justify-content: center;
-    align-content: center;
+@apply flex flex-wrap gap-2 p-3;
 
 }
 </style>
