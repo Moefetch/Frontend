@@ -9,20 +9,34 @@
              </form> -->
             </div>
             <div class="flex flex-col gap-2">
-                <h2 class="text-red-500 indent-2px text-14px" :style="`${picFormError.picNameError? '' : 'display: none;'}`">{{nameErrorMessage}}</h2>
-                <div :class="`${picFormError.picNameError? 'error': ''}`">
+                <h2 class="text-red-500 indent-2px text-14px" :style="`${picFormError.picNameError? '' : 'display: none;'}`">{{picUrlErrorMessage}}</h2>
+                <div :class="`${picFormError.picNameError? 'error': ''}`" style="width: fit-content;">
                     <input
                     v-model="picForm.url"
                     class="inputField"
                     type="text"
-                    pattern="[A-Za-z0-9_\s]{1,64}"
-                    title="Starts with a letter and doesnt contain special characters"
                     placeholder="Image URL or post URL" 
-                    min="1" max="64"
                     @click="picFormError.picNameError = false"/>
                 </div>
                     <BaseDropMenu :dropdownItemsArray="modelTypesArray" @item-selected="typeSelect" :class="`${picFormError.picTypeError? 'error': ''} box-content`" @click="picFormError.picTypeError = false"/>
-                    <BaseDropMenu :dropdownItemsArray="albumsArray" @item-selected="albumSelect" :class="`${picFormError.picAlbumError? 'error': ''} box-content`" @click="picFormError.picAlbumError = false"/>
+                    <BaseDropMenu v-if="!createAlbumToggle" :dropdownItemsArray="albumsArray" :specialItem="'Create New Album'" @item-selected="albumSelect" @special-item-selected="toggleCreateNewAblum" :class="`${picFormError.picAlbumError? 'error': ''} box-content`" @click="picFormError.picAlbumError = false"/>
+                    <div :class="`${AlbumNameErrorMessage? 'error': ''}`" style="width: fit-content;">
+
+                    <input 
+                    v-if="createAlbumToggle"
+                    type="text"
+                    v-model="picForm.album"
+                    ref="newAlbumInput"
+                    id="newAlbumInput"
+                    name="newAlbumInput"
+                    class="inputField"
+                    placeholder="Enter new Album name" 
+                    min="1" max="64"
+                    />
+                    </div>
+
+                    <h2 class="text-red-500 indent-2px text-14px" :style="`${AlbumNameErrorMessage? '' : 'display: none;'}`">{{AlbumNameErrorMessage}}</h2>
+
                     <Button text="Submit" color="#4d6d8d" class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]" @click="submit()"/>
             </div>
     </div>
@@ -52,6 +66,8 @@ console.log(albumCollection)
 
 const picPreview = ref<string>('/icons/image.svg');
 const picHTMLElement = ref<HTMLDivElement | undefined>(undefined);
+const newAlbumInput = ref<HTMLDivElement | undefined>(undefined);
+const createAlbumToggle = ref(false);
 const modelTypesArray = ref(["Select type"]);
 
 const picForm = ref<INewPic>({
@@ -68,7 +84,9 @@ const picFormError = ref({
 
 })
 
-const nameErrorMessage = ref<string>("");
+const picUrlErrorMessage = ref<string>("");
+const AlbumNameErrorMessage = ref<string>("");
+
 
 onMounted(async () => {
     modelTypesArray.value = modelTypesArray.value.concat(await api.getModelTypes())
@@ -91,6 +109,12 @@ function albumSelect(a: string) {
     else picForm.value.album = a;
 }
 
+function toggleCreateNewAblum() {
+    createAlbumToggle.value = !createAlbumToggle.value;
+    setTimeout(() => {
+        newAlbumInput.value?.focus()
+    }, 200);
+}
 
 //garbage checks for incorrect entries
 
@@ -101,7 +125,12 @@ async function submit() {
     //pic type errors brrrrrrrrrrrrrrrrrr
     if (!picForm.value.type) noTypeSelected();
 
-    if (!picForm.value.album) noAlbumelected();
+    if (!picForm.value.album && !createAlbumToggle.value) noAlbumelected();
+
+    if (!picForm.value.album && createAlbumToggle.value) albumNameEmpty();
+    else if ((picForm.value.album as string)[0].match(/[0-9]/)) albumNameStartsWithNumOrSpecial();
+    else if (picForm.value.album?.match(/[^A-Za-z0-9_\s]/g)) albumNameContainsSpecialChar();
+
 
     if (picFormError.value.picAlbumError || picFormError.value.picNameError || picFormError.value.picTypeError) return;
 
@@ -119,7 +148,7 @@ async function submit() {
 
 function urlEmpty() {
     picFormError.value.picNameError = true;
-    nameErrorMessage.value = "Please provide a url to picture";
+    picUrlErrorMessage.value = "Please provide a url to picture";
 }
 
 
@@ -132,6 +161,25 @@ function noAlbumelected() {
     picFormError.value.picAlbumError = true;
 
 }
+
+//when the new album inputed bla bla
+function albumNameEmpty() {
+    picFormError.value.picAlbumError = true;
+    AlbumNameErrorMessage.value = "Please give a name to your new album";
+}
+
+function albumNameStartsWithNumOrSpecial() {
+    picFormError.value.picAlbumError = true;
+    AlbumNameErrorMessage.value = "album name must start with a leter";
+
+}
+
+function albumNameContainsSpecialChar() {
+    picFormError.value.picAlbumError = true;
+    AlbumNameErrorMessage.value = "album name cannot include special characters";
+
+}
+
 
 </script>
 

@@ -37,6 +37,7 @@ import Button from "../misc/Button.vue";
 
 import api from "../../services/api";
 import type { INewAlbum, AlbumSchemaType, ICollection } from "../../services/types";
+import { blob } from "stream/consumers";
 
 const emit = defineEmits(['newAlbumSubmitted']);
 

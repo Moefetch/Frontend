@@ -7,3 +7,8 @@
     import type { ICollection } from "../../services/types";
     const props = defineProps<{item: string}>();
 </script>
+<style scoped>
+div h2 {
+    text-indent: 0.25rem;
+}
+</style>

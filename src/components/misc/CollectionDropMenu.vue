@@ -39,7 +39,6 @@ function getCurrentItemFromUUID(parm: string | string[]) {
 
 let currentlyDisplayedPos = ref({top:0, left:0})
 
-    import api from "../../services/api";
     const shittyClick = ref (async () => {
         //const response = await api.shit("cock"); 
         toggled.value = !toggled.value;
