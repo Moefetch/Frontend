@@ -3,6 +3,7 @@ export interface ICollection {
     name: string;
     uuid: string | undefined;
     type?: string;
+    estamatedPicCount?: number | 0;
 }
 
 export interface IPostLinks {

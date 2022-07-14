@@ -10,12 +10,14 @@
       <SearchBar />
     </div>
     <Button icon="plus" @click="toggleaddPicPopup()" />
+    <Button :icon="`${editingToggleBool? 'cancel_editing' : 'edit' }`" :class="`${editingToggleBool? 'bg-[#B6222D] rounded-8px' : ''}`" @click="toggleEditing()" />
+    <Button icon="menu" @click="" /> 
     <div
       class="pop_out h-[93vh] top-[7vh] w-[100vw] absolute left-0"
       v-if="addPicPopup"
       @click="toggleaddPicPopup()"
     ></div>
-    <AddNewPicturePopup v-if="addPicPopup" @newPicSubmitted="toggleaddPicPopup"/>
+    <AddNewPicturePopup v-if="addPicPopup" @newPicSubmitted="submittedPicSuccessfully"/>
   </div>
 </template>
 
@@ -27,14 +29,17 @@ import type { ICollection } from "../../services/types";
 import SearchBar from "../misc/SearchBar.vue";
 
 import api from "../../services/api";
-import { onMounted, ref } from "vue";
+import { onMounted, ref} from "vue";
 import { useRoute } from "vue-router";
+
+const emit = defineEmits(['isEditing', "submittedNewPic"]);
 
 const route = useRoute();
 
 let defaultAlbumCollection: ICollection = {
   albumCoverImage: "",
   name: "------",
+  estamatedPicCount: 0, 
   uuid: undefined,
 };
 
@@ -42,8 +47,9 @@ const dataReady = ref(false); //funny enough this prevents the drop down list fr
 const resTable = ref<[ICollection]>([defaultAlbumCollection]); //bro i fucking love this, i have to use a ref, ref is gonna have any but the collection array things takes an array of fucking collections or whatever and so i give it the type in the type thing <> but then it's like that type or undefined and so i have to pass in the default value, when the scuff
 
 const addPicPopup = ref(false);
+const editingToggleBool = ref(false);
 let tablesContentRes: [ICollection];
-const AlbumCollection = JSON.parse(localStorage.getItem("albums") as string);
+//const AlbumCollection = JSON.parse(localStorage.getItem("albums") as string);
 
 
 onMounted(async () => {
@@ -58,6 +64,16 @@ function toggleaddPicPopup() {
   addPicPopup.value = !addPicPopup.value;
 }
 
+function submittedPicSuccessfully() {
+  toggleaddPicPopup()
+  emit('submittedNewPic');
+}
+
+function toggleEditing() {
+  editingToggleBool.value =! editingToggleBool.value;
+  emit('isEditing')
+}
+
 /* 
     const resTable: ICollection[] = [
         {imageURL: "https://cdn.discordapp.com/attachments/881632596298170399/901766516058509332/7e30eb81cc06fbf442a63d8e8d72adedb2c3a0ed.jpg",
@@ -69,4 +85,6 @@ function toggleaddPicPopup() {
     ]
 
  */
+
+
 </script>

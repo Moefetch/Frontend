@@ -5,9 +5,10 @@
 </template>
 
 <script setup lang="ts">
+
 import api from "../services/api";
 import { useRoute } from "vue-router";
-import { ref,onMounted } from "vue-demi";
+import { ref, onMounted} from "vue";
 const route = useRoute();
 
 import Picture from "../components/Cards/Picture.vue"
@@ -15,8 +16,12 @@ import type { IAnimePic } from "../services/types";
 
 const picsInAlbum = ref<IAnimePic[] | undefined>(undefined);
     onMounted(async () => {
-        picsInAlbum.value = await api.getPicsInAlbum(route.params.albumName as string)
+        getPicInAlbum()
     })
+
+async function getPicInAlbum() {
+    picsInAlbum.value = await api.getPicsInAlbum(route.params.albumName as string);
+}
 </script>
 
 <style>

@@ -7,10 +7,6 @@ class API {
 
     };
 
-    public getTableOfContents = async () => this.backendRequest<[ICollection]>("get", "/albums");
-
-    public getModelTypes = async () => this.backendRequest<[string]>("get", "/types-of-models");
-
     public async addPicture(data: INewPic) {
         this.backendRequest("post", "/add-picture", data)
     }
@@ -29,9 +25,17 @@ class API {
 
     };
 
+
+    
     public getPicsInAlbum = async (album: string) => {
         return this.backendRequest<[IAnimePic]>("get", `/album/${album}`)
     }
+    
+    public getTableOfContents = async () => this.backendRequest<[ICollection]>("get", "/albums");
+
+    public getModelTypes = async () => this.backendRequest<[string]>("get", "/types-of-models");
+
+
 
     private async backendRequest<T>(method: string, endpoint: string, body?: object): Promise<T> {
         const url = `http://localhost:2234${endpoint}`;

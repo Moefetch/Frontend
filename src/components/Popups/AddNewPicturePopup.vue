@@ -19,7 +19,7 @@
                     @click="picFormError.picNameError = false"/>
                 </div>
                     <BaseDropMenu :dropdownItemsArray="modelTypesArray" @item-selected="typeSelect" :class="`${picFormError.picTypeError? 'error': ''} box-content`" @click="picFormError.picTypeError = false"/>
-                    <BaseDropMenu v-if="!createAlbumToggle" :dropdownItemsArray="albumsArray" :specialItem="'Create New Album'" @item-selected="albumSelect" @special-item-selected="toggleCreateNewAblum" :class="`${picFormError.picAlbumError? 'error': ''} box-content`" @click="picFormError.picAlbumError = false"/>
+                    <BaseDropMenu v-if="!createAlbumToggle" :dropdownItemsArray="albumsArray" :defaultSelected="defaultSelected" :specialItem="'Create New Album'" @item-selected="albumSelect" @special-item-selected="toggleCreateNewAblum" :class="`${picFormError.picAlbumError? 'error': ''} box-content`" @click="picFormError.picAlbumError = false"/>
                     <div :class="`${AlbumNameErrorMessage? 'error': ''}`" style="width: fit-content;">
 
                     <input 
@@ -43,6 +43,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from "vue-router";
+const route = useRoute();
 import { onMounted, ref, computed } from "vue";
 import BaseDropMenu from "../misc/BaseDropMenu.vue";
 import Button from "../misc/Button.vue";
@@ -69,12 +71,23 @@ const newAlbumInput = ref<HTMLDivElement | undefined>(undefined);
 const createAlbumToggle = ref(false);
 const modelTypesArray = ref(["Select type"]);
 
+const defaultSelected = ref<undefined | string>(undefined);
+
 const picForm = ref<INewPic>({
     url: "",
     thumbnail_file: '',
     type: undefined,
     album: '',
 });
+
+if (route.name == ":album") { //make it autoselect album when you're in it's page
+
+    defaultSelected.value = albumCollection.find(a => a.uuid == route.params.albumName).name
+
+    picForm.value.album = albumCollection.find(a => a.uuid == route.params.albumName).name;
+    
+
+}
 
 const picFormError = ref({
     picNameError: false,
@@ -134,14 +147,17 @@ async function submit() {
     if (picFormError.value.picAlbumError || picFormError.value.picNameError || picFormError.value.picTypeError) return;
 
     
-    if (createAlbumToggle.value) 
-    await api.createNewAlbum({
-        name: picForm.value.album,
-        type: picForm.value.type,
-        thumbnail_file: "",
-    })
+    if (createAlbumToggle.value) {
+        await api.createNewAlbum({
+            name: picForm.value.album,
+            type: picForm.value.type,
+            thumbnail_file: "",
+        })
 
+        const tablesContentRes = await api.getTableOfContents();
+        localStorage.setItem("albums", JSON.stringify(tablesContentRes));
 
+    }
     //the actual submit function
     await api.addPicture({
         url: picForm.value.url,
@@ -200,6 +216,7 @@ function albumNameContainsSpecialChar() {
 @apply border-[3px] border-[#254EE0] gap-[14px];
 @apply flex-row gap-[4px] align-center m-auto;
 
+z-index: 1;
 
 display: flex;
 gap:32px;

@@ -1,6 +1,6 @@
 <template>
     <div class="h-[1.84rem] w-[14rem]" ref="target">
-        <div :class="`flex mt-auto mb-auto flex-row bg-dark-500 w-[14rem] h-[1.84rem] pr-[0.25rem] rounded-[0.2rem] cursor-pointer items-center ${toggled? 'rounded-b-none' : '' }`" @click="shittyClick()">
+        <div :class="`flex mt-auto mb-auto flex-row bg-dark-500 w-[14rem] h-[1.84rem] pr-[0.25rem] rounded-[0.2rem] cursor-pointer items-center ${toggled? 'rounded-b-none' : '' }`" @click="dropDownToggle()">
             <BaseDropMenuItem :item="currentItem" :class="`h-[14px] w-full` "  id="currentlyDisplayed" />
             <Icon :icon="toggled? 'up' : 'down'"  class="w-4 h-4"/>
         </div>
@@ -14,10 +14,8 @@
     </div>
 </template>
 <script setup lang='ts'>
-import { computed } from "@vue/reactivity";
 import { onClickOutside } from '@vueuse/core'
 import { ref } from "vue";
-import type { Ref } from "vue";
 
 import type { ICollection } from "../../services/types";
 import Icon from "./Icon.vue";
@@ -26,21 +24,18 @@ import BaseDropMenuItem  from "./BaseDropMenuItem.vue";
 
 let toggled = ref(false);
 
-const props = defineProps<{dropdownItemsArray: string[], specialItem?: string}>();
+const props = defineProps<{dropdownItemsArray: string[], specialItem?: string, defaultSelected?: string}>();
 
 const target = ref(null)
 onClickOutside(target, () => {
     if(toggled.value) toggled.value = !toggled.value;
 })
 
-const currentlyDisplayedPos = ref({top:0, left:0});
-
-
 const currentItem = ref(props.dropdownItemsArray[0]);
 
 const emit = defineEmits(['item-selected', "special-item-selected"]);
 
-const shittyClick = ref (async () => {
+const dropDownToggle = ref (async () => {
     //const response = await api.shit("cock"); 
     toggled.value = !toggled.value;
 })
@@ -50,6 +45,10 @@ function clickedType(item: string) {
     currentItem.value = item; 
     toggled.value = !toggled.value
     emit('item-selected', item);
+}
+
+if (props.defaultSelected) {
+    currentItem.value = props.defaultSelected; 
 }
 
 </script>
