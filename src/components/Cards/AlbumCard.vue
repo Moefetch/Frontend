@@ -47,7 +47,7 @@ border: 3px solid #254EE0;
     border-radius: 8px;
     align-content: center;
     text-align: left;
-    text-indent: 2vw;
+    text-indent: 12px;
 
 }
 .text_container h1 {
@@ -65,6 +65,7 @@ border: 3px solid #254EE0;
  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-style: normal;
     text-align: left;
+    font-size: 2.4vh;
     color: #FFFFFF;
 }
 

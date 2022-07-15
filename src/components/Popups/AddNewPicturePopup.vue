@@ -18,8 +18,8 @@
                     placeholder="Image URL or post URL" 
                     @click="picFormError.picNameError = false"/>
                 </div>
-                    <BaseDropMenu :dropdownItemsArray="modelTypesArray" @item-selected="typeSelect" :class="`${picFormError.picTypeError? 'error': ''} box-content`" @click="picFormError.picTypeError = false"/>
-                    <BaseDropMenu v-if="!createAlbumToggle" :dropdownItemsArray="albumsArray" :defaultSelected="defaultSelected" :specialItem="'Create New Album'" @item-selected="albumSelect" @special-item-selected="toggleCreateNewAblum" :class="`${picFormError.picAlbumError? 'error': ''} box-content`" @click="picFormError.picAlbumError = false"/>
+                    <BaseDropMenu :dropdownItemsArray="modelTypesArray" @item-selected="typeSelect" :defaultSelected="defaultSelectedAlbumType" :class="`${picFormError.picTypeError? 'error': ''} box-content`" @click="picFormError.picTypeError = false"/>
+                    <BaseDropMenu v-if="!createAlbumToggle" :dropdownItemsArray="albumsArray" :defaultSelected="defaultSelectedAlbumName" :specialItem="'Create New Album'" @item-selected="albumSelect" @special-item-selected="toggleCreateNewAblum" :class="`${picFormError.picAlbumError? 'error': ''} box-content`" @click="picFormError.picAlbumError = false"/>
                     <div :class="`${AlbumNameErrorMessage? 'error': ''}`" style="width: fit-content;">
 
                     <input 
@@ -71,7 +71,8 @@ const newAlbumInput = ref<HTMLDivElement | undefined>(undefined);
 const createAlbumToggle = ref(false);
 const modelTypesArray = ref(["Select type"]);
 
-const defaultSelected = ref<undefined | string>(undefined);
+const defaultSelectedAlbumName = ref<undefined | string>(undefined);
+const defaultSelectedAlbumType = ref<undefined | string>(undefined);
 
 const picForm = ref<INewPic>({
     url: "",
@@ -80,13 +81,16 @@ const picForm = ref<INewPic>({
     album: '',
 });
 
-if (route.name == ":album") { //make it autoselect album when you're in it's page
+//make it autoselect album when you're in an album page
+if (route.name == ":album") { 
 
-    defaultSelected.value = albumCollection.find(a => a.uuid == route.params.albumName).name
+    const albumObj = albumCollection.find(a => a.uuid == route.params.albumName)
 
-    picForm.value.album = albumCollection.find(a => a.uuid == route.params.albumName).name;
-    
+    defaultSelectedAlbumName.value = albumObj.name
+    picForm.value.album = albumObj.name;
 
+    defaultSelectedAlbumType.value = albumObj.type
+    picForm.value.type = albumObj.type;
 }
 
 const picFormError = ref({
