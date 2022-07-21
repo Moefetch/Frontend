@@ -16,6 +16,7 @@ export default defineConfig({
       },
       white: {
         400: "#D8D8D8",
+        450: "#CACACA",
         500: "#FFFFFF",
       },
       dark: {

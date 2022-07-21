@@ -79,7 +79,7 @@ h1.noResult {
 }
 
 .inputField {
-  @apply outline-none w-full h-full box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 bg-dark-700 placeholder-white-400;
+  @apply outline-none w-full h-[2rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 bg-dark-700 placeholder-white-400;
   font-family: "Work Sans", sans-serif;
   color: white;
 }

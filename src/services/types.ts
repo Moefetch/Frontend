@@ -61,7 +61,14 @@ export interface INewPic {
 
 export type PicTypes = IAnimePic;
 
+export interface ISettings {
+    backend_url: string;
+    database_url: string;
+    prefered_quality_highest_bool: boolean;
+    search_diff_sites: boolean;
+    saucenao_api_key?: string;
 
+}
 
 /* export interface ITableOfContents extends ICollection {
     id:  string;

@@ -24,7 +24,9 @@ function toggledSubmittedPic() {
   }, 100); */
 }
 
-localStorage.setItem("backendUrl","http://localhost:2234/")
+localStorage.setItem("backendUrl","http://localhost:2234/") //bruh
+
+localStorage.setItem("setupBool","false"); //bruh
 </script>
 
 <style>

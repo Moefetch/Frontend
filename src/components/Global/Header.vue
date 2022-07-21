@@ -7,17 +7,18 @@
       <CollectionDropMenu :collectionArray="resTable" :currentCol="route.params.albumName" />
     </div>
     <div class="m-auto">
-      <SearchBar />
+      <SearchBar class="h-[32]"/>
     </div>
-    <Button icon="plus" @click="toggleaddPicPopup()" />
+    <Button icon="plus" @click="toggleAddPicPopup()" />
     <Button :icon="`${editingToggleBool? 'cancel_editing' : 'edit' }`" :class="`${editingToggleBool? 'bg-[#B6222D] rounded-8px' : ''}`" @click="toggleEditing()" />
-    <Button icon="menu" @click="" /> 
+    <Button icon="menu" @click="toggleSetupPopup()" /> 
     <div
       class="pop_out h-[93vh] top-[7vh] w-[100vw] absolute left-0"
-      v-if="addPicPopup"
-      @click="toggleaddPicPopup()"
+      v-if="addPicPopupToggleBool || setupPopupToggleBool"
+      @click="togglePopupsOff()"
     ></div>
-    <AddNewPicturePopup v-if="addPicPopup" @newPicSubmitted="submittedPicSuccessfully"/>
+    <SetupPopup v-if="setupPopupToggleBool"/>
+    <AddNewPicturePopup v-if="addPicPopupToggleBool" @newPicSubmitted="submittedPicSuccessfully"/>
   </div>
 </template>
 
@@ -25,6 +26,7 @@
 import Button from "../misc/Button.vue";
 import CollectionDropMenu from "../misc/CollectionDropMenu.vue";
 import AddNewPicturePopup from "../Popups/AddNewPicturePopup.vue";
+import SetupPopup from "../Popups/setupPopup.vue";
 import type { ICollection } from "../../services/types";
 import SearchBar from "../misc/SearchBar.vue";
 
@@ -38,7 +40,7 @@ const route = useRoute();
 
 let defaultAlbumCollection: ICollection = {
   albumCoverImage: "",
-  name: "------",
+  name: "Home",
   estamatedPicCount: 0, 
   uuid: undefined,
 };
@@ -46,8 +48,10 @@ let defaultAlbumCollection: ICollection = {
 const dataReady = ref(false); //funny enough this prevents the drop down list from lowading scuffed
 const resTable = ref<[ICollection]>([defaultAlbumCollection]); //bro i fucking love this, i have to use a ref, ref is gonna have any but the collection array things takes an array of fucking collections or whatever and so i give it the type in the type thing <> but then it's like that type or undefined and so i have to pass in the default value, when the scuff
 
-const addPicPopup = ref(false);
+const addPicPopupToggleBool = ref(false);
+const setupPopupToggleBool = ref(false);
 const editingToggleBool = ref(false);
+
 let tablesContentRes: [ICollection];
 //const AlbumCollection = JSON.parse(localStorage.getItem("albums") as string);
 
@@ -60,12 +64,25 @@ onMounted(async () => {
   resTable.value.unshift(defaultAlbumCollection);
 });
 
-function toggleaddPicPopup() {
-  addPicPopup.value = !addPicPopup.value;
+function togglePopupsOff() {
+  addPicPopupToggleBool.value = false;
+  setupPopupToggleBool.value = false;
 }
 
+ //toggle that bool the opposite of what it is and cancel the other if it is true
+function toggleAddPicPopup() {
+  addPicPopupToggleBool.value = !addPicPopupToggleBool.value;
+  setupPopupToggleBool.value = false;
+}
+
+function toggleSetupPopup() {
+  setupPopupToggleBool.value = !setupPopupToggleBool.value;
+  addPicPopupToggleBool.value = false;
+}
+
+
 function submittedPicSuccessfully() {
-  toggleaddPicPopup()
+  toggleAddPicPopup()
   emit('submittedNewPic');
 }
 
