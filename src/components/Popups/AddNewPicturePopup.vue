@@ -132,12 +132,13 @@ if (route.name == ":album") {
   const albumObj = albumCollection.find(
     (a) => a.uuid == route.params.albumName
   );
+  if (albumObj) {
+    defaultSelectedAlbumName.value = albumObj.name;
+    picForm.value.album = albumObj.name;
 
-  defaultSelectedAlbumName.value = albumObj.name;
-  picForm.value.album = albumObj.name;
-
-  defaultSelectedAlbumType.value = albumObj.type;
-  picForm.value.type = albumObj.type;
+    defaultSelectedAlbumType.value = albumObj.type;
+    picForm.value.type = albumObj.type as INewPic["type"] ;
+  }
 }
 
 const picFormError = ref({

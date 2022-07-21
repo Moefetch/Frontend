@@ -72,7 +72,8 @@ let newAlbumCover: File | "" = "";
 
 const OnAlbumCoverChange = (event: any) => {
     newAlbumCover = event.target.files[0];
-    newAlbumCoverPreview.value = URL.createObjectURL(newAlbumCover);
+    if (typeof(newAlbumCover) != "string") newAlbumCoverPreview.value = URL.createObjectURL(newAlbumCover);
+    else newAlbumCoverPreview.value = newAlbumCover;
 }
 
 function typeSelect(a: AlbumSchemaType) {

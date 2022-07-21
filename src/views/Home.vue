@@ -2,7 +2,7 @@
   <div class="page-container flex align-center">
         <div class="albums_container grid align-center m-auto gap">
             <AlbumAddCard @click="toggleCreateAlbumPopup()"/>            
-            <AlbumCard v-for="item in resTable" :name="item.name" :thumbnail="item.albumCoverImage" :estamatedPicCount="item.estamatedPicCount" :router="item.uuid" /> 
+            <AlbumCard v-for="item in resTable" :name="item.name" :thumbnail="item.albumCoverImage" :estimatedPicCount="item.estimatedPicCount" :router="item.uuid" /> 
             <div class="pop_out h-[93vh] top-[7vh] w-[100vw] absolute left-0" v-if="addAlbumToggled" @click="toggleCreateAlbumPopup()">
             </div>
                 <CreateNewAlbumPopup v-if="addAlbumToggled"  @newAlbumSubmitted="toggleCreateAlbumPopup"/>

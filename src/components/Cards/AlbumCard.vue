@@ -4,7 +4,7 @@
         <div class="h-[20%] flex items-start w-full relative top-[1vh]">
             <div class="text_container">
                 <h1>{{name}}</h1>
-                <h2>{{estamatedPicCount}}</h2>
+                <h2>{{estimatedPicCount}}</h2>
             </div>
             <Button icon="info" style="max-height: 6.4vh; aspect-ratio: 1;" @click="" />
         </div>
@@ -19,7 +19,7 @@ defineProps<{
   name: string;
   thumbnail?: string;
   router: string | undefined;
-  estamatedPicCount: number;
+  estimatedPicCount: number;
 }>();
 
 </script>

@@ -8,7 +8,7 @@
     </div>
     <div class="m-auto">
       <SearchBar class="h-[32]"/>
-    </div>
+    </div> 
     <Button icon="plus" @click="toggleAddPicPopup()" />
     <Button :icon="`${editingToggleBool? 'cancel_editing' : 'edit' }`" :class="`${editingToggleBool? 'bg-[#B6222D] rounded-8px' : ''}`" @click="toggleEditing()" />
     <Button icon="menu" @click="toggleSetupPopup()" /> 
@@ -41,7 +41,7 @@ const route = useRoute();
 let defaultAlbumCollection: ICollection = {
   albumCoverImage: "",
   name: "Home",
-  estamatedPicCount: 0, 
+  estimatedPicCount: 0, 
   uuid: undefined,
 };
 

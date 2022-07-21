@@ -1,15 +1,18 @@
 <template>
     <div class="setup_popup_container">
         <form class="flex flex-col gap-[1rem]">
-            <h2 class="text-red-500 indent-2px text-14px" v-if="settingsFormError.backendUrlError" :style="`${settingsFormError.backendUrlError? '' : 'display: none;'}`">{{settingsFormError.backendUrlError}}</h2>
-            <div :class="`${settingsFormError.backendUrlError ? 'error' : ''}`">
-                <input class="popupInputField"
-                type="text"
-                v-model="settingsForm.backend_url"
-                placeholder="Backend   URL / Hostname and port e.g. http://127.0.0.1:2234"
-
-                />
+            <div class="flex flex-col gap-[0.5rem]">
+                <h2 class="text-red-500 indent-2px text-14px" v-if="settingsFormError.backendUrlError" :style="`${settingsFormError.backendUrlError? '' : 'display: none;'}`">{{settingsFormError.backendUrlError}}</h2>
+                <div :class="`${settingsFormError.backendUrlError ? 'error' : ''}`">
+                    <input class="popupInputField"
+                    type="text"
+                    v-model="settingsForm.backend_url"
+                    placeholder="Backend   URL / Hostname and port e.g. http://127.0.0.1:2234"
+                    @click="settingsFormError.backendUrlError = ''"
+                    />
+                </div>
             </div>
+            <div class="flex flex-col gap-[0.5rem]">
 
             <h2 class="text-red-500 indent-2px text-14px" v-if="settingsFormError.databaseUrlError" :style="`${settingsFormError.databaseUrlError? '' : 'display: none;'}`">{{settingsFormError.databaseUrlError}}</h2>
             <div :class="`${settingsFormError.databaseUrlError ? 'error' : ''}`">
@@ -17,8 +20,9 @@
                 type="text"
                 v-model="settingsForm.database_url"
                 placeholder="Database URL / Hostname and port e.g. mongodb://localhost:27017/moefetch:"
-
+                @click="settingsFormError.databaseUrlError = ''"
             />
+            </div>
             </div>
 
             <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
@@ -48,16 +52,21 @@
                     </div>
                 </div>
             </div>
-            <h2 class="text-red-500 indent-2px text-14px" v-if="settingsFormError.saucenaoApiKeyError" :style="`${settingsFormError.saucenaoApiKeyError? '' : 'display: none;'}`">{{settingsFormError.saucenaoApiKeyError}}</h2>
-            <div :class="`${settingsFormError.saucenaoApiKeyError ? 'error' : ''}`">
-                <input :class="`${settingsForm.search_diff_sites ? 'popupSaucenaoKeyInputField' : 'popupSaucenaoKeyInputFieldDisabled'}`"
-                type="text"
-                v-model="settingsForm.saucenao_api_key"
-                placeholder="Saucenao API key (for the option above)"
-                :disabled="!settingsForm.search_diff_sites"
-                />
+
+            <div class="flex flex-col gap-[0.5rem]">
+                <h2 class="text-red-500 indent-2px text-14px" v-if="settingsFormError.saucenaoApiKeyError" :style="`${settingsFormError.saucenaoApiKeyError? '' : 'display: none;'}`">{{settingsFormError.saucenaoApiKeyError}}</h2>
+                <div :class="`${settingsFormError.saucenaoApiKeyError ? 'error' : ''}`">
+                    <input :class="`${settingsForm.search_diff_sites ? 'popupSaucenaoKeyInputField' : 'popupSaucenaoKeyInputFieldDisabled'}`"
+                    type="text"
+                    v-model="settingsForm.saucenao_api_key"
+                    placeholder="Saucenao API key (for the option above)"
+                    :disabled="!settingsForm.search_diff_sites"
+                    @click="settingsFormError.saucenaoApiKeyError = ''"
+                    />
+                </div>
             </div>
-            <Button text="Submit" color="#4d6d8d" class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]" @click=""/>
+
+            <Button type="button" text="Confirm" color="#4d6d8d" class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]" @click="submit()"/>
         </form>
     </div>
 </template>
@@ -102,6 +111,19 @@ function togglePreferedQuality(toggleInto: boolean) {
 
 function toggleSearchForDiffSites(toggleInto: boolean) {
     settingsForm.value.search_diff_sites = toggleInto;
+}
+
+function submit() {
+    if (!settingsForm.value.backend_url) settingsFormError.value.backendUrlError = "No Backend url was provided";
+    if (!settingsForm.value.database_url) settingsFormError.value.databaseUrlError = "No Database url was provided";
+    if (!settingsForm.value.saucenao_api_key && settingsForm.value.search_diff_sites) settingsFormError.value.saucenaoApiKeyError = "No saucenao api key was provided";
+
+
+    if (settingsFormError.value.backendUrlError || settingsFormError.value.databaseUrlError || settingsFormError.value.saucenaoApiKeyError) return;
+    else {
+
+    }
+
 }
 
 </script>
