@@ -26,7 +26,7 @@
 import Button from "../misc/Button.vue";
 import CollectionDropMenu from "../misc/CollectionDropMenu.vue";
 import AddNewPicturePopup from "../Popups/AddNewPicturePopup.vue";
-import SetupPopup from "../Popups/setupPopup.vue";
+import SetupPopup from "../Popups/SetupPopup.vue";
 import type { ICollection } from "../../services/types";
 import SearchBar from "../misc/SearchBar.vue";
 
