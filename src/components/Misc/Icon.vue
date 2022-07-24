@@ -12,7 +12,7 @@
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
-console.log(route.fullPath);
+console.log(route.name, route.path );
   defineProps<{icon: string}>();
   //const modeProd = ref(import.meta.env.PROD); //add /moefetch-client in the '' up above if you wanna build for github and add ${modeProd? '' : ''} before /icons/
 </script>
