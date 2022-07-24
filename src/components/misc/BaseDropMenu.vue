@@ -53,6 +53,6 @@ if (props.defaultSelected) {
 
 </script>
 
-<style>
+<style lang="postcss">
 
 </style>
