@@ -44,7 +44,7 @@
         :class="`${picFormError.picAlbumError ? 'error' : ''} box-content`"
         @click="picFormError.picAlbumError = false"
       />
-
+      
       <h2
         class="text-red-500 indent-2px text-14px"
         :style="`${AlbumNameErrorMessage ? '' : 'display: none;'}`"
@@ -56,6 +56,7 @@
         :class="`${AlbumNameErrorMessage ? 'error' : ''}`"
         style="width: fit-content"
       >
+      
         <input
           v-if="createAlbumToggle"
           type="text"
@@ -70,6 +71,8 @@
         />
       </div>
 
+      
+
       <Button
         text="Submit"
         color="#4d6d8d"
@@ -82,6 +85,7 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
+const route = useRoute();
 import { onMounted, ref, computed } from "vue";
 import BaseDropMenu from "../Misc/BaseDropMenu.vue";
 import Button from "../Misc/Button.vue";
@@ -93,14 +97,12 @@ import type {
   ICollection,
 } from "../../services/types";
 
-const route = useRoute();
 const emit = defineEmits(["newPicSubmitted"]);
 
 let defaultAlbumCollection: ICollection = {
   albumCoverImage: "",
   name: "Select Album",
   uuid: "",
-  estimatedPicCount: 0,
 };
 
 let albumCollection: ICollection[] = JSON.parse(
@@ -135,7 +137,7 @@ if (route.name == ":album") {
     picForm.value.album = albumObj.name;
 
     defaultSelectedAlbumType.value = albumObj.type;
-    picForm.value.type = albumObj.type as INewPic["type"];
+    picForm.value.type = albumObj.type as INewPic["type"] ;
   }
 }
 
@@ -161,26 +163,26 @@ const OnAlbumCoverChange = (event: any) => {
     picPreview.value = URL.createObjectURL(newAlbumCover);
 }
  */
-const typeSelect = (a: AlbumSchemaType) => {
+function typeSelect(a: AlbumSchemaType) {
   if ((a as string) == "Select type") picForm.value.type = undefined;
   else picForm.value.type = a;
-};
+}
 
-const albumSelect = (a: string) => {
+function albumSelect(a: string) {
   if ((a as string) == "Select Album") picForm.value.album = "";
   else picForm.value.album = a;
-};
+}
 
-const toggleCreateNewAblum = () => {
+function toggleCreateNewAblum() {
   createAlbumToggle.value = !createAlbumToggle.value;
   setTimeout(() => {
     newAlbumInput.value?.focus();
   }, 200);
-};
+}
 
 //garbage checks for incorrect entries
 
-const submit = async () => {
+async function submit() {
   //url errors brrrrrr
   if (!picForm.value.url) urlEmpty();
 
@@ -218,7 +220,7 @@ const submit = async () => {
     const tablesContentRes = await api.getTableOfContents();
     localStorage.setItem("albums", JSON.stringify(tablesContentRes));
   }
-  // the actual submit const
+  //the actual submit function
   await api.addPicture({
     url: picForm.value.url,
     type: picForm.value.type,
@@ -226,39 +228,39 @@ const submit = async () => {
   });
 
   emit("newPicSubmitted");
-};
+}
 
-const urlEmpty = () => {
+function urlEmpty() {
   picFormError.value.picNameError = true;
   picUrlErrorMessage.value = "Please provide a url to picture";
-};
+}
 
-const noTypeSelected = () => {
+function noTypeSelected() {
   picFormError.value.picTypeError = true;
-};
+}
 
-const noAlbumelected = () => {
+function noAlbumelected() {
   picFormError.value.picAlbumError = true;
-};
+}
 
 //when the new album inputed bla bla
-const albumNameEmpty = () => {
+function albumNameEmpty() {
   picFormError.value.picAlbumError = true;
   AlbumNameErrorMessage.value = "Please give a name to your new album";
-};
+}
 
-const albumNameStartsWithNumOrSpecial = () => {
+function albumNameStartsWithNumOrSpecial() {
   picFormError.value.picAlbumError = true;
   AlbumNameErrorMessage.value = "album name must start with a leter";
-};
+}
 
-const albumNameContainsSpecialChar = () => {
+function albumNameContainsSpecialChar() {
   picFormError.value.picAlbumError = true;
   AlbumNameErrorMessage.value = "album name cannot include special characters";
-};
+}
 </script>
 
-<style lang="postcss">
+<style>
 :root {
   --popup_height: 320px;
   --popup_width: 480px;
@@ -267,7 +269,7 @@ const albumNameContainsSpecialChar = () => {
 .popup_container {
   @apply absolute top-[50%] left-[50%] p-10 text-white-400;
   @apply border-[3px] border-[#254EE0] gap-[14px];
-  @apply flex-row gap-[4px] m-auto;
+  @apply flex-row gap-[4px] align-middle m-auto;
 
   z-index: 1;
 
