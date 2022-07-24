@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import Button from "../misc/Button.vue";
-import CollectionDropMenu from "../isc/CollectionDropMenu.vue";
+import CollectionDropMenu from "../misc/CollectionDropMenu.vue";
 import AddNewPicturePopup from "../Popups/AddNewPicturePopup.vue";
 import SetupPopup from "../Popups/setupPopup.vue";
 import type { ICollection } from "../../services/types";
