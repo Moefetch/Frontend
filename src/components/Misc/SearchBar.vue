@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useDebounceFn } from "@vueuse/core";
-import Icon from "./icon.vue";
+import Icon from "./Icon.vue";
 let searchString = ref("");
 let searchPaused = ref(true);
 
