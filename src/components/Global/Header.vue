@@ -24,11 +24,11 @@
 
 <script setup lang="ts">
 import Button from "../misc/Button.vue";
-import CollectionDropMenu from "../Misc/CollectionDropMenu.vue";
+import CollectionDropMenu from "../isc/CollectionDropMenu.vue";
 import AddNewPicturePopup from "../Popups/AddNewPicturePopup.vue";
 import SetupPopup from "../Popups/setupPopup.vue";
 import type { ICollection } from "../../services/types";
-import SearchBar from "../Misc/SearchBar.vue";
+import SearchBar from "../misc/SearchBar.vue";
 
 import api from "../../services/api";
 import { onMounted, ref} from "vue";
