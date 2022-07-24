@@ -33,10 +33,10 @@ import SearchBar from "../Misc/SearchBar.vue";
 import api from "../../services/api";
 import { onMounted, ref} from "vue";
 import { useRoute } from "vue-router";
+const route = useRoute();
 
 const emit = defineEmits(['isEditing', "submittedNewPic"]);
 
-const route = useRoute();
 
 let defaultAlbumCollection: ICollection = {
   albumCoverImage: "",
