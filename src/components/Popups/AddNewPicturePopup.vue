@@ -103,6 +103,7 @@ let defaultAlbumCollection: ICollection = {
   albumCoverImage: "",
   name: "Select Album",
   uuid: "",
+  estimatedPicCount: 0
 };
 
 let albumCollection: ICollection[] = JSON.parse(
