@@ -12,7 +12,7 @@
 </template>
 
 <script  setup lang="ts">
-import Button from "../misc/Button.vue";
+import Button from "../Misc/Button.vue";
 const backendUrl = localStorage.getItem("backendUrl") as string;
 
 defineProps<{
@@ -24,7 +24,7 @@ defineProps<{
 
 </script>
 
-<style>
+<style lang="postcss">
 .container {
 @apply bg-[#3D3D3D]  w-[32vh] h-[40vh];
 border-radius: 4px;

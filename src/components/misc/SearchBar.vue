@@ -1,5 +1,8 @@
 <template>
-  <div class="search" :class="{ focused: searchString.length != 0 && !searchPaused }">
+  <div
+    class="search"
+    :class="{ focused: searchString.length != 0 && !searchPaused }"
+  >
     <div class="bar">
       <input
         v-model="searchString"
@@ -7,37 +10,24 @@
         :class="{ active: searchString.length != 0 }"
         type="text"
         placeholder="Search "
-        
         @keydown="typingTimeOut()"
-        
-        
       />
       <Icon :icon="searchString.length != 0 ? 'x' : 'search'" />
     </div>
-    
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useDebounceFn } from '@vueuse/core'
+import { useDebounceFn } from "@vueuse/core";
 import Icon from "./icon.vue";
-let searchRes = ref();
-let focused = ref(false);
-let searchString = ref('');
+let searchString = ref("");
 let searchPaused = ref(true);
-//let timer = ref((func: Function, timeoutNumber: number)=>{return useDebounceFn(func, timeoutNumber)});
 
-
-
-
-const typingTimeOut = useDebounceFn( ()=>{
-  console.log('trigged a search', searchString.value )
-  searchPaused.value = false
-}, 700 )
-
-
-
+const typingTimeOut = useDebounceFn(() => {
+  console.log("trigged a search", searchString.value);
+  searchPaused.value = false;
+}, 700);
 </script>
 
 <style lang="postcss" scoped>
@@ -48,16 +38,14 @@ const typingTimeOut = useDebounceFn( ()=>{
     max-width: 80%;
   }
 }
-
 .search {
   @apply z-10 self-start flex w-72 flex-col gap-2 max-h-600px p-2 duration-200 ease;
 }
-
 .search:focus-within,
 .search.focused {
   @apply w-400px;
 }
-.bar img{
+.bar img {
   color: rgb(218, 218, 218, 1);
 }
 .inputField.active {
