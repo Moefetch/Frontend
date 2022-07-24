@@ -76,10 +76,10 @@
 </template>
 
 <script setup lang="ts">
-import Icon from "../misc/Icon.vue";
+import Icon from "../Misc/Icon.vue";
 
 import { onMounted, ref, computed } from "vue";
-import Button from "../misc/Button.vue";
+import Button from "../Misc/Button.vue";
 
 import api from "../../services/api";
 const connectToBackendAndDB = api.connectToBackendAndDB;

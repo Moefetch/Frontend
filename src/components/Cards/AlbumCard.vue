@@ -12,7 +12,7 @@
 </template>
 
 <script  setup lang="ts">
-import Button from "../misc/Button.vue";
+import Button from "../Misc/Button.vue";
 let backendUrl: string;
 const localStorageSettingsJSONString = localStorage.getItem("settings") ;
 if (localStorageSettingsJSONString) {

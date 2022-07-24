@@ -23,12 +23,12 @@
 </template>
 
 <script setup lang="ts">
-import Button from "../misc/Button.vue";
-import CollectionDropMenu from "../misc/CollectionDropMenu.vue";
+import Button from "../Misc/Button.vue";
+import CollectionDropMenu from "../Misc/CollectionDropMenu.vue";
 import AddNewPicturePopup from "../Popups/AddNewPicturePopup.vue";
 import SetupPopup from "../Popups/SetupPopup.vue";
 import type { ICollection } from "../../services/types";
-import SearchBar from "../misc/SearchBar.vue";
+import SearchBar from "../Misc/SearchBar.vue";
 
 import api from "../../services/api";
 import { onMounted, ref} from "vue";
