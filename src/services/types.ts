@@ -5,7 +5,6 @@ export interface ICollection {
     type?: string;
     estimatedPicCount: number;
 }
-
 export interface IPostLinks {
     pixiv?: string;
     danbooru?: string;
@@ -69,6 +68,17 @@ export interface ISettings {
     saucenao_api_key?: string;
 
 }
+
+
+export interface IErrorObject {
+    anyErrors: boolean;
+    backendErrors: string[];
+    
+    databaseErrors: string[];
+    
+    saucenaoAPIErrors: string[]
+}
+
 
 /* export interface ITableOfContents extends ICollection {
     id:  string;

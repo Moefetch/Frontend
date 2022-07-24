@@ -1,6 +1,6 @@
 <template>
     <div class="setup_popup_container">
-        <form class="flex flex-col gap-[1rem]">
+        <form class="flex flex-col gap-[1rem]" v-if="!formSubmittedToggle"> 
             <div class="flex flex-col gap-[0.5rem]">
                 <h2 class="text-red-500 indent-2px text-14px" v-if="settingsFormError.backendUrlError" :style="`${settingsFormError.backendUrlError? '' : 'display: none;'}`">{{settingsFormError.backendUrlError}}</h2>
                 <div :class="`${settingsFormError.backendUrlError ? 'error' : ''}`">
@@ -19,7 +19,7 @@
                 <input class="popupInputField"
                 type="text"
                 v-model="settingsForm.database_url"
-                placeholder="Database URL / Hostname and port e.g. mongodb://localhost:27017/moefetch:"
+                placeholder="Database URL, use the form mongodb://username:password@host:port/moefetch"
                 @click="settingsFormError.databaseUrlError = ''"
             />
             </div>
@@ -68,6 +68,10 @@
 
             <Button type="button" text="Confirm" color="#4d6d8d" class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]" @click="submit()"/>
         </form>
+        <div v-else class="m-auto items-center flex flex-col">
+            <img src="/Gifs/1484.gif" alt="" class="w-[4rem]">
+            <h2 class="textLoadClass">Connecting</h2>
+        </div>
     </div>
 </template>
 
@@ -76,8 +80,13 @@ import Icon from "../misc/Icon.vue";
 
 import { onMounted, ref, computed } from "vue";
 import Button from "../misc/Button.vue";
+
 import api from "../../services/api";
+const connectToBackendAndDB = api.connectToBackendAndDB;
 import type { ISettings } from "../../services/types";
+const HOSTS_REGEX = /(?<protocol>mongodb(?:\+srv|)):\/\/(?:(?<username>[^:]*)(?::(?<password>[^@]*))?@)?(?<hosts>(?!:)[^\/?@]+)(?<rest>.*)/;
+
+const formSubmittedToggle = ref(false);
 
 const settingsFormError = ref<{
     backendUrlError: undefined | string;
@@ -113,15 +122,17 @@ function toggleSearchForDiffSites(toggleInto: boolean) {
     settingsForm.value.search_diff_sites = toggleInto;
 }
 
-function submit() {
+async function submit() {
+    console.log(settingsForm.value.database_url)
     if (!settingsForm.value.backend_url) settingsFormError.value.backendUrlError = "No Backend url was provided";
     if (!settingsForm.value.database_url) settingsFormError.value.databaseUrlError = "No Database url was provided";
     if (!settingsForm.value.saucenao_api_key && settingsForm.value.search_diff_sites) settingsFormError.value.saucenaoApiKeyError = "No saucenao api key was provided";
-
+    if (!HOSTS_REGEX.test(settingsForm.value.database_url)) settingsFormError.value.databaseUrlError = "Database url invalid";
 
     if (settingsFormError.value.backendUrlError || settingsFormError.value.databaseUrlError || settingsFormError.value.saucenaoApiKeyError) return;
     else {
-
+        formSubmittedToggle.value = true;
+        console.log(await connectToBackendAndDB(settingsForm.value));
     }
 
 }
@@ -163,6 +174,13 @@ top: calc((100vh - var(--setup_popup_height) + 7vh)/2)
     background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
     font-family: "Work Sans", sans-serif;
     color: rgb(202, 202, 202);
+}
+
+.textLoadClass {
+    @apply box-border font-medium text-12px border-none px-6px py-2;
+    font-family: "Work Sans", sans-serif;
+    color: rgb(202, 202, 202);
+
 }
 
 .popupSaucenaoKeyInputField[type="text"] {

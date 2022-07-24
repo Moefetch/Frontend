@@ -1,12 +1,37 @@
-import type {ICollection, IAnimePic, INewAlbum, INewPic} from "./types";
+import type {ICollection, IAnimePic, INewAlbum, INewPic, ISettings, IErrorObject} from "./types";
 
 class API {
 
     constructor(){
-    
+    this.setBackendURL()
 
     };
 
+
+    public backendUrl = "";
+        
+    public localStorageSettingsJSONString = localStorage.getItem("settings") //to see if exists
+
+    public localStorageSettings: ISettings = {  
+        backend_url: "",
+        database_url: "",
+        prefered_quality_highest_bool: false,
+        search_diff_sites: false,
+        saucenao_api_key: undefined,
+    };
+
+    /**
+     * setBackendURL
+     */
+    private setBackendURL() {
+            
+        if (this.localStorageSettingsJSONString) {
+            this.localStorageSettings = JSON.parse(this.localStorageSettingsJSONString) as ISettings;   
+        }
+        else this.localStorageSettings.backend_url = 'http://localhost:2234';
+
+    }
+    
     public async addPicture(data: INewPic) {
         this.backendRequest("post", "/add-picture", data)
     }
@@ -25,8 +50,6 @@ class API {
 
     };
 
-
-    
     public getPicsInAlbum = async (album: string) => {
         return this.backendRequest<[IAnimePic]>("get", `/album/${album}`)
     }
@@ -35,10 +58,15 @@ class API {
 
     public getModelTypes = async () => this.backendRequest<[string]>("get", "/types-of-models");
 
+    public connectToBackendAndDB = async (settings: ISettings) => {
+        console.log(settings.backend_url)
+        this.localStorageSettings.backend_url = settings.backend_url;
+        return this.backendRequest<IErrorObject>("post", "/connection-test", settings);
+    }
 
 
     private async backendRequest<T>(method: string, endpoint: string, body?: object): Promise<T> {
-        const url = `http://localhost:2234${endpoint}`;
+        const url = `${this.localStorageSettings.backend_url}${endpoint}`;
         return this.request(method, url, body);
     }
 
@@ -65,7 +93,7 @@ class API {
 
         //console.log(url)  //was for debugging now bloat lmao
         const response = await fetch(url, options);
-        const data = await response.json().catch((err) => {/* console.log(err); console.log(options) */});
+        const data = await response.json().catch((err) => {console.log(err); console.log(options)});
 
         return data;
     }
