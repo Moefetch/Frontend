@@ -29,7 +29,7 @@ defineProps<{
 
 </script>
 
-<style>
+<style lang="postcss">
 .container {
 @apply bg-[#3D3D3D]  w-[32vh] h-[40vh];
 border-radius: 4px;

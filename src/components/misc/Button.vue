@@ -15,7 +15,7 @@ defineProps<{
 }>();
 </script>
 
-<style>
+<style lang="postcss">
 
 :root {
   --color: var(--color);

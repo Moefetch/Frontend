@@ -8,7 +8,7 @@ defineProps<{
 }>();
 </script>
 
-<style>
+<style lang="postcss">
 .picture_card {
 
   @apply max-h-[150px] max-w-[280px];

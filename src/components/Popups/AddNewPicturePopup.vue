@@ -44,7 +44,7 @@
         :class="`${picFormError.picAlbumError ? 'error' : ''} box-content`"
         @click="picFormError.picAlbumError = false"
       />
-      
+
       <h2
         class="text-red-500 indent-2px text-14px"
         :style="`${AlbumNameErrorMessage ? '' : 'display: none;'}`"
@@ -56,7 +56,6 @@
         :class="`${AlbumNameErrorMessage ? 'error' : ''}`"
         style="width: fit-content"
       >
-      
         <input
           v-if="createAlbumToggle"
           type="text"
@@ -71,8 +70,6 @@
         />
       </div>
 
-      
-
       <Button
         text="Submit"
         color="#4d6d8d"
@@ -85,10 +82,9 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-const route = useRoute();
 import { onMounted, ref, computed } from "vue";
-import BaseDropMenu from "../misc/BaseDropMenu.vue";
-import Button from "../misc/Button.vue";
+import BaseDropMenu from "../Misc/BaseDropMenu.vue";
+import Button from "../Misc/Button.vue";
 
 import api from "../../services/api";
 import type {
@@ -97,12 +93,14 @@ import type {
   ICollection,
 } from "../../services/types";
 
+const route = useRoute();
 const emit = defineEmits(["newPicSubmitted"]);
 
 let defaultAlbumCollection: ICollection = {
   albumCoverImage: "",
   name: "Select Album",
   uuid: "",
+  estimatedPicCount: 0,
 };
 
 let albumCollection: ICollection[] = JSON.parse(
@@ -137,7 +135,7 @@ if (route.name == ":album") {
     picForm.value.album = albumObj.name;
 
     defaultSelectedAlbumType.value = albumObj.type;
-    picForm.value.type = albumObj.type as INewPic["type"] ;
+    picForm.value.type = albumObj.type as INewPic["type"];
   }
 }
 
@@ -163,26 +161,26 @@ const OnAlbumCoverChange = (event: any) => {
     picPreview.value = URL.createObjectURL(newAlbumCover);
 }
  */
-function typeSelect(a: AlbumSchemaType) {
+const typeSelect = (a: AlbumSchemaType) => {
   if ((a as string) == "Select type") picForm.value.type = undefined;
   else picForm.value.type = a;
-}
+};
 
-function albumSelect(a: string) {
+const albumSelect = (a: string) => {
   if ((a as string) == "Select Album") picForm.value.album = "";
   else picForm.value.album = a;
-}
+};
 
-function toggleCreateNewAblum() {
+const toggleCreateNewAblum = () => {
   createAlbumToggle.value = !createAlbumToggle.value;
   setTimeout(() => {
     newAlbumInput.value?.focus();
   }, 200);
-}
+};
 
 //garbage checks for incorrect entries
 
-async function submit() {
+const submit = async () => {
   //url errors brrrrrr
   if (!picForm.value.url) urlEmpty();
 
@@ -220,7 +218,7 @@ async function submit() {
     const tablesContentRes = await api.getTableOfContents();
     localStorage.setItem("albums", JSON.stringify(tablesContentRes));
   }
-  //the actual submit function
+  // the actual submit const
   await api.addPicture({
     url: picForm.value.url,
     type: picForm.value.type,
@@ -228,39 +226,39 @@ async function submit() {
   });
 
   emit("newPicSubmitted");
-}
+};
 
-function urlEmpty() {
+const urlEmpty = () => {
   picFormError.value.picNameError = true;
   picUrlErrorMessage.value = "Please provide a url to picture";
-}
+};
 
-function noTypeSelected() {
+const noTypeSelected = () => {
   picFormError.value.picTypeError = true;
-}
+};
 
-function noAlbumelected() {
+const noAlbumelected = () => {
   picFormError.value.picAlbumError = true;
-}
+};
 
 //when the new album inputed bla bla
-function albumNameEmpty() {
+const albumNameEmpty = () => {
   picFormError.value.picAlbumError = true;
   AlbumNameErrorMessage.value = "Please give a name to your new album";
-}
+};
 
-function albumNameStartsWithNumOrSpecial() {
+const albumNameStartsWithNumOrSpecial = () => {
   picFormError.value.picAlbumError = true;
   AlbumNameErrorMessage.value = "album name must start with a leter";
-}
+};
 
-function albumNameContainsSpecialChar() {
+const albumNameContainsSpecialChar = () => {
   picFormError.value.picAlbumError = true;
   AlbumNameErrorMessage.value = "album name cannot include special characters";
-}
+};
 </script>
 
-<style>
+<style lang="postcss">
 :root {
   --popup_height: 320px;
   --popup_width: 480px;
@@ -269,7 +267,7 @@ function albumNameContainsSpecialChar() {
 .popup_container {
   @apply absolute top-[50%] left-[50%] p-10 text-white-400;
   @apply border-[3px] border-[#254EE0] gap-[14px];
-  @apply flex-row gap-[4px] align-center m-auto;
+  @apply flex-row gap-[4px] m-auto;
 
   z-index: 1;
 

@@ -46,6 +46,6 @@ let currentlyDisplayedPos = ref({top:0, left:0})
 
 </script>
 
-<style>
+<style lang="postcss">
 
 </style>
