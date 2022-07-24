@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import Button from "../Misc/Button.vue";
+import Button from "../misc/Button.vue";
 import CollectionDropMenu from "../Misc/CollectionDropMenu.vue";
 import AddNewPicturePopup from "../Popups/AddNewPicturePopup.vue";
 import SetupPopup from "../Popups/setupPopup.vue";
