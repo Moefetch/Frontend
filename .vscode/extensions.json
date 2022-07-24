@@ -1,3 +1,3 @@
 {
-  "recommendations": ["Vue.volar", "cpylua.language-postcss"]
+  "recommendations": ["Vue.volar", "cpylua.language-postcss", "voorjaar.windicss-intellisense", "esbenp.prettier-vscode"]
 }
