@@ -1,4 +1,4 @@
-import type {ICollection, IAnimePic, INewAlbum, INewPic, ISettings, IErrorObject} from "./types";
+import type {ICollection, IAnimePic, INewAlbum, INewPic, ISettings, ISettingsErrorObject} from "./types";
 
 class API {
 
@@ -15,7 +15,6 @@ class API {
     public localStorageSettings: ISettings = {  
         backend_url: "",
         database_url: "",
-        prefered_quality_highest_bool: false,
         search_diff_sites: false,
         saucenao_api_key: undefined,
     };
@@ -26,7 +25,8 @@ class API {
     private setBackendURL() {
             
         if (this.localStorageSettingsJSONString) {
-            this.localStorageSettings = JSON.parse(this.localStorageSettingsJSONString) as ISettings;   
+            this.localStorageSettings = JSON.parse(this.localStorageSettingsJSONString) as ISettings; 
+            if( this.localStorageSettings.backend_url[this.localStorageSettings.backend_url.length -1 ] == "/")  this.localStorageSettings.backend_url = this.localStorageSettings.backend_url.substring(0, (this.localStorageSettings.backend_url.length - 1));
         }
         else this.localStorageSettings.backend_url = 'http://localhost:2234';
 
@@ -61,9 +61,9 @@ class API {
     public getModelTypes = async () => this.backendRequest<[string]>("get", "/types-of-models");
 
     public connectToBackendAndDB = async (settings: ISettings) => {
-        console.log(settings.backend_url)
         this.localStorageSettings.backend_url = settings.backend_url;
-        return this.backendRequest<IErrorObject>("post", "/connection-test", settings);
+        if( this.localStorageSettings.backend_url[this.localStorageSettings.backend_url.length - 1] == "/")  this.localStorageSettings.backend_url = this.localStorageSettings.backend_url.substring(0, (this.localStorageSettings.backend_url.length - 1));
+        return this.backendRequest<ISettingsErrorObject>("post", "/connection-test", settings);
     }
 
 

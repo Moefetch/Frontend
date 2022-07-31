@@ -53,6 +53,7 @@ export interface INewPic {
     old_file?: string;
     thumbnail_file?: string;
     url: string;
+    useSauceNao?: boolean;
     has_results?: boolean;
     type?: AlbumSchemaType;
     album: string;
@@ -63,20 +64,27 @@ export type PicTypes = IAnimePic;
 export interface ISettings {
     backend_url: string;
     database_url: string;
-    prefered_quality_highest_bool: boolean;
     search_diff_sites: boolean;
+    pixiv_download_first_image: boolean;
     saucenao_api_key?: string;
 
 }
 
 
 export interface IErrorObject {
-    anyErrors: boolean;
-    backendErrors: string[];
+    backendErrors: string;
     
-    databaseErrors: string[];
+    databaseErrors: string;
     
-    saucenaoAPIErrors: string[]
+    saucenaoAPIErrors: string
+}
+
+export interface ISettingsErrorObject {
+    backendUrlError: string;
+    
+    databaseUrlError: string;
+    
+    saucenaoApiKeyError: string
 }
 
 

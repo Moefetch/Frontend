@@ -6,7 +6,7 @@
             </div>
             <form>
                 <input type="file" @change="OnAlbumCoverChange" style="display: none" id="picHTMLElement" name="picHTMLElement" ref="picHTMLElement" accept="image/*" />
-             </form> -->
+            </form> -->
     </div>
     <div class="flex flex-col gap-2">
       <h2
@@ -19,13 +19,15 @@
         :class="`${picFormError.picNameError ? 'error' : ''}`"
         style="width: fit-content"
       >
-        <input
+        <textarea
           v-model="picForm.url"
           class="inputField"
+          :style="`height: ${(picForm.url.split('\n').length * 11.6) + 20 }px`"
           type="text"
           placeholder="Image URL or post URL"
           @click="picFormError.picNameError = false"
         />
+        <h2>{{picForm.url.split('\n').length}}</h2>
       </div>
       <BaseDropMenu
         :dropdownItemsArray="modelTypesArray"
@@ -71,7 +73,10 @@
         />
       </div>
 
-      
+      <div class="checkbox_option w-[16rem]" @click="toggleUseSaucenao()">   
+        <Icon :icon="picForm.useSauceNao? 'checked_checkbox' : 'unchecked_checkbox'" />
+        <h2>Use Saucenao to get highest Qaulity</h2>
+      </div>
 
       <Button
         text="Submit"
@@ -89,12 +94,14 @@ const route = useRoute();
 import { onMounted, ref, computed } from "vue";
 import BaseDropMenu from "../Misc/BaseDropMenu.vue";
 import Button from "../Misc/Button.vue";
+import Icon from "../Misc/Icon.vue";
 
 import api from "../../services/api";
 import type {
   INewPic,
   AlbumSchemaType,
   ICollection,
+  ISettings
 } from "../../services/types";
 
 const emit = defineEmits(["newPicSubmitted"]);
@@ -118,14 +125,31 @@ const newAlbumInput = ref<HTMLDivElement | undefined>(undefined);
 const createAlbumToggle = ref(false);
 const modelTypesArray = ref(["Select type"]);
 
-const defaultSelectedAlbumName = ref<undefined | string>(undefined);
-const defaultSelectedAlbumType = ref<undefined | string>(undefined);
+const defaultSelectedAlbumName = ref("");
+const defaultSelectedAlbumType = ref("");
+
+const settingsForm = ref<ISettings>({
+    backend_url: "",
+    database_url: "",
+    prefered_quality_highest_bool: false,
+    search_diff_sites: false,
+    saucenao_api_key: undefined,
+});
+
+
+const localStorageSettings = localStorage.getItem("settings") //to see if exists
+
+if (localStorageSettings) {
+    //const localStorageSettingsJSON:ISettings =  \\/
+    settingsForm.value = JSON.parse(localStorageSettings);    //localStorageSettingsJSON;
+}
 
 const picForm = ref<INewPic>({
   url: "",
   thumbnail_file: "",
   type: undefined,
   album: "",
+  useSauceNao: (settingsForm.value.saucenao_api_key as boolean),
 });
 
 //make it autoselect album when you're in an album page
@@ -140,6 +164,11 @@ if (route.name == ":album") {
     defaultSelectedAlbumType.value = albumObj.type;
     picForm.value.type = albumObj.type as INewPic["type"] ;
   }
+}
+
+
+function toggleUseSaucenao() {
+  picForm.value.useSauceNao = !picForm.value.useSauceNao;
 }
 
 const picFormError = ref({
@@ -226,6 +255,7 @@ async function submit() {
     url: picForm.value.url,
     type: picForm.value.type,
     album: picForm.value.album,
+    useSauceNao: picForm.value.useSauceNao
   });
 
   emit("newPicSubmitted");
@@ -268,9 +298,10 @@ function albumNameContainsSpecialChar() {
 }
 
 .popup_container {
-  @apply absolute top-[50%] left-[50%] p-10 text-white-400;
-  @apply border-[3px] border-[#254EE0] gap-[14px];
-  @apply flex-row gap-[4px] align-middle m-auto;
+  @apply absolute top-0 left-0 right-0 bottom-0 m-auto;
+  @apply p-10 pb-[10rem] h-[fit-content];
+  @apply border-[3px] border-[#254EE0] gap-[14px] text-white-400;
+  @apply flex-row gap-[4px] align-middle;
 
   z-index: 1;
 
@@ -282,11 +313,7 @@ function albumNameContainsSpecialChar() {
   background-color: rgba(42, 45, 52, 1);
 
   width: var(--popup_width);
-  height: var(--popup_height);
 
-  left: calc((100vw - var(--popup_width)) / 2);
-  right: calc((100vw - var(--popup_width)) / 2);
-  top: calc((100vh - var(--popup_height) + 7vh) / 2);
 }
 .album_thumbnail_preview {
   @apply h-[12.4vh] w-[12.4vh];
@@ -296,9 +323,12 @@ function albumNameContainsSpecialChar() {
 
 .inputField[type="text"] {
   @apply outline-none w-[16rem] h-[1rem] box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 placeholder-white-400;
+  @apply m;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;
   color: white;
+  box-sizing: border-box;
+  resize: none;
 }
 .error {
   @apply border-rose-600 border-width-[2px] !important;

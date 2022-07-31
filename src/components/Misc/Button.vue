@@ -1,8 +1,8 @@
 <template>
   <button v-bind:class="`${color? '' : 'bg-transparent'}`" :style="`${color? 'background-color: ' + `${color}` : '' }`">
-    <div :class='`${text ? "py-1 px-4" : "p-2 "} flex items-center justify-between gap-2 transition-all duration-100`'>
+    <div :class='`${text ? "py-1 px-4" : "p-2 "} flex items-center justify-between gap-2 transition-all duration-100 text-center`'>
       <Icon v-if="icon" class="h-6 transition-all duration-100" :icon="icon" />
-      <h1 v-if="text">{{ text }}</h1>
+      <h1 v-if="text" class="m-auto">{{ text }}</h1>
     </div>
   </button>
 </template>

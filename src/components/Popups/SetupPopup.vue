@@ -26,32 +26,24 @@
             </div>
 
             <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
-                <h1>Prefered quality to download</h1>
                 <div class="h-[24px] right-0 flex flex-row items-center">
-                    <div class="checkbox_option" @click="togglePreferedQuality(true)">   
-                        <Icon :icon="!settingsForm.prefered_quality_highest_bool? 'unchecked_checkbox' : 'checked_checkbox'" />
-                        <h2>Highest</h2>
-                    </div>
-                    <div class="checkbox_option" @click="togglePreferedQuality(false)">   
-                        <Icon :icon="settingsForm.prefered_quality_highest_bool? 'unchecked_checkbox' : 'checked_checkbox'" />
-                        <h2>Default</h2>
+                    <div class="checkbox_option" @click="toggleSearchForDiffSites()">   
+                        <Icon :icon="!settingsForm.search_diff_sites? 'unchecked_checkbox' : 'checked_checkbox'" />
+                        <h2>Use SauceNao to search different sites for possibly higher quality</h2>
                     </div>
                 </div>
             </div>
 
+
             <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
-                <h1>Search different sites for possibly higher quality</h1>
                 <div class="h-[24px] right-0 flex flex-row items-center">
-                    <div class="checkbox_option" @click="toggleSearchForDiffSites(true)">   
-                        <Icon :icon="!settingsForm.search_diff_sites? 'unchecked_checkbox' : 'checked_checkbox'" />
-                        <h2>Yes</h2>
-                    </div>
-                    <div class="checkbox_option" @click="toggleSearchForDiffSites(false)">   
-                        <Icon :icon="settingsForm.search_diff_sites? 'unchecked_checkbox' : 'checked_checkbox'" />
-                        <h2>No</h2>
+                    <div class="checkbox_option" @click="togglePixivDownloadAll()">   
+                        <Icon :icon="!settingsForm.pixiv_download_first_image? 'unchecked_checkbox' : 'checked_checkbox'" />
+                        <h2>Download all images in pixiv pages</h2>
                     </div>
                 </div>
             </div>
+
 
             <div class="flex flex-col gap-[0.5rem]">
                 <h2 class="text-red-500 indent-2px text-14px" v-if="settingsFormError.saucenaoApiKeyError" :style="`${settingsFormError.saucenaoApiKeyError? '' : 'display: none;'}`">{{settingsFormError.saucenaoApiKeyError}}</h2>
@@ -65,17 +57,27 @@
                     />
                 </div>
             </div>
+            <Button type="button" text="Use Defaults" color="#a41414" class="absolute bottom-8 left-8 w-[fit-content] rounded-[8px]" @click="useDefaults()"/>
 
             <Button type="button" text="Confirm" color="#4d6d8d" class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]" @click="submit()"/>
         </form>
         <div v-else class="m-auto items-center flex flex-col">
-            <img src="/Gifs/1484.gif" alt="" class="w-[4rem]">
-            <h2 class="textLoadClass">Connecting</h2>
+            <img :src="`${connectionSuccess ? '/Gifs/ok_success.gif' :'/Gifs/loading_three_circles.gif'}`" alt="" class="w-[6rem]">
+            <h2 class="textLoadClass">{{connectionSuccess ? 'Connected' : 'Connecting' }}</h2>
+            <Button type="button" text="Done" color="#254ee0" class="absolute bottom-8 w-[10rem] text-center rounded-[8px]" @click="emitSubmit()"/>
+
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
+
+const emit = defineEmits(['sumbittedSettings']);
+
+function emitSubmit() {
+    emit('sumbittedSettings')
+}
+
 import Icon from "../Misc/Icon.vue";
 
 import { onMounted, ref, computed } from "vue";
@@ -83,16 +85,12 @@ import Button from "../Misc/Button.vue";
 
 import api from "../../services/api";
 const connectToBackendAndDB = api.connectToBackendAndDB;
-import type { ISettings } from "../../services/types";
+import type { ISettings, ISettingsErrorObject } from "../../services/types";
 const HOSTS_REGEX = /(?<protocol>mongodb(?:\+srv|)):\/\/(?:(?<username>[^:]*)(?::(?<password>[^@]*))?@)?(?<hosts>(?!:)[^\/?@]+)(?<rest>.*)/;
 
 const formSubmittedToggle = ref(false);
-
-const settingsFormError = ref<{
-    backendUrlError: undefined | string;
-    databaseUrlError: undefined | string;
-    saucenaoApiKeyError: undefined | string;
-}>({
+const connectionSuccess = ref(false);
+const settingsFormError = ref<ISettingsErrorObject>({
     backendUrlError: "" ,
     databaseUrlError: "",
     saucenaoApiKeyError: ""
@@ -102,8 +100,8 @@ const settingsFormError = ref<{
 const settingsForm = ref<ISettings>({
     backend_url: "",
     database_url: "",
-    prefered_quality_highest_bool: false,
     search_diff_sites: false,
+    pixiv_download_first_image: false,
     saucenao_api_key: undefined,
 });
 
@@ -114,16 +112,25 @@ if (localStorageSettings) {
     settingsForm.value = JSON.parse(localStorageSettings);    //localStorageSettingsJSON;
 }
 
-function togglePreferedQuality(toggleInto: boolean) {
-    settingsForm.value.prefered_quality_highest_bool = toggleInto;
+function toggleSearchForDiffSites() {
+    settingsForm.value.search_diff_sites = !settingsForm.value.search_diff_sites;
 }
 
-function toggleSearchForDiffSites(toggleInto: boolean) {
-    settingsForm.value.search_diff_sites = toggleInto;
+
+function togglePixivDownloadAll() {
+    settingsForm.value.pixiv_download_first_image = !settingsForm.value.pixiv_download_first_image;
+}
+
+
+const defaultSettings: ISettings = {
+    backend_url: "http://127.0.0.1:2234",
+    database_url: "mongodb://127.0.0.1:27017/moefetch",
+    search_diff_sites: false,
+    pixiv_download_first_image: false,
+    saucenao_api_key: undefined,
 }
 
 async function submit() {
-    console.log(settingsForm.value.database_url)
     if (!settingsForm.value.backend_url) settingsFormError.value.backendUrlError = "No Backend url was provided";
     if (!settingsForm.value.database_url) settingsFormError.value.databaseUrlError = "No Database url was provided";
     if (!settingsForm.value.saucenao_api_key && settingsForm.value.search_diff_sites) settingsFormError.value.saucenaoApiKeyError = "No saucenao api key was provided";
@@ -132,11 +139,28 @@ async function submit() {
     if (settingsFormError.value.backendUrlError || settingsFormError.value.databaseUrlError || settingsFormError.value.saucenaoApiKeyError) return;
     else {
         formSubmittedToggle.value = true;
-        console.log(await connectToBackendAndDB(settingsForm.value));
+        const connectionResponse = await connectToBackendAndDB(settingsForm.value);
+        if ((connectionResponse.databaseUrlError || connectionResponse.saucenaoApiKeyError)) {
+            formSubmittedToggle.value = false;
+            if (connectionResponse.databaseUrlError) {
+                settingsFormError.value.databaseUrlError = connectionResponse.databaseUrlError;
+            } 
+            
+            if (connectionResponse.saucenaoApiKeyError) {
+                settingsFormError.value.saucenaoApiKeyError = connectionResponse.saucenaoApiKeyError;
+            }
+        }
+        else {
+            localStorage.setItem("settings", JSON.stringify(settingsForm.value))
+            connectionSuccess.value = true;
+        }
     }
 
 }
-
+async function useDefaults() {
+    settingsForm.value = defaultSettings;
+    await submit()
+}
 </script>
 
 <style>
@@ -177,7 +201,7 @@ top: calc((100vh - var(--setup_popup_height) + 7vh)/2)
 }
 
 .textLoadClass {
-    @apply box-border font-medium text-12px border-none px-6px py-2;
+    @apply box-border font-medium text-22px border-none px-6px py-2;
     font-family: "Work Sans", sans-serif;
     color: rgb(202, 202, 202);
 
@@ -202,7 +226,7 @@ top: calc((100vh - var(--setup_popup_height) + 7vh)/2)
 
 }
 .checkbox_option {
-    @apply text-12px flex flex-row items-center h-[24px] align-middle w-[108px] gap-1 cursor-pointer;
+    @apply text-12px flex flex-row items-center h-[24px] align-middle w-[35rem] gap-1 cursor-pointer;
     font-family: "Work Sans", sans-serif;
     color: white;
 }
