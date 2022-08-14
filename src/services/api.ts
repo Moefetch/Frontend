@@ -16,6 +16,7 @@ class API {
         backend_url: "",
         database_url: "",
         search_diff_sites: false,
+        pixiv_download_first_image_only: true,
         saucenao_api_key: undefined,
     };
 
@@ -61,9 +62,24 @@ class API {
     public getModelTypes = async () => this.backendRequest<[string]>("get", "/types-of-models");
 
     public connectToBackendAndDB = async (settings: ISettings) => {
+        const oldBackendUrl = this.localStorageSettings.backend_url;
         this.localStorageSettings.backend_url = settings.backend_url;
-        if( this.localStorageSettings.backend_url[this.localStorageSettings.backend_url.length - 1] == "/")  this.localStorageSettings.backend_url = this.localStorageSettings.backend_url.substring(0, (this.localStorageSettings.backend_url.length - 1));
-        return this.backendRequest<ISettingsErrorObject>("post", "/connection-test", settings);
+        // if it ends with a / remove the /
+        if( this.localStorageSettings.backend_url[this.localStorageSettings.backend_url.length - 1] == "/")
+          this.localStorageSettings.backend_url = this.localStorageSettings
+          .backend_url
+          .substring(0, (this.localStorageSettings.backend_url.length - 1));
+          try {
+              const req = await this.backendRequest<ISettingsErrorObject>("post", "/connection-test", settings);
+              return req;
+          } catch (error) {
+            this.localStorageSettings.backend_url = oldBackendUrl;
+            return {
+                backendUrlError: "Cannot connect to Backend, URL might be incorrect",
+                databaseUrlError: "",
+                saucenaoApiKeyError: "",
+            } as ISettingsErrorObject
+          } 
     }
 
 

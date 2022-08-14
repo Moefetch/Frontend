@@ -7,7 +7,7 @@
                     <input class="popupInputField"
                     type="text"
                     v-model="settingsForm.backend_url"
-                    placeholder="Backend   URL / Hostname and port e.g. http://127.0.0.1:2234"
+                    placeholder="Backend   URL / Hostname and port e.g. http://127.0.0.1:2234/"
                     @click="settingsFormError.backendUrlError = ''"
                     />
                 </div>
@@ -27,23 +27,21 @@
 
             <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
                 <div class="h-[24px] right-0 flex flex-row items-center">
+                    <div class="checkbox_option" @click="togglePixivDownloadAll()">   
+                        <Icon :icon="!settingsForm.pixiv_download_first_image_only? 'checked_checkbox' : 'unchecked_checkbox'" />
+                        <h2>Download all images in pixiv pages</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
+                <div class="h-[24px] right-0 flex flex-row items-center">
                     <div class="checkbox_option" @click="toggleSearchForDiffSites()">   
                         <Icon :icon="!settingsForm.search_diff_sites? 'unchecked_checkbox' : 'checked_checkbox'" />
                         <h2>Use SauceNao to search different sites for possibly higher quality</h2>
                     </div>
                 </div>
             </div>
-
-
-            <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
-                <div class="h-[24px] right-0 flex flex-row items-center">
-                    <div class="checkbox_option" @click="togglePixivDownloadAll()">   
-                        <Icon :icon="!settingsForm.pixiv_download_first_image? 'unchecked_checkbox' : 'checked_checkbox'" />
-                        <h2>Download all images in pixiv pages</h2>
-                    </div>
-                </div>
-            </div>
-
 
             <div class="flex flex-col gap-[0.5rem]">
                 <h2 class="text-red-500 indent-2px text-14px" v-if="settingsFormError.saucenaoApiKeyError" :style="`${settingsFormError.saucenaoApiKeyError? '' : 'display: none;'}`">{{settingsFormError.saucenaoApiKeyError}}</h2>
@@ -72,20 +70,22 @@
 
 <script setup lang="ts">
 
-const emit = defineEmits(['sumbittedSettings']);
-
-function emitSubmit() {
-    emit('sumbittedSettings')
-}
-
 import Icon from "../Misc/Icon.vue";
 
 import { onMounted, ref, computed } from "vue";
 import Button from "../Misc/Button.vue";
 
 import api from "../../services/api";
-const connectToBackendAndDB = api.connectToBackendAndDB;
 import type { ISettings, ISettingsErrorObject } from "../../services/types";
+
+const emit = defineEmits(['sumbittedSettings']);
+
+function emitSubmit() {
+    emit('sumbittedSettings')
+}
+
+
+const connectToBackendAndDB = api.connectToBackendAndDB;
 const HOSTS_REGEX = /(?<protocol>mongodb(?:\+srv|)):\/\/(?:(?<username>[^:]*)(?::(?<password>[^@]*))?@)?(?<hosts>(?!:)[^\/?@]+)(?<rest>.*)/;
 
 const formSubmittedToggle = ref(false);
@@ -101,7 +101,7 @@ const settingsForm = ref<ISettings>({
     backend_url: "",
     database_url: "",
     search_diff_sites: false,
-    pixiv_download_first_image: false,
+    pixiv_download_first_image_only: true,
     saucenao_api_key: undefined,
 });
 
@@ -118,15 +118,15 @@ function toggleSearchForDiffSites() {
 
 
 function togglePixivDownloadAll() {
-    settingsForm.value.pixiv_download_first_image = !settingsForm.value.pixiv_download_first_image;
+    settingsForm.value.pixiv_download_first_image_only = !settingsForm.value.pixiv_download_first_image_only;
 }
 
 
 const defaultSettings: ISettings = {
-    backend_url: "http://127.0.0.1:2234",
+    backend_url: "http://127.0.0.1:2234/",
     database_url: "mongodb://127.0.0.1:27017/moefetch",
     search_diff_sites: false,
-    pixiv_download_first_image: false,
+    pixiv_download_first_image_only: true,
     saucenao_api_key: undefined,
 }
 
@@ -140,8 +140,11 @@ async function submit() {
     else {
         formSubmittedToggle.value = true;
         const connectionResponse = await connectToBackendAndDB(settingsForm.value);
-        if ((connectionResponse.databaseUrlError || connectionResponse.saucenaoApiKeyError)) {
+        if ((connectionResponse.databaseUrlError || connectionResponse.saucenaoApiKeyError || connectionResponse.backendUrlError)) {
             formSubmittedToggle.value = false;
+            if (connectionResponse.backendUrlError) {
+                settingsFormError.value.backendUrlError = connectionResponse.backendUrlError;
+            }
             if (connectionResponse.databaseUrlError) {
                 settingsFormError.value.databaseUrlError = connectionResponse.databaseUrlError;
             } 
@@ -163,7 +166,7 @@ async function useDefaults() {
 }
 </script>
 
-<style>
+<style lang="postcss">
 
 :root {
     --setup_popup_height: 500px;
@@ -194,7 +197,7 @@ right: calc((100vw - var(--setup_popup_width) )/2);
 top: calc((100vh - var(--setup_popup_height) + 7vh)/2)
 }
 .popupInputField[type="text"] {
-    @apply outline-none h-[2rem] w-[37.5rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 placeholder-warmGray-400;
+    @apply outline-none h-[2rem] w-[37.5rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
     background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
     font-family: "Work Sans", sans-serif;
     color: rgb(202, 202, 202);
@@ -208,13 +211,13 @@ top: calc((100vh - var(--setup_popup_height) + 7vh)/2)
 }
 
 .popupSaucenaoKeyInputField[type="text"] {
-    @apply outline-none h-[2rem] w-[37.5rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 placeholder-warmGray-400;
+    @apply outline-none h-[2rem] w-[37.5rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
     background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
     font-family: "Work Sans", sans-serif;
     color: rgb(202, 202, 202);
 }
 .popupSaucenaoKeyInputFieldDisabled[type="text"] {
-    @apply outline-none h-[2rem] w-[37.5rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 placeholder-warmGray-500;
+    @apply outline-none h-[2rem] w-[37.5rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
     background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
     font-family: "Work Sans", sans-serif;
     color: rgb(129, 129, 129);

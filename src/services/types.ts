@@ -2,7 +2,7 @@ export interface ICollection {
     albumCoverImage: string;
     name: string;
     uuid: string | undefined;
-    type?: string;
+    type: string;
     estimatedPicCount: number;
 }
 export interface IPostLinks {
@@ -65,7 +65,7 @@ export interface ISettings {
     backend_url: string;
     database_url: string;
     search_diff_sites: boolean;
-    pixiv_download_first_image: boolean;
+    pixiv_download_first_image_only: boolean;
     saucenao_api_key?: string;
 
 }

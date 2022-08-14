@@ -17,7 +17,7 @@
       v-if="addPicPopupToggleBool || setupPopupToggleBool"
       @click="togglePopupsOff()"
     ></div>
-    <SetupPopup v-if="setupPopupToggleBool"/>
+    <SetupPopup v-if="setupPopupToggleBool" @sumbittedSettings="toggleSetupPopup"/>
     <AddNewPicturePopup v-if="addPicPopupToggleBool" @newPicSubmitted="submittedPicSuccessfully"/>
   </div>
 </template>
@@ -41,7 +41,8 @@ const emit = defineEmits(['isEditing', "submittedNewPic"]);
 let defaultAlbumCollection: ICollection = {
   albumCoverImage: "",
   name: "Home",
-  estimatedPicCount: 0, 
+  estimatedPicCount: 0,
+  type: "",
   uuid: undefined,
 };
 
@@ -79,7 +80,6 @@ function toggleSetupPopup() {
   setupPopupToggleBool.value = !setupPopupToggleBool.value;
   addPicPopupToggleBool.value = false;
 }
-
 
 function submittedPicSuccessfully() {
   toggleAddPicPopup()

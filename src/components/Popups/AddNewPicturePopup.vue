@@ -27,7 +27,6 @@
           placeholder="Image URL or post URL"
           @click="picFormError.picNameError = false"
         />
-        <h2>{{picForm.url.split('\n').length}}</h2>
       </div>
       <BaseDropMenu
         :dropdownItemsArray="modelTypesArray"
@@ -66,6 +65,7 @@
           ref="newAlbumInput"
           id="newAlbumInput"
           name="newAlbumInput"
+          style="height: 32px"
           class="inputField"
           placeholder="Enter new Album name"
           min="1"
@@ -73,9 +73,9 @@
         />
       </div>
 
-      <div class="checkbox_option w-[16rem]" @click="toggleUseSaucenao()">   
+      <div class="checkbox_option w-[16rem]" v-if="settingsForm.saucenao_api_key" @click="toggleUseSaucenao()">   
         <Icon :icon="picForm.useSauceNao? 'checked_checkbox' : 'unchecked_checkbox'" />
-        <h2>Use Saucenao to get highest Qaulity</h2>
+        <h2>Use Saucenao to get highest Quality</h2>
       </div>
 
       <Button
@@ -90,7 +90,6 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-const route = useRoute();
 import { onMounted, ref, computed } from "vue";
 import BaseDropMenu from "../Misc/BaseDropMenu.vue";
 import Button from "../Misc/Button.vue";
@@ -104,12 +103,14 @@ import type {
   ISettings
 } from "../../services/types";
 
+const route = useRoute();
 const emit = defineEmits(["newPicSubmitted"]);
 
 let defaultAlbumCollection: ICollection = {
   albumCoverImage: "",
   name: "Select Album",
   uuid: "",
+  type: "",
   estimatedPicCount: 0
 };
 
@@ -131,8 +132,8 @@ const defaultSelectedAlbumType = ref("");
 const settingsForm = ref<ISettings>({
     backend_url: "",
     database_url: "",
-    prefered_quality_highest_bool: false,
     search_diff_sites: false,
+    pixiv_download_first_image: false,
     saucenao_api_key: undefined,
 });
 
@@ -149,7 +150,7 @@ const picForm = ref<INewPic>({
   thumbnail_file: "",
   type: undefined,
   album: "",
-  useSauceNao: (settingsForm.value.saucenao_api_key as boolean),
+  useSauceNao: (settingsForm.value.search_diff_sites),
 });
 
 //make it autoselect album when you're in an album page
