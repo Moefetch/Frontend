@@ -58,12 +58,16 @@ let tablesContentRes: [ICollection];
 
 
 onMounted(async () => {
+  await setResTable()
+});
+
+async function setResTable() {
   tablesContentRes = await api.getTableOfContents();
   dataReady.value = true;
   localStorage.setItem("albums", JSON.stringify(tablesContentRes));
   resTable.value = tablesContentRes;
   resTable.value.unshift(defaultAlbumCollection);
-});
+}
 
 function togglePopupsOff() {
   addPicPopupToggleBool.value = false;

@@ -12,13 +12,9 @@
 </template>
 
 <script  setup lang="ts">
+import api from "../../services/api";
 import Button from "../Misc/Button.vue";
-let backendUrl: string;
-const localStorageSettingsJSONString = localStorage.getItem("settings") ;
-if (localStorageSettingsJSONString) {
-    backendUrl = JSON.parse(localStorageSettingsJSONString).backend_url;
-    
-} else backendUrl= 'http://127.0.0.1:2234/';
+const backendUrl = api.getBackendUrl()
 
 defineProps<{
   name: string;

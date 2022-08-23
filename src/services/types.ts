@@ -45,7 +45,7 @@ export type AlbumSchemaType = "Anime Pic";
 export interface INewAlbum {
     name: string;
     type: AlbumSchemaType | undefined;
-    thumbnail_file: "" | File;
+    album_thumbnail_file: "" | File;
 }
 
 export interface INewPic {

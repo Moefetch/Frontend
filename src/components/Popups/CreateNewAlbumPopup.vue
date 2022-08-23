@@ -86,7 +86,6 @@ import type {
   AlbumSchemaType,
   ICollection,
 } from "../../services/types";
-import { blob } from "stream/consumers";
 
 const emit = defineEmits(["newAlbumSubmitted"]);
 
@@ -100,7 +99,7 @@ const modelTypesArray = ref(["Select type"]);
 
 const albumForm = ref<INewAlbum>({
   name: "",
-  thumbnail_file: "",
+  album_thumbnail_file: "",
   type: undefined,
 });
 
@@ -161,7 +160,7 @@ async function submit() {
   await api.createNewAlbum({
     name: albumForm.value.name,
     type: albumForm.value.type,
-    thumbnail_file: newAlbumCover,
+    album_thumbnail_file: newAlbumCover,
   });
 
   emit("newAlbumSubmitted");
@@ -212,7 +211,7 @@ function noTypeSelected() {
 
   left: calc((100vw - var(--popup_width)) / 2);
   right: calc((100vw - var(--popup_width)) / 2);
-  top: calc((100vh - var(--popup_height) + 7vh) / 2);
+  top: calc((100vh - var(--popup_height) - 25vh) / 2);
 }
 .album_thumbnail_preview {
   @apply h-[12.4vh] w-[12.4vh];
@@ -221,7 +220,7 @@ function noTypeSelected() {
 }
 
 .inputField {
-  @apply outline-none w-[16rem] h-[1rem] box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 bg-dark-700 placeholder-white-400;
+  @apply outline-none h-[2rem] w-[16rem] box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 bg-dark-700 placeholder-white-400;
   font-family: "Work Sans", sans-serif;
   color: white;
 }

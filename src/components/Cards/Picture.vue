@@ -1,11 +1,14 @@
 <template>
-<img :src="pictureURL" class="picture_card"/>
+<img :src="backendUrl + pictureURL" class="picture_card"/>
 </template>
 
 <script setup lang="ts">
+import api from "../../services/api";
 defineProps<{
   pictureURL?: string;
 }>();
+const backendUrl = api.getBackendUrl()
+
 </script>
 
 <style lang="postcss">

@@ -37,13 +37,13 @@ class API {
         this.backendRequest("post", "/add-picture", data)
     }
     public async createNewAlbum(data: INewAlbum) {
-        const { name, thumbnail_file, type } = data;
+        const { name, album_thumbnail_file, type } = data;
 
         const formData = new FormData();
 
         name && formData.append("name", name);
         type && formData.append("type", type);
-        thumbnail_file && formData.append("thumbnail_file", thumbnail_file);
+        album_thumbnail_file && formData.append("album_thumbnail_file", album_thumbnail_file);
 
 
         await this.backendRequest("post", "/create-album", formData);
@@ -51,7 +51,19 @@ class API {
 
     };
 
-
+/**
+ * getBackendUrl
+ */
+public getBackendUrl() {
+    let backendUrl: string;
+    const localStorageSettingsJSONString = localStorage.getItem("settings") ;
+    if (localStorageSettingsJSONString) {
+        backendUrl = JSON.parse(localStorageSettingsJSONString).backend_url;
+        
+    } else backendUrl= 'http://127.0.0.1:2234/';
+    
+    return backendUrl;
+}
 
     public getPicsInAlbum = async (album: string) => {
         return this.backendRequest<[IAnimePic]>("get", `/album/${album}`)
