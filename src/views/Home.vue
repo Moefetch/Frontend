@@ -3,7 +3,7 @@
     <div class="albums_container grid m-auto gap">
       <AlbumAddCard @click="toggleCreateAlbumPopup()" />
       <AlbumCard
-        v-for="item in resTable"
+        v-for="item in state.collectionArray"
         :name="item.name"
         :thumbnail="item.albumCoverImage"
         :estimatedPicCount="item.estimatedPicCount"
@@ -23,13 +23,18 @@
 </template>
 
 <script setup lang="ts">
-import api from "../services/api";
+
 import type { ICollection } from "../services/types";
-import { onMounted, ref } from "vue";
+import { ref, inject} from "vue";
+
+import AppState from '../../state'
+
 
 import AlbumCard from "../components/Cards/AlbumCard.vue";
 import AlbumAddCard from "../components/Cards/AlbumAddCard.vue";
 import CreateNewAlbumPopup from "../components/Popups/CreateNewAlbumPopup.vue";
+
+const state = (inject('state') as AppState).state;
 
 defineProps<{ isEditing: boolean }>();
 
@@ -37,18 +42,8 @@ let addAlbumToggled = ref(false);
 
 function toggleCreateAlbumPopup() {
   addAlbumToggled.value = !addAlbumToggled.value;
-  updateResTable();
 }
 
-let resTable = ref<[ICollection]>();
-
-onMounted(async () => {
-  await updateResTable();
-});
-
-async function updateResTable() {
-  resTable.value = await api.getTableOfContents();
-}
 </script>
 
 <style lang="postcss">

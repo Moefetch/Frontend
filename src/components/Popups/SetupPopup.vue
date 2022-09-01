@@ -72,7 +72,7 @@
 
 import Icon from "../Misc/Icon.vue";
 
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, reactive } from "vue";
 import Button from "../Misc/Button.vue";
 
 import api from "../../services/api";
@@ -90,14 +90,15 @@ const HOSTS_REGEX = /(?<protocol>mongodb(?:\+srv|)):\/\/(?:(?<username>[^:]*)(?:
 
 const formSubmittedToggle = ref(false);
 const connectionSuccess = ref(false);
-const settingsFormError = ref<ISettingsErrorObject>({
+const settingsFormError = reactive<ISettingsErrorObject>({
     backendUrlError: "" ,
     databaseUrlError: "",
     saucenaoApiKeyError: ""
 
 })
+const localStorageSettings = localStorage.getItem("settings") //to see if exists
 
-const settingsForm = ref<ISettings>({
+const settingsForm = reactive<ISettings>(localStorageSettings ? JSON.parse(localStorageSettings) : {
     backend_url: "",
     database_url: "",
     search_diff_sites: false,
@@ -105,20 +106,13 @@ const settingsForm = ref<ISettings>({
     saucenao_api_key: undefined,
 });
 
-const localStorageSettings = localStorage.getItem("settings") //to see if exists
-
-if (localStorageSettings) {
-    //const localStorageSettingsJSON:ISettings =  \\/
-    settingsForm.value = JSON.parse(localStorageSettings);    //localStorageSettingsJSON;
-}
-
 function toggleSearchForDiffSites() {
-    settingsForm.value.search_diff_sites = !settingsForm.value.search_diff_sites;
+    settingsForm.search_diff_sites = !settingsForm.search_diff_sites;
 }
 
 
 function togglePixivDownloadAll() {
-    settingsForm.value.pixiv_download_first_image_only = !settingsForm.value.pixiv_download_first_image_only;
+    settingsForm.pixiv_download_first_image_only = !settingsForm.pixiv_download_first_image_only;
 }
 
 
@@ -131,37 +125,43 @@ const defaultSettings: ISettings = {
 }
 
 async function submit() {
-    if (!settingsForm.value.backend_url) settingsFormError.value.backendUrlError = "No Backend url was provided";
-    if (!settingsForm.value.database_url) settingsFormError.value.databaseUrlError = "No Database url was provided";
-    if (!settingsForm.value.saucenao_api_key && settingsForm.value.search_diff_sites) settingsFormError.value.saucenaoApiKeyError = "No saucenao api key was provided";
-    if (!HOSTS_REGEX.test(settingsForm.value.database_url)) settingsFormError.value.databaseUrlError = "Database url invalid";
+    if (!settingsForm.backend_url) settingsFormError.backendUrlError = "No Backend url was provided";
+    if (!settingsForm.database_url) settingsFormError.databaseUrlError = "No Database url was provided";
+    if (!settingsForm.saucenao_api_key && settingsForm.search_diff_sites) settingsFormError.saucenaoApiKeyError = "No saucenao api key was provided";
+    if (!HOSTS_REGEX.test(settingsForm.database_url)) settingsFormError.databaseUrlError = "Database url invalid";
 
-    if (settingsFormError.value.backendUrlError || settingsFormError.value.databaseUrlError || settingsFormError.value.saucenaoApiKeyError) return;
+    if (settingsFormError.backendUrlError || settingsFormError.databaseUrlError || settingsFormError.saucenaoApiKeyError) return;
     else {
         formSubmittedToggle.value = true;
-        const connectionResponse = await connectToBackendAndDB(settingsForm.value);
+        const connectionResponse = await connectToBackendAndDB(settingsForm);
         if ((connectionResponse.databaseUrlError || connectionResponse.saucenaoApiKeyError || connectionResponse.backendUrlError)) {
             formSubmittedToggle.value = false;
             if (connectionResponse.backendUrlError) {
-                settingsFormError.value.backendUrlError = connectionResponse.backendUrlError;
+                settingsFormError.backendUrlError = connectionResponse.backendUrlError;
             }
             if (connectionResponse.databaseUrlError) {
-                settingsFormError.value.databaseUrlError = connectionResponse.databaseUrlError;
+                settingsFormError.databaseUrlError = connectionResponse.databaseUrlError;
             } 
             
             if (connectionResponse.saucenaoApiKeyError) {
-                settingsFormError.value.saucenaoApiKeyError = connectionResponse.saucenaoApiKeyError;
+                settingsFormError.saucenaoApiKeyError = connectionResponse.saucenaoApiKeyError;
             }
         }
         else {
-            localStorage.setItem("settings", JSON.stringify(settingsForm.value))
+            localStorage.setItem("settings", JSON.stringify(settingsForm))
             connectionSuccess.value = true;
         }
     }
 
 }
 async function useDefaults() {
-    settingsForm.value = defaultSettings;
+    //i have to to do this retarded bs cus it's a const reactive
+    settingsForm.backend_url = defaultSettings.backend_url;
+    settingsForm.database_url = defaultSettings.database_url;
+    settingsForm.pixiv_download_first_image_only = defaultSettings.pixiv_download_first_image_only;
+    settingsForm.saucenao_api_key = defaultSettings.saucenao_api_key;
+    settingsForm.search_diff_sites = defaultSettings.search_diff_sites;
+
     await submit()
 }
 </script>

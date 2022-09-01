@@ -1,6 +1,6 @@
 <template>
     <div class="h-[1.84rem] w-[14rem]" ref="target">
-        <div :class="`flex mt-auto mb-auto flex-row bg-dark-500 w-[14rem] h-[1.84rem] pl-[0.25rem] pr-[0.25rem] rounded-[0.2rem] cursor-pointer items-center ${toggled? 'rounded-b-none' : '' }`" @click="shittyClick()">
+        <div :class="`flex mt-auto mb-auto flex-row bg-dark-500 w-[14rem] h-[1.84rem] pl-[0.25rem] pr-[0.25rem] rounded-[0.2rem] cursor-pointer items-center ${toggled? 'rounded-b-none' : '' }`" @click="toggleDropDown()">
             <CollectionDropMenuItem :collectionItem="getCurrentItemFromUUID(route.params.albumName)" :class="`h-[1.25] w-full` "  id="currentlyDisplayed" />
             <Icon :icon="toggled? 'up' : 'down'"  class="w-4 h-4"/>
         </div>
@@ -13,7 +13,7 @@
 <script lang="ts" setup>
 import { computed } from "@vue/reactivity";
 import { onClickOutside } from '@vueuse/core'
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import type { ICollection } from "../../services/types";
 import Icon from "./Icon.vue";
 import CollectionDropMenuItem  from "./CollectionDropMenuItem.vue";
@@ -33,16 +33,17 @@ onClickOutside(target, () => {
 
 const props = defineProps<{collectionArray: ICollection[]}>();
 
+
+const toggleDropDown = ref (async () => {
+    //const response = await api.shit("cock"); 
+    toggled.value = !toggled.value;
+})
+
+
 function getCurrentItemFromUUID(parm: string | string[]) {
     return props.collectionArray.filter(a => a.uuid == parm)[0]
 }
 
-let currentlyDisplayedPos = ref({top:0, left:0})
-
-    const shittyClick = ref (async () => {
-        //const response = await api.shit("cock"); 
-        toggled.value = !toggled.value;
-    })
 
 </script>
 

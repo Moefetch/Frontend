@@ -13,12 +13,7 @@
 </template>
 <script setup lang="ts">
 import type { ICollection } from "../../services/types";
-let backendUrl: string;
-const localStorageSettingsJSONString = localStorage.getItem("settings") ;
-if (localStorageSettingsJSONString) {
-    backendUrl = JSON.parse(localStorageSettingsJSONString).backend_url;
-    
-} else backendUrl= 'http://127.0.0.1:2234/';
-
+import api from '../../services/api'
+const backendUrl = api.getBackendUrl()
 const props = defineProps<{ collectionItem: ICollection }>();
 </script>

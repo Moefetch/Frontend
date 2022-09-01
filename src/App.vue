@@ -9,8 +9,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, provide } from "vue";
 import Header from "./components/Global/Header.vue";
+import AppState from "../state" 
+import api from "./services/api";
+
+const state = new AppState();
+setResTable();
+provide("state", state);
 
 const isEditingRef = ref(false); // im doing a retarting way of sending events between nested components but whatever, i have to use vueX eventually for this
 // const submittedPicRef = ref(false);
@@ -29,6 +35,15 @@ function toggledSubmittedPic() {
 //localStorage.setItem("backendUrl","http://localhost:2234/") //bruh
 
 //localStorage.setItem("setupBool","false"); //bruh
+
+
+async function setResTable() {
+    const tablesContentRes = await api.getTableOfContents();
+    localStorage.setItem("albums", JSON.stringify(tablesContentRes));
+    state.state.collectionArray = tablesContentRes;
+    
+}
+
 </script>
 
 <style lang="postcss">

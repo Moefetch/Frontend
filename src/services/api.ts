@@ -46,7 +46,7 @@ class API {
         album_thumbnail_file && formData.append("album_thumbnail_file", album_thumbnail_file);
 
 
-        await this.backendRequest("post", "/create-album", formData);
+        return await this.backendRequest<ICollection>("post", "/create-album", formData)
         //add error handling or whatever tf idk
 
     };
@@ -59,7 +59,7 @@ public getBackendUrl() {
     const localStorageSettingsJSONString = localStorage.getItem("settings") ;
     if (localStorageSettingsJSONString) {
         backendUrl = JSON.parse(localStorageSettingsJSONString).backend_url;
-        
+        if (backendUrl[backendUrl.length - 1] != '/') backendUrl = backendUrl + '/'
     } else backendUrl= 'http://127.0.0.1:2234/';
     
     return backendUrl;

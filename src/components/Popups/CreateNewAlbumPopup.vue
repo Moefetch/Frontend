@@ -76,7 +76,8 @@
 
 <script setup lang="ts">
 ///////////////////////////////////// start of declarations afaik
-import { onMounted, ref } from "vue";
+import { onMounted, ref, inject } from "vue";
+import AppState from '../../../state'
 import BaseDropMenu from "../Misc/BaseDropMenu.vue";
 import Button from "../Misc/Button.vue";
 
@@ -86,24 +87,27 @@ import type {
   AlbumSchemaType,
   ICollection,
 } from "../../services/types";
+import { reactive } from "@vue/reactivity";
 
+const state = (inject('state') as AppState).state;
 const emit = defineEmits(["newAlbumSubmitted"]);
-
-const albumCollection = JSON.parse(
-  localStorage.getItem("albums") as string
-) as ICollection[];
 
 const newAlbumCoverPreview = ref<string>("/icons/upload.svg");
 const albumCover = ref<HTMLDivElement | undefined>(undefined);
 const modelTypesArray = ref(["Select type"]);
 
-const albumForm = ref<INewAlbum>({
+const albumForm = reactive<INewAlbum>({
   name: "",
   album_thumbnail_file: "",
   type: undefined,
 });
 
-const albumFormError = ref<any>({
+const albumFormError = reactive<{
+  albumNameError: boolean;
+  albumCoverError: boolean;
+  albumTypeError: boolean;
+  albumAlreadyExistError: boolean;
+}>({
   albumNameError: false,
   albumCoverError: false,
   albumTypeError: false,
@@ -128,8 +132,8 @@ const OnAlbumCoverChange = (event: any) => {
 };
 
 function typeSelect(a: AlbumSchemaType) {
-  if ((a as string) == "Select type") albumForm.value.type = undefined;
-  else albumForm.value.type = a;
+  if ((a as string) == "Select type") albumForm.type = undefined;
+  else albumForm.type = a;
 }
 ///////////////////////////////////// end of declarations afaik
 
@@ -137,52 +141,53 @@ function typeSelect(a: AlbumSchemaType) {
 
 async function submit() {
   //name errors brrrrrr
-  if (!albumForm.value.name) nameEmpty();
-  else if (albumForm.value.name[0].match(/[0-9]/)) startsWithNumOrSpecial();
-  else if (albumForm.value.name.match(/[^A-Za-z0-9_\s]/g))
+  if (!albumForm.name) nameEmpty();
+  else if (albumForm.name[0].match(/[0-9]/)) startsWithNumOrSpecial();
+  else if (albumForm.name.match(/[^A-Za-z0-9_\s]/g))
     containsSpecialChar();
 
   //album type errors brrrrrrrrrrrrrrrrrr
-  if (!albumForm.value.type) noTypeSelected();
+  if (!albumForm.type) noTypeSelected();
 
-  if (albumCollection.some((a) => a.name == albumForm.value.name))
-    albumFormError.value.albumAlreadyExistError = true;
+  if (state.collectionArray.some((a) => a.name == albumForm.name))
+    albumFormError.albumAlreadyExistError = true;
 
   if (
-    albumFormError.value.albumAlreadyExistError ||
-    albumFormError.value.albumCoverError ||
-    albumFormError.value.albumTypeError ||
-    albumFormError.value.albumNameError
+    albumFormError.albumAlreadyExistError ||
+    albumFormError.albumCoverError ||
+    albumFormError.albumTypeError ||
+    albumFormError.albumNameError
   )
     return;
 
   //the actual submit function
-  await api.createNewAlbum({
-    name: albumForm.value.name,
-    type: albumForm.value.type,
+
+  const response = await api.createNewAlbum({
+    name: albumForm.name,
+    type: albumForm.type,
     album_thumbnail_file: newAlbumCover,
   });
-
+  state.collectionArray.push(response)
   emit("newAlbumSubmitted");
 }
 
 function nameEmpty() {
-  albumFormError.value.albumNameError = true;
+  albumFormError.albumNameError = true;
   nameErrorMessage.value = "Please give a name to your new album";
 }
 
 function startsWithNumOrSpecial() {
-  albumFormError.value.albumNameError = true;
+  albumFormError.albumNameError = true;
   nameErrorMessage.value = "album name must start with a leter";
 }
 
 function containsSpecialChar() {
-  albumFormError.value.albumNameError = true;
+  albumFormError.albumNameError = true;
   nameErrorMessage.value = "album name cannot include special characters";
 }
 
 function noTypeSelected() {
-  albumFormError.value.albumTypeError = true;
+  albumFormError.albumTypeError = true;
 }
 </script>
 

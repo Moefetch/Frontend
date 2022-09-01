@@ -37,7 +37,7 @@
       />
       <BaseDropMenu
         v-if="!createAlbumToggle"
-        :dropdownItemsArray="albumsArray"
+        :dropdownItemsArray="albumsNamesArray"
         :defaultSelected="defaultSelectedAlbumName"
         :specialItem="'Create New Album'"
         @item-selected="albumSelect"
@@ -90,10 +90,11 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, inject, reactive } from "vue";
 import BaseDropMenu from "../Misc/BaseDropMenu.vue";
 import Button from "../Misc/Button.vue";
 import Icon from "../Misc/Icon.vue";
+import AppState from '../../../state';
 
 import api from "../../services/api";
 import type {
@@ -102,6 +103,8 @@ import type {
   ICollection,
   ISettings
 } from "../../services/types";
+
+const state = (inject('state') as AppState).state;
 
 const route = useRoute();
 const emit = defineEmits(["newPicSubmitted"]);
@@ -114,11 +117,9 @@ let defaultAlbumCollection: ICollection = {
   estimatedPicCount: 0
 };
 
-let albumCollection: ICollection[] = JSON.parse(
-  localStorage.getItem("albums") as string
-);
-albumCollection.unshift(defaultAlbumCollection);
-let albumsArray = albumCollection.map((a) => a.name);
+let albumCollection: ICollection[] = [defaultAlbumCollection, ...state.collectionArray]
+
+let albumsNamesArray = albumCollection.map((a) => a.name);
 
 const picPreview = ref<string>("/icons/image.svg");
 const picHTMLElement = ref<HTMLDivElement | undefined>(undefined);
@@ -129,7 +130,11 @@ const modelTypesArray = ref(["Select type"]);
 const defaultSelectedAlbumName = ref("");
 const defaultSelectedAlbumType = ref("");
 
-const settingsForm = ref<ISettings>({
+const localStorageSettings = localStorage.getItem("settings") //to see if exists
+
+let settingsForm = reactive<ISettings>(
+  localStorageSettings ? JSON.parse(localStorageSettings) : 
+  {
     backend_url: "",
     database_url: "",
     search_diff_sites: false,
@@ -138,19 +143,12 @@ const settingsForm = ref<ISettings>({
 });
 
 
-const localStorageSettings = localStorage.getItem("settings") //to see if exists
-
-if (localStorageSettings) {
-    //const localStorageSettingsJSON:ISettings =  \\/
-    settingsForm.value = JSON.parse(localStorageSettings);    //localStorageSettingsJSON;
-}
-
-const picForm = ref<INewPic>({
+const picForm = reactive<INewPic>({
   url: "",
   thumbnail_file: "",
   type: undefined,
   album: "",
-  useSauceNao: (settingsForm.value.search_diff_sites),
+  useSauceNao: (settingsForm.search_diff_sites),
 });
 
 //make it autoselect album when you're in an album page
@@ -160,19 +158,19 @@ if (route.name == ":album") {
   );
   if (albumObj) {
     defaultSelectedAlbumName.value = albumObj.name;
-    picForm.value.album = albumObj.name;
+    picForm.album = albumObj.name;
 
     defaultSelectedAlbumType.value = albumObj.type;
-    picForm.value.type = albumObj.type as INewPic["type"] ;
+    picForm.type = albumObj.type as INewPic["type"] ;
   }
 }
 
 
 function toggleUseSaucenao() {
-  picForm.value.useSauceNao = !picForm.value.useSauceNao;
+  picForm.useSauceNao = !picForm.useSauceNao;
 }
 
-const picFormError = ref({
+const picFormError = reactive({
   picNameError: false,
   picTypeError: false,
   picAlbumError: false,
@@ -195,13 +193,13 @@ const OnAlbumCoverChange = (event: any) => {
 }
  */
 function typeSelect(a: AlbumSchemaType) {
-  if ((a as string) == "Select type") picForm.value.type = undefined;
-  else picForm.value.type = a;
+  if ((a as string) == "Select type") picForm.type = undefined;
+  else picForm.type = a;
 }
 
 function albumSelect(a: string) {
-  if ((a as string) == "Select Album") picForm.value.album = "";
-  else picForm.value.album = a;
+  if ((a as string) == "Select Album") picForm.album = "";
+  else picForm.album = a;
 }
 
 function toggleCreateNewAblum() {
@@ -215,36 +213,36 @@ function toggleCreateNewAblum() {
 
 async function submit() {
   //url errors brrrrrr
-  if (!picForm.value.url) urlEmpty();
+  if (!picForm.url) urlEmpty();
 
   //pic type errors brrrrrrrrrrrrrrrrrr
-  if (!picForm.value.type) noTypeSelected();
+  if (!picForm.type) noTypeSelected();
 
-  if (!picForm.value.album && !createAlbumToggle.value) noAlbumelected();
+  if (!picForm.album && !createAlbumToggle.value) noAlbumelected();
 
   if (
-    (picForm.value.album == undefined || picForm.value.album == "") &&
+    (picForm.album == undefined || picForm.album == "") &&
     createAlbumToggle.value
   )
     albumNameEmpty();
-  if (picForm.value.album && createAlbumToggle.value) {
-    if ((picForm.value.album as string)[0].match(/[0-9]/))
+  if (picForm.album && createAlbumToggle.value) {
+    if ((picForm.album as string)[0].match(/[0-9]/))
       albumNameStartsWithNumOrSpecial();
   }
-  if (picForm.value.album?.match(/[^A-Za-z0-9_\s]/g))
+  if (picForm.album?.match(/[^A-Za-z0-9_\s]/g))
     albumNameContainsSpecialChar();
 
   if (
-    picFormError.value.picAlbumError ||
-    picFormError.value.picNameError ||
-    picFormError.value.picTypeError
+    picFormError.picAlbumError ||
+    picFormError.picNameError ||
+    picFormError.picTypeError
   )
     return;
 
   if (createAlbumToggle.value) {
     await api.createNewAlbum({
-      name: picForm.value.album,
-      type: picForm.value.type,
+      name: picForm.album,
+      type: picForm.type,
       album_thumbnail_file: ""
     });
 
@@ -253,41 +251,41 @@ async function submit() {
   }
   //the actual submit function
   await api.addPicture({
-    url: picForm.value.url,
-    type: picForm.value.type,
-    album: picForm.value.album,
-    useSauceNao: picForm.value.useSauceNao
+    url: picForm.url,
+    type: picForm.type,
+    album: picForm.album,
+    useSauceNao: picForm.useSauceNao
   });
 
   emit("newPicSubmitted");
 }
 
 function urlEmpty() {
-  picFormError.value.picNameError = true;
+  picFormError.picNameError = true;
   picUrlErrorMessage.value = "Please provide a url to picture";
 }
 
 function noTypeSelected() {
-  picFormError.value.picTypeError = true;
+  picFormError.picTypeError = true;
 }
 
 function noAlbumelected() {
-  picFormError.value.picAlbumError = true;
+  picFormError.picAlbumError = true;
 }
 
 //when the new album inputed bla bla
 function albumNameEmpty() {
-  picFormError.value.picAlbumError = true;
+  picFormError.picAlbumError = true;
   AlbumNameErrorMessage.value = "Please give a name to your new album";
 }
 
 function albumNameStartsWithNumOrSpecial() {
-  picFormError.value.picAlbumError = true;
+  picFormError.picAlbumError = true;
   AlbumNameErrorMessage.value = "album name must start with a leter";
 }
 
 function albumNameContainsSpecialChar() {
-  picFormError.value.picAlbumError = true;
+  picFormError.picAlbumError = true;
   AlbumNameErrorMessage.value = "album name cannot include special characters";
 }
 </script>
