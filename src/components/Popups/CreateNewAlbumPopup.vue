@@ -64,6 +64,11 @@
       >
         Album already exists, please enter a different name
       </h2>
+      <div class="checkbox_option w-[16rem]" @click="toggleAlbumIsHidden">   
+        <Icon :icon="albumForm.isHidden ? 'checked_checkbox' : 'unchecked_checkbox'" />
+        <h2>Hidden album</h2>
+      </div>
+
       <Button
         text="Submit"
         color="#4d6d8d"
@@ -76,10 +81,11 @@
 
 <script setup lang="ts">
 ///////////////////////////////////// start of declarations afaik
-import { onMounted, ref, inject } from "vue";
+import { onMounted, ref, inject, reactive } from "vue";
 import AppState from '../../../state'
 import BaseDropMenu from "../Misc/BaseDropMenu.vue";
 import Button from "../Misc/Button.vue";
+import Icon from "../Misc/Icon.vue";
 
 import api from "../../services/api";
 import type {
@@ -87,7 +93,7 @@ import type {
   AlbumSchemaType,
   ICollection,
 } from "../../services/types";
-import { reactive } from "@vue/reactivity";
+
 
 const state = (inject('state') as AppState).state;
 const emit = defineEmits(["newAlbumSubmitted"]);
@@ -100,7 +106,13 @@ const albumForm = reactive<INewAlbum>({
   name: "",
   album_thumbnail_file: "",
   type: undefined,
+  isHidden: false,
 });
+
+
+function toggleAlbumIsHidden() {
+  albumForm.isHidden = !albumForm.isHidden
+}
 
 const albumFormError = reactive<{
   albumNameError: boolean;
@@ -166,6 +178,7 @@ async function submit() {
     name: albumForm.name,
     type: albumForm.type,
     album_thumbnail_file: newAlbumCover,
+    isHidden: albumForm.isHidden,
   });
   state.collectionArray.push(response)
   emit("newAlbumSubmitted");
@@ -202,7 +215,7 @@ function noTypeSelected() {
   @apply border-[3px] border-[#254EE0] gap-[14px];
   @apply flex-row gap-[4px] m-auto;
 
-  z-index: 1;
+  z-index: 3;
 
   display: flex;
   gap: 32px;

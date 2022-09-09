@@ -37,13 +37,14 @@ class API {
         this.backendRequest("post", "/add-picture", data)
     }
     public async createNewAlbum(data: INewAlbum) {
-        const { name, album_thumbnail_file, type } = data;
+        const { name, album_thumbnail_file, type, isHidden } = data;
 
         const formData = new FormData();
 
         name && formData.append("name", name);
         type && formData.append("type", type);
         album_thumbnail_file && formData.append("album_thumbnail_file", album_thumbnail_file);
+        isHidden && formData.append("isHidden", isHidden ? '1' : '' );
 
 
         return await this.backendRequest<ICollection>("post", "/create-album", formData)

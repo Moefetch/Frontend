@@ -1,6 +1,6 @@
 <template>
   <div class="pictures_container grid" v-if="picsInAlbum">
-    <Picture v-for="item in picsInAlbum" :pictureURL="item.thumbnail_file" />
+    <Picture v-for="item in picsInAlbum" :item="item" />
   </div>
 </template>
 

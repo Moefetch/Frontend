@@ -243,7 +243,8 @@ async function submit() {
     await api.createNewAlbum({
       name: picForm.album,
       type: picForm.type,
-      album_thumbnail_file: ""
+      album_thumbnail_file: "",
+      isHidden: false,
     });
 
     const tablesContentRes = await api.getTableOfContents();
@@ -302,7 +303,7 @@ function albumNameContainsSpecialChar() {
   @apply border-[3px] border-[#254EE0] gap-[14px] text-white-400;
   @apply flex-row gap-[4px] align-middle;
 
-  z-index: 1;
+  z-index: 3;
 
   display: flex;
   gap: 32px;

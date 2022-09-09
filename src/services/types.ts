@@ -24,21 +24,57 @@ export interface IArtist {
 
     }
 }
+export interface IImageDataArray  {
+    file: string;
+    thumbnail_file: string;
+    imageSize?: ISizeCalculationResult;
+}
+export interface IPostIds {
+    danbooru?: number;
+    yande?: number;
+    pixiv?: number;
+}
 
 export interface IAnimePic {
     id: string;
-    file: string;
+    indexer: number;
+    imagesDataArray: IImageDataArray[];
     alternative_names?: string[];
-    old_file?: string;
-    thumbnail_file: string;
+    oldFile?: string;
     album: string;
-    tags_pixiv?: string[];
-    tags_danbooru?: string[];
+    //tags_pixiv?: string[];
+    //tags_danbooru?: string[];
     artist?: IArtist;
+    storedResult?: string;
     links: IPostLinks;
+    ids: IPostIds;
+    isHidden: boolean;
+    isNSFW: boolean;
+    hasResults?: boolean;
+    //pixiv_post_id?: number;
+
+    //compatability with INewAnimePic
+    tags?: ITagsObject;
+    //imageSize?: ISizeCalculationResult;
+}
+export interface ITagsObject {
+    pixiv?: IPixivTag[];
+    danbooru?: IDanbooruTags;
+    yande?: IYandeTags;
+}
+
+export interface IYandeTags extends IDanbooruTags {}
+
+export interface IDanbooruTags {
+    artists?: string[];
+    copyrights?: string[];
     characters?: string[];
-    has_results: boolean;
-    pixiv_post_id?: number;
+    general?: string[];
+}
+export interface IPixivTag {
+    tag: string;
+    romaji?: string;
+    enTranslation?: string;
 }
 export type AlbumSchemaType = "Anime Pic";
 
@@ -46,6 +82,7 @@ export interface INewAlbum {
     name: string;
     type: AlbumSchemaType | undefined;
     album_thumbnail_file: "" | File;
+    isHidden: boolean;
 }
 
 export interface INewPic {
@@ -87,7 +124,16 @@ export interface ISettingsErrorObject {
     saucenaoApiKeyError: string
 }
 
+export interface ISizeCalculationResult extends ISize {
+    images?: ISize[];
+}
 
+export interface ISize {
+    width: number | undefined;
+    height: number | undefined;
+    orientation?: number;
+    type?: string;
+}
 /* export interface ITableOfContents extends ICollection {
     id:  string;
     name: string;

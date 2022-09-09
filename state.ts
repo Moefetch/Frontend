@@ -7,10 +7,13 @@ from './src/services/types';
 export default class AppState {
     public state = reactive({
         isEditing: false,
-        collectionArray: getAlbumArrayFromLocalStorage() as ICollection[],
+        collectionArray: [] as ICollection[],
+        loadedAlbumsPromise: undefined as Promise<Boolean> | undefined | true,
     });
 
 }
+
+
 
 function getAlbumArrayFromLocalStorage(): ICollection[] {
     const localRes = localStorage.getItem("albums");

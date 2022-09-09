@@ -39,7 +39,8 @@ function toggledSubmittedPic() {
 
 async function setResTable() {
     const tablesContentRes = await api.getTableOfContents();
-    localStorage.setItem("albums", JSON.stringify(tablesContentRes));
+    //localStorage.setItem("albums", JSON.stringify(tablesContentRes));
+    //console.log(tablesContentRes)
     state.state.collectionArray = tablesContentRes;
     
 }

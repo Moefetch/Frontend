@@ -3,7 +3,7 @@
     <router-link to="/">
       <Button icon="home" />
     </router-link>
-    <CollectionDropMenu :collectionArray="[defaultAlbumCollection, ...state.collectionArray]" :currentCol="route.params.albumName" />
+    <CollectionDropMenu v-if="state.collectionArray.length" :collectionArray="[defaultAlbumCollection, ...state.collectionArray]" :currentCol="route.params.albumName" />
     <div class="m-auto">
       <SearchBar class="h-[32]"/>
     </div> 

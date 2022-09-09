@@ -178,7 +178,7 @@ async function useDefaults() {
 @apply border-[3px] border-[#254EE0] gap-[14px];
 @apply flex-row gap-[4px] align-center m-auto;
 
-z-index: 1;
+z-index: 3;
 
 display: flex;
 gap:32px;
