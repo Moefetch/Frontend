@@ -8,9 +8,10 @@ export interface ICollection {
 export interface IPostLinks {
     pixiv?: string;
     danbooru?: string;
+    yande?:string;
     twitter?: string;
     other?: string[];
-    discord?: string;
+    
 }
 
 
@@ -40,12 +41,11 @@ export interface IAnimePic {
     indexer: number;
     imagesDataArray: IImageDataArray[];
     alternative_names?: string[];
-    oldFile?: string;
     album: string;
     //tags_pixiv?: string[];
     //tags_danbooru?: string[];
-    artist?: IArtist;
-    storedResult?: string;
+    artists?: string[];
+    storedResult?: "danbooru" | "pixiv" | 'yande';
     links: IPostLinks;
     ids: IPostIds;
     isHidden: boolean;
@@ -54,9 +54,10 @@ export interface IAnimePic {
     //pixiv_post_id?: number;
 
     //compatability with INewAnimePic
-    tags?: ITagsObject;
+    tags?: string[];
     //imageSize?: ISizeCalculationResult;
 }
+
 export interface ITagsObject {
     pixiv?: IPixivTag[];
     danbooru?: IDanbooruTags;

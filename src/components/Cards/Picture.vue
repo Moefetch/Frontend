@@ -1,19 +1,23 @@
 <template>
-  <div >
-    <div class='picture_card'>
-      <div class="muliImageNum" v-if="vIfVar" :style="numPopStyles">
-      <Icon icon="multi_image"/>{{vIfVar}}
-    </div>
-      <img :src="backendUrl + pictureURL" class="picture_card"/>
+  <div @click="toggleViewPicturePopup" class="cursor-pointer">
+    <div class="pictureCard">
+      <div class="muliImageNum" v-if="vIfVar > 1" :style="numPopStyles">
+        <Icon icon="multi_image"/>
+        <h2>{{vIfVar}}</h2>
+      </div>
+      <img :src="backendUrl + pictureURL" :class="'pictureCard ' + `${vIfVar > 1 ? 'hasMulti' : ''}`"/>
     </div>
   </div>
+
+    <ViewingPicture v-if="togglePictureView" :item="item" :backendUrl='backendUrl'/>
 </template>
 
 <script setup lang="ts">
 import api from "../../services/api";
 import { IAnimePic } from "../../services/types";
 import Icon from "../Misc/Icon.vue";
-
+import ViewingPicture from '../Popups/ViewingPicture.vue'
+import { ref } from 'vue'
 const props = defineProps<{
   item: IAnimePic;
 }>();
@@ -24,30 +28,39 @@ const backendUrl = api.getBackendUrl()
 const numPopStyles = `
 
 `
+const togglePictureView = ref(false)
+function toggleViewPicturePopup() {
+  togglePictureView.value = !togglePictureView.value
+}
 
 </script>
 
 <style lang="postcss">
-.picture_card {
+.pictureCard {
 
-  @apply max-h-[150px] max-w-[280px];
+  @apply max-h-[150px] max-w-[280px] ;
+  z-index: -1;
 
-  border-radius: 4px;
   object-fit: cover;
   border-radius: 4px;
   column-gap: 1rem;
 }
 .muliImageNum {
-  @apply relative;
+  @apply relative p-[2px] rounded-[6px];
+  background-color: rgba(134, 134, 134, 0.575);
   margin-left: auto;
   width: fit-content;
-  top: 30px;
+  top: 10px;
   right: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
 }
 
 .hasMulti {
   
   position: relative;
-  bottom: 24px;
+  bottom: 26px;
 }
+
 </style>
