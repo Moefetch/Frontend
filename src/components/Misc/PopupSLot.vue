@@ -21,10 +21,6 @@ onClickOutside(target, () => {
 })
 const state = (inject('state') as AppState).state;
 
-function disableAllPopups() {
-    state.popup = '';
-}
-
 </script>
 
 <style lang='postcss'>

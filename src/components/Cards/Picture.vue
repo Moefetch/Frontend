@@ -1,5 +1,5 @@
 <template>
-  <div @click="toggleViewPicturePopup" class="cursor-pointer">
+  <div class="cursor-pointer">
     <div class="pictureCard">
       <div class="muliImageNum" v-if="vIfVar > 1" :style="numPopStyles">
         <Icon icon="multi_image"/>
@@ -8,24 +8,13 @@
       <img :src="backendUrl + pictureURL" :class="'pictureCard ' + `${vIfVar > 1 ? 'hasMulti' : ''}`"/>
     </div>
   </div>
-  <PopupSLot v-if="state.popup == 'ViewingPicture'">
-    <ViewingPicture :item="item" :backendUrl='backendUrl'/>
-  </PopupSLot>
+
 </template>
 
 <script setup lang="ts">
 import api from "../../services/api";
 import { IAnimePic } from "../../services/types";
 import Icon from "../Misc/Icon.vue";
-import ViewingPicture from '../Popups/ViewingPicture.vue'
-import PopupSLot from "../Misc/PopupSLot.vue";
-
-import { ref, inject} from "vue";
-
-import AppState from '../../../state'
-
-const state = (inject('state') as AppState).state;
-
 
 const props = defineProps<{
   item: IAnimePic;
@@ -35,12 +24,7 @@ const vIfVar = props.item.imagesDataArray.length
 const backendUrl = api.getBackendUrl()
 
 const numPopStyles = `
-
 `
-const togglePictureView = ref(false)
-function toggleViewPicturePopup() {
-  togglePictureView.value = !togglePictureView.value
-}
 
 </script>
 

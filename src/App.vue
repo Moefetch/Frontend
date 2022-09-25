@@ -4,7 +4,7 @@
     @isEditing="toggledEditing"
     @submittedNewPic="toggledSubmittedPic"
   />
-  <div class="h-[93vh]">
+  <div class="h-[93vh] overflow-y-auto">
     <router-view :isEditing="isEditingRef" />
   </div>
 </template>
