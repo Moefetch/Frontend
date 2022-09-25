@@ -1,7 +1,7 @@
 <template>
   <div class="page-container flex">
     <div class="albums_container grid m-auto gap">
-      <AlbumAddCard @click="toggleCreateAlbumPopup()" />
+      <AlbumAddCard @click="state.popup = 'CreateNewAlbumPopup'" />
       <AlbumCard
         v-for="item in state.collectionArray"
         :name="item.name"
@@ -9,15 +9,11 @@
         :estimatedPicCount="item.estimatedPicCount"
         :router="item.uuid"
       />
-      <div
-        class="pop_out h-[93vh] top-[7vh] w-[100vw] absolute left-0"
-        v-if="addAlbumToggled"
-        @click="toggleCreateAlbumPopup()"
-      ></div>
-      <CreateNewAlbumPopup
-        v-if="addAlbumToggled"
-        @newAlbumSubmitted="toggleCreateAlbumPopup"
-      />
+      <PopupSLot v-if="state.popup == 'CreateNewAlbumPopup'">
+        <CreateNewAlbumPopup
+          @newAlbumSubmitted="toggleAlbumPopupOff"
+        />
+      </PopupSLot>
     </div>
   </div>
 </template>
@@ -25,6 +21,8 @@
 <script setup lang="ts">
 
 import type { ICollection } from "../services/types";
+import PopupSLot from "../components/Misc/PopupSLot.vue";
+
 import { ref, inject} from "vue";
 
 import AppState from '../../state'
@@ -36,13 +34,11 @@ import CreateNewAlbumPopup from "../components/Popups/CreateNewAlbumPopup.vue";
 
 const state = (inject('state') as AppState).state;
 
-defineProps<{ isEditing: boolean }>();
-
-let addAlbumToggled = ref(false);
-
-function toggleCreateAlbumPopup() {
-  addAlbumToggled.value = !addAlbumToggled.value;
+function toggleAlbumPopupOff() {
+  state.popup = '';
 }
+
+defineProps<{ isEditing: boolean }>();
 
 </script>
 

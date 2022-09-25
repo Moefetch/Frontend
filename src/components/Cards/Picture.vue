@@ -8,8 +8,9 @@
       <img :src="backendUrl + pictureURL" :class="'pictureCard ' + `${vIfVar > 1 ? 'hasMulti' : ''}`"/>
     </div>
   </div>
-
-    <ViewingPicture v-if="togglePictureView" :item="item" :backendUrl='backendUrl'/>
+  <PopupSLot v-if="state.popup == 'ViewingPicture'">
+    <ViewingPicture :item="item" :backendUrl='backendUrl'/>
+  </PopupSLot>
 </template>
 
 <script setup lang="ts">
@@ -17,7 +18,15 @@ import api from "../../services/api";
 import { IAnimePic } from "../../services/types";
 import Icon from "../Misc/Icon.vue";
 import ViewingPicture from '../Popups/ViewingPicture.vue'
-import { ref } from 'vue'
+import PopupSLot from "../Misc/PopupSLot.vue";
+
+import { ref, inject} from "vue";
+
+import AppState from '../../../state'
+
+const state = (inject('state') as AppState).state;
+
+
 const props = defineProps<{
   item: IAnimePic;
 }>();

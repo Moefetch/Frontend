@@ -174,7 +174,7 @@ async function useDefaults() {
 }
       
 .setup_popup_container {
-@apply absolute top-[50%] left-[50%] p-10 text-white-400;
+@apply absolute p-10 text-white-400;
 @apply border-[3px] border-[#254EE0] gap-[14px];
 @apply flex-row gap-[4px] align-center m-auto;
 
@@ -191,10 +191,10 @@ width: var(--setup_popup_width);
 height: var(--setup_popup_height);
 
 
-
+/* 
 left: calc((100vw - var(--setup_popup_width))/2);
 right: calc((100vw - var(--setup_popup_width) )/2);
-top: calc((100vh - var(--setup_popup_height) + 7vh)/2)
+top: calc((100vh - var(--setup_popup_height) + 7vh)/2) */
 }
 .popupInputField[type="text"] {
     @apply outline-none h-[2rem] w-[37.5rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;

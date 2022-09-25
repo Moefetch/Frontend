@@ -9,6 +9,7 @@ export default class AppState {
         isEditing: false,
         collectionArray: [] as ICollection[],
         loadedAlbumsPromise: undefined as Promise<Boolean> | undefined | true,
+        popup: '',
     });
 
 }

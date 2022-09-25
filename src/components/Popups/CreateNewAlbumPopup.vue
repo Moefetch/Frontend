@@ -46,7 +46,7 @@
           placeholder="Name"
           min="1"
           max="64"
-          @click="albumFormError.albumNameError = false"
+          @click="albumFormError.albumNameError = false; albumFormError.albumAlreadyExistError = false"
         />
       </div>
       <BaseDropMenu
@@ -153,6 +153,8 @@ function typeSelect(a: AlbumSchemaType) {
 
 async function submit() {
   //name errors brrrrrr
+
+  
   if (!albumForm.name) nameEmpty();
   else if (albumForm.name[0].match(/[0-9]/)) startsWithNumOrSpecial();
   else if (albumForm.name.match(/[^A-Za-z0-9_\s]/g))
@@ -211,7 +213,7 @@ function noTypeSelected() {
 }
 
 .popup_container {
-  @apply absolute top-[50%] left-[50%] p-10 text-white-400;
+  @apply absolute p-10 text-white-400;
   @apply border-[3px] border-[#254EE0] gap-[14px];
   @apply flex-row gap-[4px] m-auto;
 
@@ -227,9 +229,7 @@ function noTypeSelected() {
   width: var(--popup_width);
   height: var(--popup_height);
 
-  left: calc((100vw - var(--popup_width)) / 2);
-  right: calc((100vw - var(--popup_width)) / 2);
-  top: calc((100vh - var(--popup_height) - 25vh) / 2);
+
 }
 .album_thumbnail_preview {
   @apply h-[12.4vh] w-[12.4vh];

@@ -7,16 +7,17 @@
     <div class="m-auto">
       <SearchBar class="h-[32]"/>
     </div> 
-    <Button icon="plus" @click="toggleAddPicPopup()" />
+    <Button icon="plus" @click="state.popup = 'AddNewPicturePopup'" />
     <Button :icon="`${editingToggleBool? 'cancel_editing' : 'edit' }`" :class="`${editingToggleBool? 'bg-[#B6222D] rounded-8px' : ''}`" @click="toggleEditing()" />
-    <Button icon="menu" @click="toggleSetupPopup()" /> 
-    <div
-      class="pop_out h-[93vh] top-[7vh] w-[100vw] absolute left-0"
-      v-if="addPicPopupToggleBool || setupPopupToggleBool"
-      @click="togglePopupsOff()"
-    ></div>
-    <SetupPopup v-if="setupPopupToggleBool" @sumbittedSettings="toggleSetupPopup"/>
-    <AddNewPicturePopup v-if="addPicPopupToggleBool" @newPicSubmitted="submittedPicSuccessfully"/>
+    <Button icon="menu" @click="state.popup = 'SetupPopup'" /> 
+    
+    <PopupSLot v-if="state.popup == 'AddNewPicturePopup'">
+      <AddNewPicturePopup @newPicSubmitted="togglePopupsOff"/>
+    </PopupSLot>
+    
+    <PopupSLot v-if="state.popup == 'SetupPopup'">
+      <SetupPopup @sumbittedSettings="togglePopupsOff"/>
+    </PopupSLot>
   </div>
 </template>
 
@@ -27,6 +28,7 @@ import AddNewPicturePopup from "../Popups/AddNewPicturePopup.vue";
 import SetupPopup from "../Popups/SetupPopup.vue";
 import type { ICollection } from "../../services/types";
 import SearchBar from "../Misc/SearchBar.vue";
+import PopupSLot from "../Misc/PopupSLot.vue";
 
 import { ref, inject} from "vue";
 import { useRoute } from "vue-router";
@@ -48,31 +50,13 @@ const route = useRoute();
 
 const emit = defineEmits(['isEditing', "submittedNewPic"]);
 
-const addPicPopupToggleBool = ref(false);
-const setupPopupToggleBool = ref(false);
 const editingToggleBool = ref(false);
 
 
 function togglePopupsOff() {
-  addPicPopupToggleBool.value = false;
-  setupPopupToggleBool.value = false;
+  state.popup = ''
 }
 
- //toggle that bool the opposite of what it is and cancel the other if it is true
-function toggleAddPicPopup() {
-  addPicPopupToggleBool.value = !addPicPopupToggleBool.value;
-  setupPopupToggleBool.value = false;
-}
-
-function toggleSetupPopup() {
-  setupPopupToggleBool.value = !setupPopupToggleBool.value;
-  addPicPopupToggleBool.value = false;
-}
-
-function submittedPicSuccessfully() {
-  toggleAddPicPopup()
-  emit('submittedNewPic');
-}
 
 function toggleEditing() {
   editingToggleBool.value =! editingToggleBool.value;

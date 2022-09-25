@@ -1,5 +1,5 @@
 <template>
-    <div class="pictureContainer flex items-center flex-col gap-8 max-h-[93vh]">
+    <div class="pictureContainer flex items-center flex-col gap-8">
       <img :src="backendUrl + item.imagesDataArray[indexer].file" class='pictureView' />
       <div class="flex flex-row gap-4 h-[24vh] items-center">
         <div v-for="pic, index in item.imagesDataArray">
@@ -36,8 +36,8 @@ function setIndexer(params: number) {
 
 <style lang="postcss">
 .pictureContainer {
-  @apply absolute cursor-pointer w-[70vw] h-[93vh] left-0 top-[7vh] z-1;
-  background-color:rgb(53, 53, 53, 0.4);
+  @apply absolute cursor-pointer w-[70vw] h-[93vh] left-0 top-[7vh] z-1 max-h-[93vh];
+
   
 }
 

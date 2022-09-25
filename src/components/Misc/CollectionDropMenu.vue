@@ -11,7 +11,6 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { computed } from "@vue/reactivity";
 import { onClickOutside } from '@vueuse/core'
 import { ref, watch } from "vue";
 import type { ICollection } from "../../services/types";
