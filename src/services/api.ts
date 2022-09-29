@@ -14,6 +14,7 @@ class API {
 
     public localStorageSettings: ISettings = {  
         backend_url: "",
+        use_mongodb: false,
         database_url: "",
         search_diff_sites: false,
         pixiv_download_first_image_only: true,

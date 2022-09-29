@@ -1,14 +1,14 @@
 <template>
-    <div class="pictureContainer flex items-center flex-col gap-8">
+    <div class="pictureContainer flex items-center flex-col gap-4">
       <img :src="backendUrl + item.imagesDataArray[indexer].file" class='pictureView' ref='target'/>
-      <div class="flex flex-row gap-4 h-[24vh] items-center">
-        <div v-for="pic, index in item.imagesDataArray " ref='target'>
+      <div class="flex flex-row gap-4 h-[24vh] items-center" ref='target2'>
+        <div v-for="pic, index in item.imagesDataArray ">
           <img  :src="backendUrl + pic.file" :class='`pictureViewCards ${(indexer == index) ? "pictureViewCardSelected" : ""} h-20`' @click="setIndexer(index)" />
         </div>
       </div>
     </div>
     
-    <div class="bg-[#32303A] absolute right-0 w-[30vw] h-[93vh] overflow-auto pb-4" ref='target'>
+    <div class="bg-[#32303A] absolute right-0 w-[30vw] h-[93vh] overflow-auto pb-4" ref='target3'>
        <PictureViewData v-if="refreshBool" :item="item" :indexer='indexer'/>
     </div>
 </template>
@@ -27,11 +27,47 @@ const state = (inject('state') as AppState).state;
 
 
 const target = ref(null)
+const target2 = ref(null)
+const target3 = ref(null)
 
+const clickedOutsideOf = {
+  first: false,
+  second: false,
+  third: false,
+}
 onClickOutside(target, () => {
-  state.popup = '';
+  clickOutsideFunc('first');
+})
+
+onClickOutside(target2, () => {
+  clickOutsideFunc('second');
+})
+
+onClickOutside(target3, () => {
+  clickOutsideFunc('third');
 
 })
+
+function clickOutsideFunc(ofWhich: 'first' | 'second' | 'third') {
+  clickedOutsideOf[ofWhich] = true;
+
+  setTimeout(() => {
+    console.log(clickedOutsideOf);
+    
+    if (clickedOutsideOf.first && clickedOutsideOf.second && clickedOutsideOf.third) {
+      state.popup = '';
+    }
+    else {
+      clickedOutsideOf.first = false;
+      clickedOutsideOf.second = false;
+      clickedOutsideOf.third = false;
+
+    }
+
+  }, 10);
+}
+
+
 const props = defineProps<{
   item: IAnimePic;
   backendUrl: string;
@@ -57,7 +93,7 @@ function setIndexer(params: number) {
 
 .pictureView {
 
-@apply h-full max-w-[56%] mt-4 cursor-default;
+@apply h-full max-w-[56vw] mt-4 cursor-default;
 object-fit: cover;
 
 column-gap: 1rem;

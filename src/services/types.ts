@@ -95,13 +95,15 @@ export interface INewPic {
     has_results?: boolean;
     type?: AlbumSchemaType;
     album: string;
+    isHidden?: boolean;
 }
 
 export type PicTypes = IAnimePic;
 
 export interface ISettings {
     backend_url: string;
-    database_url: string;
+    use_mongodb: boolean;
+    database_url?: string;
     search_diff_sites: boolean;
     pixiv_download_first_image_only: boolean;
     saucenao_api_key?: string;

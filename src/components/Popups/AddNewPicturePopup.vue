@@ -255,7 +255,8 @@ async function submit() {
     url: picForm.url,
     type: picForm.type,
     album: picForm.album,
-    useSauceNao: picForm.useSauceNao
+    useSauceNao: picForm.useSauceNao,
+    isHidden: false
   });
 
   emit("newPicSubmitted");

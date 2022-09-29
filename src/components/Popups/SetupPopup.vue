@@ -14,12 +14,24 @@
             </div>
             <div class="flex flex-col gap-[0.5rem]">
 
+
+            <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
+                <div class="h-[24px] right-0 flex flex-row items-center">
+                    <div class="checkbox_option" @click="toggleUseMongoDb()">   
+                        <Icon :icon="settingsForm.use_mongodb ? 'checked_checkbox' : 'unchecked_checkbox'" />
+                        <h2>Use a mongoDB database</h2>
+                    </div>
+                </div>
+            </div>
+
+
             <h2 class="text-red-500 indent-2px text-14px" v-if="settingsFormError.databaseUrlError" :style="`${settingsFormError.databaseUrlError? '' : 'display: none;'}`">{{settingsFormError.databaseUrlError}}</h2>
-            <div :class="`${settingsFormError.databaseUrlError ? 'error' : ''}`">
-                <input class="popupInputField"
+            <div :class="`${settingsFormError.databaseUrlError ? 'error' : ''}`" >
+                <input :class="`${settingsForm.use_mongodb ? 'popupSaucenaoKeyInputField' : 'popupSaucenaoKeyInputFieldDisabled'}`"
                 type="text"
                 v-model="settingsForm.database_url"
                 placeholder="Database URL, use the form mongodb://username:password@host:port/moefetch"
+                :disabled="settingsForm.use_mongodb"
                 @click="settingsFormError.databaseUrlError = ''"
             />
             </div>
@@ -100,7 +112,7 @@ const localStorageSettings = localStorage.getItem("settings") //to see if exists
 
 const settingsForm = reactive<ISettings>(localStorageSettings ? JSON.parse(localStorageSettings) : {
     backend_url: "",
-    database_url: "",
+    use_mongodb: false,
     search_diff_sites: false,
     pixiv_download_first_image_only: true,
     saucenao_api_key: undefined,
@@ -115,10 +127,15 @@ function togglePixivDownloadAll() {
     settingsForm.pixiv_download_first_image_only = !settingsForm.pixiv_download_first_image_only;
 }
 
+function toggleUseMongoDb(){
+    settingsForm.use_mongodb = !settingsForm.use_mongodb;
+    console.log(settingsForm.use_mongodb);
+    
+}
 
 const defaultSettings: ISettings = {
     backend_url: "http://127.0.0.1:2234/",
-    database_url: "mongodb://127.0.0.1:27017/moefetch",
+    use_mongodb: false,
     search_diff_sites: false,
     pixiv_download_first_image_only: true,
     saucenao_api_key: undefined,
@@ -126,26 +143,22 @@ const defaultSettings: ISettings = {
 
 async function submit() {
     if (!settingsForm.backend_url) settingsFormError.backendUrlError = "No Backend url was provided";
-    if (!settingsForm.database_url) settingsFormError.databaseUrlError = "No Database url was provided";
+    if (settingsForm.use_mongodb && !settingsForm.database_url) settingsFormError.databaseUrlError = "No Database url was provided";
     if (!settingsForm.saucenao_api_key && settingsForm.search_diff_sites) settingsFormError.saucenaoApiKeyError = "No saucenao api key was provided";
-    if (!HOSTS_REGEX.test(settingsForm.database_url)) settingsFormError.databaseUrlError = "Database url invalid";
+
+    if (settingsForm.use_mongodb && settingsForm.database_url && !HOSTS_REGEX.test(settingsForm.database_url)) settingsFormError.databaseUrlError = "Database url invalid";
 
     if (settingsFormError.backendUrlError || settingsFormError.databaseUrlError || settingsFormError.saucenaoApiKeyError) return;
     else {
         formSubmittedToggle.value = true;
+        
         const connectionResponse = await connectToBackendAndDB(settingsForm);
         if ((connectionResponse.databaseUrlError || connectionResponse.saucenaoApiKeyError || connectionResponse.backendUrlError)) {
             formSubmittedToggle.value = false;
-            if (connectionResponse.backendUrlError) {
-                settingsFormError.backendUrlError = connectionResponse.backendUrlError;
-            }
-            if (connectionResponse.databaseUrlError) {
-                settingsFormError.databaseUrlError = connectionResponse.databaseUrlError;
-            } 
-            
-            if (connectionResponse.saucenaoApiKeyError) {
-                settingsFormError.saucenaoApiKeyError = connectionResponse.saucenaoApiKeyError;
-            }
+
+            settingsFormError.backendUrlError = connectionResponse.backendUrlError;
+            settingsFormError.databaseUrlError = connectionResponse.databaseUrlError;
+            settingsFormError.saucenaoApiKeyError = connectionResponse.saucenaoApiKeyError;
         }
         else {
             localStorage.setItem("settings", JSON.stringify(settingsForm))
@@ -156,6 +169,7 @@ async function submit() {
 }
 async function useDefaults() {
     //i have to to do this retarded bs cus it's a const reactive
+    
     settingsForm.backend_url = defaultSettings.backend_url;
     settingsForm.database_url = defaultSettings.database_url;
     settingsForm.pixiv_download_first_image_only = defaultSettings.pixiv_download_first_image_only;

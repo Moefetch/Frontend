@@ -24,7 +24,7 @@
     <div class="pictureViewDataTextDiv" v-if="item.links">
         <h2 class="pictureViewDataText">External links</h2>
         <a class="contents" v-for="link in linksReformated"  :href="linksAsAny[link]">
-        <icon class="pictureViewDataText textRoundedBg fixedPos max-h-8 max-w-8" :icon="link" >
+        <Icon class="pictureViewDataText textRoundedBg fixedPos max-h-8 max-w-8" :icon="link" >
             {{item.links}}
         </Icon>
         </a>    
@@ -34,9 +34,14 @@
     <div class="pictureViewTagDiv flex-col gap-col-12" v-if="item.tags">
         <h2 class="pictureViewDataText text-size-[30px] relative top-6">Tags:</h2>
         <div class="tagsContainer">
-            <h2 class="pictureViewDataText textRoundedBg h-[fit-content] whitespace-nowrap" v-for="tag in item.tags">
-                {{tag}}
-            </h2>
+            <div v-if="item.tags" class="tagsContainer">
+                <h2 class="pictureViewDataText textRoundedBg h-[fit-content] whitespace-nowrap" v-for="tag in item.tags">
+                    {{tag}}
+                </h2>
+                <div class="addNewTag">
+                    <Icon icon="plus" />
+                </div>
+            </div>
         </div>
     </div>
 
@@ -78,5 +83,9 @@ const linksReformated = Object.getOwnPropertyNames(linksAsAny)
 .pictureViewTagDiv{
     @apply w-full flex flex-col;
 
+}
+.addNewTag{
+    @apply bg-[#4F4F4F] rounded-[12px] p-1 pl-2 pr-2;
+    @apply h-8 w-8;
 }
 </style>
