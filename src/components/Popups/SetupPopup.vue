@@ -17,7 +17,7 @@
 
             <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
                 <div class="h-[24px] right-0 flex flex-row items-center">
-                    <div class="checkbox_option" @click="toggleUseMongoDb()">   
+                    <div class="checkbox_option" @click="toggleASettingsFormVariable('use_mongodb')">   
                         <Icon :icon="settingsForm.use_mongodb ? 'checked_checkbox' : 'unchecked_checkbox'" />
                         <h2>Use a mongoDB database</h2>
                     </div>
@@ -39,7 +39,7 @@
 
             <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
                 <div class="h-[24px] right-0 flex flex-row items-center">
-                    <div class="checkbox_option" @click="togglePixivDownloadAll()">   
+                    <div class="checkbox_option" @click="toggleASettingsFormVariable('pixiv_download_first_image_only')">   
                         <Icon :icon="!settingsForm.pixiv_download_first_image_only? 'checked_checkbox' : 'unchecked_checkbox'" />
                         <h2>Download all images in pixiv pages</h2>
                     </div>
@@ -48,7 +48,7 @@
 
             <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
                 <div class="h-[24px] right-0 flex flex-row items-center">
-                    <div class="checkbox_option" @click="toggleSearchForDiffSites()">   
+                    <div class="checkbox_option" @click="toggleASettingsFormVariable('search_diff_sites')">   
                         <Icon :icon="!settingsForm.search_diff_sites? 'unchecked_checkbox' : 'checked_checkbox'" />
                         <h2>Use SauceNao to search different sites for possibly higher quality</h2>
                     </div>
@@ -67,11 +67,42 @@
                     />
                 </div>
             </div>
+
+            
+            <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
+                <div class="h-[24px] right-0 flex flex-row items-center">
+                    <div class="checkbox_option" @click="toggleASettingsFormVariable('show_nsfw')">   
+                        <Icon :icon="settingsForm.show_nsfw  ? 'checked_checkbox' : 'unchecked_checkbox'" />
+                        <h2>Show NSFW tagged posts</h2>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
+                <div class="h-[24px] right-0 flex flex-row items-center">
+                    <div class="checkbox_option" @click="toggleASettingsFormVariable('blur_nsfw')">   
+                        <Icon :icon="settingsForm.blur_nsfw? 'checked_checkbox' : 'unchecked_checkbox'" />
+                        <h2>Blur NSFW tagged posts</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
+                <div class="h-[24px] right-0 flex flex-row items-center">
+                    <div class="checkbox_option" @click="toggleASettingsFormVariable('show_hidden')">   
+                        <Icon :icon="settingsForm.show_hidden? 'checked_checkbox' : 'unchecked_checkbox'" />
+                        <h2>Show hidden posts</h2>
+                    </div>
+                </div>
+            </div>
+
+            
             <Button type="button" text="Use Defaults" color="#a41414" class="absolute bottom-8 left-8 w-[fit-content] rounded-[8px]" @click="useDefaults()"/>
 
             <Button type="button" text="Confirm" color="#4d6d8d" class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]" @click="submit()"/>
         </form>
-        <div v-else class="m-auto items-center flex flex-col">
+        <div v-else class="m-auto items-center flex flex-col pt-25 pb-25">
             <img :src="`${connectionSuccess ? '/Gifs/ok_success.gif' :'/Gifs/loading_three_circles.gif'}`" alt="" class="w-[6rem]">
             <h2 class="textLoadClass">{{connectionSuccess ? 'Connected' : 'Connecting' }}</h2>
             <Button v-if="connectionSuccess" type="button" text="Done" color="#254ee0" class="absolute bottom-8 w-[10rem] text-center rounded-[8px]" @click="emitSubmit()"/>
@@ -113,29 +144,24 @@ const localStorageSettings = localStorage.getItem("settings") //to see if exists
 const settingsForm = reactive<ISettings>(localStorageSettings ? JSON.parse(localStorageSettings) : {
     backend_url: "",
     use_mongodb: false,
+    show_nsfw: true,
+    blur_nsfw: true,
+    show_hidden: false,
     search_diff_sites: false,
     pixiv_download_first_image_only: true,
     saucenao_api_key: undefined,
 });
-
-function toggleSearchForDiffSites() {
-    settingsForm.search_diff_sites = !settingsForm.search_diff_sites;
-}
-
-
-function togglePixivDownloadAll() {
-    settingsForm.pixiv_download_first_image_only = !settingsForm.pixiv_download_first_image_only;
-}
-
-function toggleUseMongoDb(){
-    settingsForm.use_mongodb = !settingsForm.use_mongodb;
-    console.log(settingsForm.use_mongodb);
-    
+type togglAbleVariable = 'search_diff_sites' | 'use_mongodb' | 'pixiv_download_first_image_only' | 'show_hidden' | 'blur_nsfw' | 'show_nsfw';
+function toggleASettingsFormVariable(variableNameToToggle: togglAbleVariable) {
+    settingsForm[variableNameToToggle] = !settingsForm[variableNameToToggle]
 }
 
 const defaultSettings: ISettings = {
     backend_url: "http://127.0.0.1:2234/",
     use_mongodb: false,
+    show_nsfw: true,
+    blur_nsfw: true,
+    show_hidden: false,
     search_diff_sites: false,
     pixiv_download_first_image_only: true,
     saucenao_api_key: undefined,
@@ -188,7 +214,7 @@ async function useDefaults() {
 }
       
 .setup_popup_container {
-@apply absolute p-10 text-white-400;
+@apply absolute p-10 pb-24 text-white-400;
 @apply border-[3px] border-[#254EE0] gap-[14px];
 @apply flex-row gap-[4px] align-center m-auto;
 
@@ -202,7 +228,7 @@ border-radius: 4px;
 background-color: rgba(42, 45, 52, 1); 
 
 width: var(--setup_popup_width);
-height: var(--setup_popup_height);
+height: fit-content;
 
 
 /* 

@@ -52,7 +52,6 @@ function clickOutsideFunc(ofWhich: 'first' | 'second' | 'third') {
   clickedOutsideOf[ofWhich] = true;
 
   setTimeout(() => {
-    console.log(clickedOutsideOf);
     
     if (clickedOutsideOf.first && clickedOutsideOf.second && clickedOutsideOf.third) {
       state.popup = '';

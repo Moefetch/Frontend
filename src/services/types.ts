@@ -107,7 +107,9 @@ export interface ISettings {
     search_diff_sites: boolean;
     pixiv_download_first_image_only: boolean;
     saucenao_api_key?: string;
-
+    show_nsfw: boolean,
+    blur_nsfw: boolean,
+    show_hidden: boolean,
 }
 
 

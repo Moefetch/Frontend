@@ -1,11 +1,13 @@
 <template>
   <div class="cursor-pointer">
     <div class="pictureCard">
-      <div class="muliImageNum" v-if="vIfVar > 1" :style="numPopStyles">
-        <Icon icon="multi_image"/>
-        <h2>{{vIfVar}}</h2>
+      <div class="overflow-hidden rounded-[0.25rem]">
+        <div class="muliImageNum" v-if="vIfVar > 1" :style="numPopStyles">
+          <Icon icon="multi_image"/>
+          <h2>{{vIfVar}}</h2>
+        </div>
+        <img :src="backendUrl + pictureURL" :class="'pictureCard ' + `${vIfVar > 1 ? 'hasMulti' : ''} ${doBlurBool  ? 'blurPicture' : ''}`"/>
       </div>
-      <img :src="backendUrl + pictureURL" :class="'pictureCard ' + `${vIfVar > 1 ? 'hasMulti' : ''}`"/>
     </div>
   </div>
 
@@ -22,20 +24,19 @@ const props = defineProps<{
 const pictureURL = props.item.imagesDataArray[props.item.indexer].thumbnail_file;
 const vIfVar = props.item.imagesDataArray.length
 const backendUrl = api.getBackendUrl()
-
+const settings = api.getSettings()
 const numPopStyles = `
 `
-
+const doBlurBool = (props.item.isNSFW && settings?.blur_nsfw)
 </script>
 
 <style lang="postcss">
 .pictureCard {
 
-  @apply max-h-[150px] max-w-[280px] ;
+  @apply max-h-[150px] max-w-[280px];
   z-index: -1;
 
   object-fit: cover;
-  border-radius: 4px;
   column-gap: 1rem;
 }
 .muliImageNum {
@@ -55,5 +56,7 @@ const numPopStyles = `
   position: relative;
   bottom: 26px;
 }
-
+.blurPicture{
+  filter: blur(10px);
+}
 </style>

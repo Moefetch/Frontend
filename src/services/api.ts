@@ -18,6 +18,9 @@ class API {
         database_url: "",
         search_diff_sites: false,
         pixiv_download_first_image_only: true,
+        show_hidden: false,
+        show_nsfw: true,
+        blur_nsfw: true,
         saucenao_api_key: undefined,
     };
 
@@ -58,13 +61,36 @@ class API {
  */
 public getBackendUrl() {
     let backendUrl: string;
-    const localStorageSettingsJSONString = localStorage.getItem("settings") ;
-    if (localStorageSettingsJSONString) {
-        backendUrl = JSON.parse(localStorageSettingsJSONString).backend_url;
+    const settings  = this.getSettings()
+    if (settings) {
+        backendUrl = settings.backend_url;
         if (backendUrl[backendUrl.length - 1] != '/') backendUrl = backendUrl + '/'
     } else backendUrl= 'http://127.0.0.1:2234/';
     
     return backendUrl;
+}
+
+/**
+ * getSettings
+ */
+public getSettings() {
+    let settings: ISettings | undefined;
+    const localStorageSettingsJSONString = localStorage.getItem("settings") ;
+    if (localStorageSettingsJSONString) {
+        settings = JSON.parse(localStorageSettingsJSONString);
+        
+    } else settings = {
+        backend_url: "http://127.0.0.1:2234/",
+        use_mongodb: false,
+        show_nsfw: true,
+        blur_nsfw: true,
+        show_hidden: false,
+        search_diff_sites: false,
+        pixiv_download_first_image_only: true,
+        saucenao_api_key: undefined,
+    }
+
+    return settings
 }
 
     public getPicsInAlbum = async (album: string) => {
