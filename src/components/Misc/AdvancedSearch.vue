@@ -3,7 +3,7 @@
     <div class="flex flex-row items-center h-[7vh] pl-4 gap-4">
 
       <FieldErrorSlot :showRedBorderOnlyBool="formErrors.noAlbumSelectedError" >
-        <BaseDropMenu :defaultSelected="defaultSelected == 'Home' ? 'Select album' : defaultSelected"
+        <BaseDropMenu :defaultSelected="defaultSelected == 'Home' ? 'Select album' : selectAlbum(defaultSelected)"
          :dropdownItemsArray="albums.map(album => album.albumName)" bg-color-hex="#111112" 
           @item-selected=" (selected: string) => selectAlbum(selected)" 
           @click="formErrors.noAlbumSelectedError = false"/>
@@ -111,13 +111,15 @@ function addTagToForm(tag: string) {
   tagSearch.value = '';
   tagsAutocomplete.value = []
 }
-let albumType: AlbumSchemaType | undefined = undefined
-let albumUUID: string | undefined
+let albumType: AlbumSchemaType | undefined = undefined;
+let albumUUID: string | undefined;
+
 function selectAlbum(selected: string) {
   searchForm["album"] = selected;
   const filteredAlbum = props.albums.find(album => album.albumName == selected)
   albumType = filteredAlbum?.type as AlbumSchemaType | undefined;
   albumUUID = filteredAlbum?.albumUUID;
+  return props.defaultSelected;
 }
 
 function selectSorting(selected: string) {
@@ -149,8 +151,8 @@ function submit() {
     state.stateVariables.advancedSearchOptions.nameIncludes = searchForm.nameIncludes;
     state.stateVariables.advancedSearchOptions.sortBy = searchForm.sortBy.replace(' ', "_").toLocaleLowerCase();
 
+    state.stateVariables.albums[searchForm.album].getPictures(state.stateVariables.advancedSearchOptions);
     router.push({name: 'search', params: {albumUUID: searchForm.album}})
-
   }
   
 }
