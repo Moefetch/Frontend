@@ -1,4 +1,4 @@
-import type {IAlbum, IPicture, INewAlbum, INewPic, ISettings, ISettingsErrorObject, IFilterObj} from "./types";
+import type {IAlbum, IPicture, INewAlbum, INewPic, ISettings, ISettingsErrorObject, IFilterObj, AlbumSchemaType} from "./types";
 
 class API {
 
@@ -97,7 +97,7 @@ public getSettings() {
 
     public handleHidingPicturesInAlbum = (album: string, entriesIDs: string[], hide: boolean) => this.backendRequest("post", "/handle-hide", {album: album, entriesIDs: entriesIDs, hide: hide});
 
-    public getTagsForSearchAutocomplete = (tagSearch: string) => this.backendRequest<{tags: string[]}>("post", "/autocomplete-tags", {tagSearch: tagSearch} );
+    public getTagsForSearchAutocomplete = (tagSearch: string, type: AlbumSchemaType) => this.backendRequest<{tags: string[]}>("post", "/autocomplete-tags", {tagSearch: tagSearch, type: type} );
 
     public getPicsInAlbum = (album: string, options: IFilterObj) => {
         return this.backendRequest<[IPicture]>("post", `/search`, {album: album, options})

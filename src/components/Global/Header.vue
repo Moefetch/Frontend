@@ -54,7 +54,7 @@ const defaultAlbumCollection: IAlbum = {
   };
 
   function mapAlbumsToNamesArray(albums: IAlbum[]) {
-    return [ ...albums.map(album => ({albumName: album.name, albumUUID: album.uuid }))]
+    return [ ...albums.map(album => ({albumName: album.name, albumUUID: album.uuid, type: album.type }))]
   }
 
 const route = useRoute();

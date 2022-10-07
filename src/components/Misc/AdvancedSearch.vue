@@ -5,13 +5,13 @@
       <FieldErrorSlot :showRedBorderOnlyBool="formErrors.noAlbumSelectedError" >
         <BaseDropMenu :defaultSelected="defaultSelected == 'Home' ? 'Select album' : defaultSelected"
          :dropdownItemsArray="albums.map(album => album.albumName)" bg-color-hex="#111112" 
-          @item-selected=" (selected: string) => selectSomething(selected, 'album')" 
+          @item-selected=" (selected: string) => selectAlbum(selected)" 
           @click="formErrors.noAlbumSelectedError = false"/>
       </FieldErrorSlot>
 
       <FieldErrorSlot :showRedBorderOnlyBool="formErrors.noSortingSelected">
         <BaseDropMenu defaultSelected="Sort by" :dropdownItemsArray="sortBy" bg-color-hex="#111112" 
-          @item-selected=" (selected: string) => selectSomething(selected, 'sortBy')"
+          @item-selected=" (selected: string) => selectSorting(selected)"
           @click="formErrors.noSortingSelected = false"/>
       </FieldErrorSlot>
 
@@ -68,6 +68,7 @@ import BaseDropMenuItem from './BaseDropMenuItem.vue';
 import router from '../../router';
 import FieldErrorSlot from './FieldErrorSlot.vue';
 import { AppState } from '../../../state';
+import { AlbumSchemaType } from '../../services/types';
 
 const state = (inject('state') as AppState)
 const tagSearch = ref('');
@@ -91,7 +92,7 @@ const formErrors = reactive({
 })
 
 const props = defineProps<{
-    albums: {albumName: string, albumUUID: string}[];
+    albums: {albumName: string, albumUUID: string, type: string}[];
     defaultSelected: string;
 }>();
 if (props.defaultSelected !== 'Home') searchForm.album = props.defaultSelected;
@@ -110,9 +111,17 @@ function addTagToForm(tag: string) {
   tagSearch.value = '';
   tagsAutocomplete.value = []
 }
+let albumType: AlbumSchemaType | undefined = undefined
+let albumUUID: string | undefined
+function selectAlbum(selected: string) {
+  searchForm["album"] = selected;
+  const filteredAlbum = props.albums.find(album => album.albumName == selected)
+  albumType = filteredAlbum?.type as AlbumSchemaType | undefined;
+  albumUUID = filteredAlbum?.albumUUID;
+}
 
-function selectSomething(selected: string, formIndexer: "album" | "sortBy") {
-  searchForm[formIndexer] = selected;
+function selectSorting(selected: string) {
+  searchForm["sortBy"] = selected;
   
 }
 
@@ -121,8 +130,8 @@ let tagLookupTimeout: number;
 async function invokeSearchTags(tagSearch: string) {
   clearTimeout(tagLookupTimeout)
   tagLookupTimeout = setTimeout(async () => {
-    if (tagSearch) {
-      tagsAutocomplete.value = (await api.getTagsForSearchAutocomplete(tagSearch)).tags
+    if (tagSearch && albumType) {
+      tagsAutocomplete.value = (await api.getTagsForSearchAutocomplete(tagSearch, albumType)).tags
     } else tagsAutocomplete.value = []
   }, 900);
 }
