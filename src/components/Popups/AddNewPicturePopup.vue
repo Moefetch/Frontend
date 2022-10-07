@@ -9,16 +9,7 @@
             </form> -->
     </div>
     <div class="flex flex-col gap-2">
-      <h2
-        class="text-red-500 indent-2px text-14px"
-        :style="`${picFormError.picNameError ? '' : 'display: none;'}`"
-      >
-        {{ picUrlErrorMessage }}
-      </h2>
-      <div
-        :class="`${picFormError.picNameError ? 'error' : ''}`"
-        style="width: fit-content"
-      >
+      <FieldErrorSlot :errorMessage="picUrlErrorMessage">
         <textarea
           v-model="picForm.url"
           class="inputField"
@@ -27,7 +18,10 @@
           placeholder="Image URL or post URL"
           @click="picFormError.picNameError = false"
         />
-      </div>
+
+      </FieldErrorSlot>
+      
+       
       <BaseDropMenu
         :dropdownItemsArray="modelTypesArray"
         @item-selected="typeSelect"
@@ -45,19 +39,7 @@
         :class="`${picFormError.picAlbumError ? 'error' : ''} box-content`"
         @click="picFormError.picAlbumError = false"
       />
-      
-      <h2
-        class="text-red-500 indent-2px text-14px"
-        :style="`${AlbumNameErrorMessage ? '' : 'display: none;'}`"
-      >
-        {{ AlbumNameErrorMessage }}
-      </h2>
-
-      <div
-        :class="`${AlbumNameErrorMessage ? 'error' : ''}`"
-        style="width: fit-content"
-      >
-      
+      <FieldErrorSlot :errorMessage="AlbumNameErrorMessage">
         <input
           v-if="createAlbumToggle"
           type="text"
@@ -71,8 +53,8 @@
           min="1"
           max="64"
         />
-      </div>
-
+      </FieldErrorSlot>
+      
       <div class="checkbox_option w-[16rem]" v-if="settingsForm.saucenao_api_key" @click="toggleUseSaucenao()">   
         <Icon :icon="picForm.useSauceNao? 'checked_checkbox' : 'unchecked_checkbox'" />
         <h2>Use Saucenao to get highest Quality</h2>
@@ -94,22 +76,22 @@ import { onMounted, ref, inject, reactive } from "vue";
 import BaseDropMenu from "../Misc/BaseDropMenu.vue";
 import Button from "../Misc/Button.vue";
 import Icon from "../Misc/Icon.vue";
-import AppState from '../../../state';
+import FieldErrorSlot from "../Misc/FieldErrorSlot.vue";
+import { AppState } from '../../../state';
 
-import api from "../../services/api";
+import { api } from "../../services/api";
 import type {
   INewPic,
   AlbumSchemaType,
-  ICollection,
+  IAlbum,
   ISettings
 } from "../../services/types";
 
-const state = (inject('state') as AppState).state;
+const state = (inject('state') as AppState);
 
 const route = useRoute();
-const emit = defineEmits(["newPicSubmitted"]);
 
-let defaultAlbumCollection: ICollection = {
+let defaultAlbumCollection: IAlbum = {
   albumCoverImage: "",
   name: "Select Album",
   uuid: "",
@@ -117,7 +99,7 @@ let defaultAlbumCollection: ICollection = {
   estimatedPicCount: 0
 };
 
-let albumCollection: ICollection[] = [defaultAlbumCollection, ...state.collectionArray]
+let albumCollection: IAlbum[] = [defaultAlbumCollection, ...Object.values(state.stateVariables.albums)]
 
 let albumsNamesArray = albumCollection.map((a) => a.name);
 
@@ -154,7 +136,7 @@ const picForm = reactive<INewPic>({
 //make it autoselect album when you're in an album page
 if (route.name == ":album") {
   const albumObj = albumCollection.find(
-    (a) => a.uuid == route.params.albumName
+    (a) => a.uuid == route.params.albumUUID
   );
   if (albumObj) {
     defaultSelectedAlbumName.value = albumObj.name;
@@ -258,8 +240,8 @@ async function submit() {
     useSauceNao: picForm.useSauceNao,
     isHidden: false
   });
-
-  emit("newPicSubmitted");
+  state.stateVariables.popup = ''; //disables the popup aka exits
+  
 }
 
 function urlEmpty() {

@@ -3,42 +3,34 @@
     <div class="albums_container grid m-auto gap">
       <AlbumAddCard @click="state.popup = 'CreateNewAlbumPopup'" />
       <AlbumCard
-        v-for="item in state.collectionArray"
+        v-for="item in state.albums"
         :name="item.name"
         :thumbnail="item.albumCoverImage"
         :estimatedPicCount="item.estimatedPicCount"
         :router="item.uuid"
       />
-      <PopupSLot v-if="state.popup == 'CreateNewAlbumPopup'">
-        <CreateNewAlbumPopup
-          @newAlbumSubmitted="toggleAlbumPopupOff"
-        />
-      </PopupSLot>
+      <PopupSlot v-if="state.popup == 'CreateNewAlbumPopup'">
+        <CreateNewAlbumPopup/>
+      </PopupSlot>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 
-import type { ICollection } from "../services/types";
-import PopupSLot from "../components/Misc/PopupSLot.vue";
+import type { IAlbum } from "../services/types";
+import PopupSlot from "../components/Misc/PopupSlot.vue";
 
 import { ref, inject} from "vue";
 
-import AppState from '../../state'
+import { AppState } from '../../state'
 
 
 import AlbumCard from "../components/Cards/AlbumCard.vue";
 import AlbumAddCard from "../components/Cards/AlbumAddCard.vue";
 import CreateNewAlbumPopup from "../components/Popups/CreateNewAlbumPopup.vue";
 
-const state = (inject('state') as AppState).state;
-
-function toggleAlbumPopupOff() {
-  state.popup = '';
-}
-
-defineProps<{ isEditing: boolean }>();
+const state = (inject('state') as AppState).stateVariables;
 
 </script>
 

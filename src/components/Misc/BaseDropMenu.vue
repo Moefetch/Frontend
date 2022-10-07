@@ -1,11 +1,13 @@
 <template>
-    <div class="h-[1.84rem] w-[14rem]" ref="target">
-        <div :class="`flex mt-auto mb-auto flex-row bg-dark-500 w-[14rem] h-[1.84rem] pr-[0.25rem] rounded-[0.2rem] cursor-pointer items-center ${toggled? 'rounded-b-none' : '' }`" @click="dropDownToggle()">
+    <div class="h-[2rem] w-[14rem]" ref="target">
+        <div :class="`flex mt-auto mb-auto flex-row w-[14rem] h-[2rem] pr-[0.25rem] rounded-[0.2rem] cursor-pointer items-center ${toggled? 'rounded-b-none' : '' }`" @click="dropDownToggle()"
+        :style="bgColorStyle">
             <BaseDropMenuItem :item="currentItem" :class="`h-[14px] w-full` "  id="currentlyDisplayed" />
             <Icon :icon="toggled? 'up' : 'down'"  class="w-4 h-4"/>
         </div>
-        <div v-if="toggled" :class="`flex flex-col bg-[#4B4B4B] w-[14rem] h-min pr-[0.25rem] rounded-[0.125rem] rounded-t-none relative`">
-            <BaseDropMenuItem v-for="item in dropdownItemsArray" :item="item" class="h-[1.25rem] w-[14rem] cursor-pointer" @click="clickedType(item)"/>
+        <div v-if="toggled" :class="`flex flex-col w-[14rem] pr-[0.25rem] rounded-[0.125rem] rounded-t-none relative`"
+        :style="bgColorStyle">
+            <BaseDropMenuItem v-for="item in dropdownItemsArray" :item="item" class="h-[1.40rem] w-[14rem] cursor-pointer" @click="clickedType(item)"/>
             <div  v-if="specialItem" class="flex flex-row  w-[14rem] gap-4">
                 <BaseDropMenuItem :item="specialItem" class="h-[1.5rem] w-full rounded-[0.125rem] rounded-t-none cursor-pointer" @click="emit('special-item-selected')"/>
                 <Icon icon="plus" class="h-[1.2rem] w-[1.2rem] m-auto mr-1"/>
@@ -17,15 +19,20 @@
 import { onClickOutside } from '@vueuse/core'
 import { ref } from "vue";
 
-import type { ICollection } from "../../services/types";
 import Icon from "./Icon.vue";
 import BaseDropMenuItem  from "./BaseDropMenuItem.vue";
 
 
 let toggled = ref(false);
 
-const props = defineProps<{dropdownItemsArray: string[], specialItem?: string, defaultSelected?: string}>();
+const props = defineProps<{
+    dropdownItemsArray: string[];
+    specialItem?: string;
+    defaultSelected?: string
+    bgColorHex?: string;
+}>();
 
+const bgColorStyle = props.bgColorHex ? `background-color: ${props.bgColorHex};` : 'background-color: #3d3d3d';
 const target = ref(null)
 onClickOutside(target, () => {
     if(toggled.value) toggled.value = !toggled.value;

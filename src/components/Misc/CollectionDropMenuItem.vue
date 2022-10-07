@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-row items-center gap-1">
-    <img
-      v-if="collectionItem.albumCoverImage"
+  <div class="flex flex-row items-center gap-1" v-if="collectionItem">
+    <img 
       :src="backendUrl + collectionItem.albumCoverImage"
+      v-if="collectionItem.albumCoverImage"
       alt=""
       class="h-5 w-5 rounded-[0.25rem]"
     />
@@ -12,8 +12,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { ICollection } from "../../services/types";
-import api from '../../services/api'
+import type { IAlbum } from "../../services/types";
+import { api } from '../../services/api'
 const backendUrl = api.getBackendUrl()
-const props = defineProps<{ collectionItem: ICollection }>();
+const props = defineProps<{ collectionItem: IAlbum }>();
 </script>

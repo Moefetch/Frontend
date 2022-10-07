@@ -2,15 +2,14 @@
     <div class="setup_popup_container">
         <form class="flex flex-col gap-[1rem]" v-if="!formSubmittedToggle"> 
             <div class="flex flex-col gap-[0.5rem]">
-                <h2 class="text-red-500 indent-2px text-14px" v-if="settingsFormError.backendUrlError" :style="`${settingsFormError.backendUrlError? '' : 'display: none;'}`">{{settingsFormError.backendUrlError}}</h2>
-                <div :class="`${settingsFormError.backendUrlError ? 'error' : ''}`">
+                <FieldErrorSlot :errorMessage="settingsFormError.backendUrlError">
                     <input class="popupInputField"
-                    type="text"
-                    v-model="settingsForm.backend_url"
-                    placeholder="Backend   URL / Hostname and port e.g. http://127.0.0.1:2234/"
-                    @click="settingsFormError.backendUrlError = ''"
+                        type="text"
+                        v-model="settingsForm.backend_url"
+                        placeholder="Backend   URL / Hostname and port e.g. http://127.0.0.1:2234/"
+                        @click="settingsFormError.backendUrlError = ''"
                     />
-                </div>
+                </FieldErrorSlot>
             </div>
             <div class="flex flex-col gap-[0.5rem]">
 
@@ -23,10 +22,7 @@
                     </div>
                 </div>
             </div>
-
-
-            <h2 class="text-red-500 indent-2px text-14px" v-if="settingsFormError.databaseUrlError" :style="`${settingsFormError.databaseUrlError? '' : 'display: none;'}`">{{settingsFormError.databaseUrlError}}</h2>
-            <div :class="`${settingsFormError.databaseUrlError ? 'error' : ''}`" >
+            <FieldErrorSlot :errorMessage="settingsFormError.databaseUrlError">
                 <input :class="`${settingsForm.use_mongodb ? 'popupSaucenaoKeyInputField' : 'popupSaucenaoKeyInputFieldDisabled'}`"
                 type="text"
                 v-model="settingsForm.database_url"
@@ -34,7 +30,7 @@
                 :disabled="settingsForm.use_mongodb"
                 @click="settingsFormError.databaseUrlError = ''"
             />
-            </div>
+            </FieldErrorSlot>
             </div>
 
             <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
@@ -56,8 +52,7 @@
             </div>
 
             <div class="flex flex-col gap-[0.5rem]">
-                <h2 class="text-red-500 indent-2px text-14px" v-if="settingsFormError.saucenaoApiKeyError" :style="`${settingsFormError.saucenaoApiKeyError? '' : 'display: none;'}`">{{settingsFormError.saucenaoApiKeyError}}</h2>
-                <div :class="`${settingsFormError.saucenaoApiKeyError ? 'error' : ''}`">
+                <FieldErrorSlot :errorMessage="settingsFormError.saucenaoApiKeyError">
                     <input :class="`${settingsForm.search_diff_sites ? 'popupSaucenaoKeyInputField' : 'popupSaucenaoKeyInputFieldDisabled'}`"
                     type="text"
                     v-model="settingsForm.saucenao_api_key"
@@ -65,9 +60,8 @@
                     :disabled="!settingsForm.search_diff_sites"
                     @click="settingsFormError.saucenaoApiKeyError = ''"
                     />
-                </div>
+                </FieldErrorSlot>
             </div>
-
             
             <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
                 <div class="h-[24px] right-0 flex flex-row items-center">
@@ -77,7 +71,6 @@
                     </div>
                 </div>
             </div>
-
             
             <div class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
                 <div class="h-[24px] right-0 flex flex-row items-center">
@@ -112,19 +105,19 @@
 </template>
 
 <script setup lang="ts">
-
+import { AppState } from '../../../state';
 import Icon from "../Misc/Icon.vue";
-
-import { onMounted, ref, reactive } from "vue";
+import FieldErrorSlot from '../Misc/FieldErrorSlot.vue';
+import { onMounted, ref, inject, reactive  } from "vue";
 import Button from "../Misc/Button.vue";
 
-import api from "../../services/api";
+import { api } from "../../services/api";
 import type { ISettings, ISettingsErrorObject } from "../../services/types";
-
-const emit = defineEmits(['sumbittedSettings']);
+const state = (inject('state') as AppState).stateVariables;
 
 function emitSubmit() {
-    emit('sumbittedSettings')
+    
+    state.popup = ''
 }
 
 
@@ -140,8 +133,8 @@ const settingsFormError = reactive<ISettingsErrorObject>({
 
 })
 const localStorageSettings = localStorage.getItem("settings") //to see if exists
-
-const settingsForm = reactive<ISettings>(localStorageSettings ? JSON.parse(localStorageSettings) : {
+const parsedLocalStorageSettings: ISettings | null = localStorageSettings ? JSON.parse(localStorageSettings) : null;
+const settingsForm = reactive<ISettings>(parsedLocalStorageSettings ? {...parsedLocalStorageSettings} : {
     backend_url: "",
     use_mongodb: false,
     show_nsfw: true,
@@ -151,8 +144,8 @@ const settingsForm = reactive<ISettings>(localStorageSettings ? JSON.parse(local
     pixiv_download_first_image_only: true,
     saucenao_api_key: undefined,
 });
-type togglAbleVariable = 'search_diff_sites' | 'use_mongodb' | 'pixiv_download_first_image_only' | 'show_hidden' | 'blur_nsfw' | 'show_nsfw';
-function toggleASettingsFormVariable(variableNameToToggle: togglAbleVariable) {
+type TogglableVariable = 'search_diff_sites' | 'use_mongodb' | 'pixiv_download_first_image_only' | 'show_hidden' | 'blur_nsfw' | 'show_nsfw';
+function toggleASettingsFormVariable(variableNameToToggle: TogglableVariable) {
     settingsForm[variableNameToToggle] = !settingsForm[variableNameToToggle]
 }
 
@@ -168,6 +161,12 @@ const defaultSettings: ISettings = {
 }
 
 async function submit() {
+    if (parsedLocalStorageSettings && (parsedLocalStorageSettings.backend_url === settingsForm.backend_url) && (parsedLocalStorageSettings.database_url === settingsForm.database_url) && (parsedLocalStorageSettings.saucenao_api_key === settingsForm.saucenao_api_key)) {
+        connectToBackendAndDB(settingsForm);
+        localStorage.setItem("settings", JSON.stringify(settingsForm));
+        state.popup = '';
+        return 
+    }
     if (!settingsForm.backend_url) settingsFormError.backendUrlError = "No Backend url was provided";
     if (settingsForm.use_mongodb && !settingsForm.database_url) settingsFormError.databaseUrlError = "No Database url was provided";
     if (!settingsForm.saucenao_api_key && settingsForm.search_diff_sites) settingsFormError.saucenaoApiKeyError = "No saucenao api key was provided";

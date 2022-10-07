@@ -14,15 +14,15 @@
 </template>
 
 <script lang="ts" setup>
-import { IAnimePic } from "../../services/types";
+import { IPicture } from "../../services/types";
 import PictureViewData from "../Misc/PictureViewData.vue";
 import { onClickOutside } from '@vueuse/core'
 
 import { ref, inject} from "vue";
 
-import AppState from '../../../state'
+import { AppState } from '../../../state'
 
-const state = (inject('state') as AppState).state;
+const state = (inject('state') as AppState).stateVariables;
 
 
 
@@ -68,7 +68,7 @@ function clickOutsideFunc(ofWhich: 'first' | 'second' | 'third') {
 
 
 const props = defineProps<{
-  item: IAnimePic;
+  item: IPicture;
   backendUrl: string;
 }>()
 const indexer = ref(props.item.indexer)

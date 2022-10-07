@@ -50,10 +50,10 @@
 </template>
 
 <script lang="ts" setup>
-import { IAnimePic } from "../../services/types";
+import { IPicture } from "../../services/types";
 import Icon from './Icon.vue'
 const props = defineProps<{
-  item: IAnimePic;
+  item: IPicture;
   indexer: number;
 }>()
 const picName = props.item.imagesDataArray[props.indexer].file;

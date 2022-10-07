@@ -1,4 +1,4 @@
-import type {ICollection, IAnimePic, INewAlbum, INewPic, ISettings, ISettingsErrorObject} from "./types";
+import type {IAlbum, IPicture, INewAlbum, INewPic, ISettings, ISettingsErrorObject, IFilterObj} from "./types";
 
 class API {
 
@@ -37,7 +37,7 @@ class API {
 
     }
     
-    public async addPicture(data: INewPic) {
+    public addPicture(data: INewPic) {
         this.backendRequest("post", "/add-picture", data)
     }
     public async createNewAlbum(data: INewAlbum) {
@@ -51,7 +51,7 @@ class API {
         isHidden && formData.append("isHidden", isHidden ? '1' : '' );
 
 
-        return await this.backendRequest<ICollection>("post", "/create-album", formData)
+        return await this.backendRequest<IAlbum>("post", "/create-album", formData)
         //add error handling or whatever tf idk
 
     };
@@ -93,13 +93,19 @@ public getSettings() {
     return settings
 }
 
-    public getPicsInAlbum = async (album: string) => {
-        return this.backendRequest<[IAnimePic]>("get", `/album/${album}`)
+    public deletePicturesInAlbum = (album: string, entriesIDs: string[]) => this.backendRequest("delete", "/delete-entry-by-id", {album: album, entriesIDs: entriesIDs});
+
+    public handleHidingPicturesInAlbum = (album: string, entriesIDs: string[], hide: boolean) => this.backendRequest("post", "/handle-hide", {album: album, entriesIDs: entriesIDs, hide: hide});
+
+    public getTagsForSearchAutocomplete = (tagSearch: string) => this.backendRequest<{tags: string[]}>("post", "/autocomplete-tags", {tagSearch: tagSearch} );
+
+    public getPicsInAlbum = (album: string, options: IFilterObj) => {
+        return this.backendRequest<[IPicture]>("post", `/search`, {album: album, options})
     }
 
-    public getTableOfContents = async () => this.backendRequest<[ICollection]>("get", "/albums");
+    public getTableOfContents = () => this.backendRequest<[IAlbum]>("get", "/albums");
 
-    public getModelTypes = async () => this.backendRequest<[string]>("get", "/types-of-models");
+    public getModelTypes = () => this.backendRequest<[string]>("get", "/types-of-models");
 
     public connectToBackendAndDB = async (settings: ISettings) => {
         const oldBackendUrl = this.localStorageSettings.backend_url;
@@ -123,7 +129,7 @@ public getSettings() {
     }
 
 
-    private async backendRequest<T>(method: string, endpoint: string, body?: object): Promise<T> {
+    private backendRequest<T>(method: string, endpoint: string, body?: object): Promise<T> {
         const url = `${this.localStorageSettings.backend_url}${endpoint}`;
         return this.request(method, url, body);
     }
@@ -157,7 +163,4 @@ public getSettings() {
     }
 }
 
-
-const api = new API();
-
-export default api;
+export const api = new API();

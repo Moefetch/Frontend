@@ -82,21 +82,21 @@
 <script setup lang="ts">
 ///////////////////////////////////// start of declarations afaik
 import { onMounted, ref, inject, reactive } from "vue";
-import AppState from '../../../state'
+import { AppState } from '../../../state'
 import BaseDropMenu from "../Misc/BaseDropMenu.vue";
 import Button from "../Misc/Button.vue";
 import Icon from "../Misc/Icon.vue";
 
-import api from "../../services/api";
+import { api } from "../../services/api";
 import type {
   INewAlbum,
   AlbumSchemaType,
-  ICollection,
+  IAlbum,
 } from "../../services/types";
+import { Album } from "../../services/album";
 
 
-const state = (inject('state') as AppState).state;
-const emit = defineEmits(["newAlbumSubmitted"]);
+const state = (inject('state') as AppState).stateVariables;
 
 const newAlbumCoverPreview = ref<string>("/icons/upload.svg");
 const albumCover = ref<HTMLDivElement | undefined>(undefined);
@@ -163,7 +163,7 @@ async function submit() {
   //album type errors brrrrrrrrrrrrrrrrrr
   if (!albumForm.type) noTypeSelected();
 
-  if (state.collectionArray.some((a) => a.name == albumForm.name))
+  if (Object.values(state.albums).some((a) => a.name == albumForm.name))
     albumFormError.albumAlreadyExistError = true;
 
   if (
@@ -182,8 +182,8 @@ async function submit() {
     album_thumbnail_file: newAlbumCover,
     isHidden: albumForm.isHidden,
   });
-  state.collectionArray.push(response)
-  emit("newAlbumSubmitted");
+  state.albums[response.uuid] = new Album(response);
+  state.popup = '';
 }
 
 function nameEmpty() {

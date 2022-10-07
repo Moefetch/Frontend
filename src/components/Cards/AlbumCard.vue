@@ -12,7 +12,7 @@
 </template>
 
 <script  setup lang="ts">
-import api from "../../services/api";
+import { api } from "../../services/api";
 import Button from "../Misc/Button.vue";
 const backendUrl = api.getBackendUrl()
 

@@ -1,7 +1,7 @@
-export interface ICollection {
+export interface IAlbum {
     albumCoverImage: string;
     name: string;
-    uuid: string | undefined;
+    uuid: string;
     type: string;
     estimatedPicCount: number;
 }
@@ -12,6 +12,15 @@ export interface IPostLinks {
     twitter?: string;
     other?: string[];
     
+}
+
+export interface IFilterObj {
+    sortBy?: string;
+    nameIncludes?: string;
+    artists?: string[];
+    tags?: string[];
+    showHidden: boolean;
+    showNSFW: boolean;
 }
 
 
@@ -36,7 +45,7 @@ export interface IPostIds {
     pixiv?: number;
 }
 
-export interface IAnimePic {
+export interface IPicture {
     id: string;
     indexer: number;
     imagesDataArray: IImageDataArray[];
@@ -98,7 +107,7 @@ export interface INewPic {
     isHidden?: boolean;
 }
 
-export type PicTypes = IAnimePic;
+export type PicTypes = IPicture;
 
 export interface ISettings {
     backend_url: string;
@@ -139,7 +148,7 @@ export interface ISize {
     orientation?: number;
     type?: string;
 }
-/* export interface ITableOfContents extends ICollection {
+/* export interface ITableOfContents extends IAlbum {
     id:  string;
     name: string;
     thumbnail_file: string,

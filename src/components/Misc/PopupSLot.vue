@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 
-import AppState from '../../../state'
+import { AppState } from '../../../state'
 import { ref, inject} from "vue";
 import { onClickOutside } from '@vueuse/core'
 
@@ -19,7 +19,7 @@ onClickOutside(target, () => {
     state.popup = '';
 
 })
-const state = (inject('state') as AppState).state;
+const state = (inject('state') as AppState).stateVariables;
 
 </script>
 

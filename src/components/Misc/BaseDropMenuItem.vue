@@ -4,7 +4,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { ICollection } from "../../services/types";
+
 const props = defineProps<{ item: string }>();
 </script>
 <style scoped>

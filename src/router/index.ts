@@ -10,11 +10,19 @@ const routes = [
     },
   },
   {
-    path: "/album/:albumName",
-    name: ":album",
+    path: "/album/:albumUUID",
+    name: "album",
     component: () => import("../views/Album.vue"),
     meta: {
       title: "Moefetch | :album",
+    },
+  },
+  {
+    path: "/search/:albumUUID",
+    name: "search",
+    component: () => import("../views/Album.vue"),
+    meta: {
+      title: "Moefetch | Search",
     },
   },
   {
