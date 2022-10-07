@@ -125,7 +125,7 @@ function selectSorting(selected: string) {
   
 }
 
-let tagLookupTimeout: number;
+let tagLookupTimeout: any;
 
 async function invokeSearchTags(tagSearch: string) {
   clearTimeout(tagLookupTimeout)
