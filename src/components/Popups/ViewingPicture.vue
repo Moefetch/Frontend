@@ -35,16 +35,16 @@ const clickedOutsideOf = {
   second: false,
   third: false,
 }
-onClickOutside(target, () => {
-  clickOutsideFunc('first');
+onClickOutside(target, (e) => {
+  if ((e.target as HTMLElement).id !== 'editButton') clickOutsideFunc('first');
 })
 
-onClickOutside(target2, () => {
-  clickOutsideFunc('second');
+onClickOutside(target2, (e) => {
+  if ((e.target as HTMLElement).id !== 'editButton') clickOutsideFunc('second');
 })
 
-onClickOutside(target3, () => {
-  clickOutsideFunc('third');
+onClickOutside(target3, (e) => {
+  if ((e.target as HTMLElement).id !== 'editButton') clickOutsideFunc('third');
 
 })
 

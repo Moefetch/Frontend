@@ -19,6 +19,6 @@ provide("state", state);
 
 <style lang="postcss">
 body {
-  @apply bg-[rgba(29,32,38,1)];
+  @apply bg-[rgba(29,32,38,1)] overflow-hidden;
 }
 </style>

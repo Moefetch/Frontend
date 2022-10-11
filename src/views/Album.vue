@@ -71,10 +71,7 @@ onKeyStroke('ArrowRight', (e) => {
 
 onMounted(async () => {
   album.value.getPictures(state.stateVariables.advancedSearchOptions);
-  state.stateVariables.advancedSearchOptions = {
-    showHidden: state.stateVariables.showHidden,
-    showNSFW: state.stateVariables.showNSFW,
-  }
+  state.clearAdvancedSearchOptions()
 });
 
 function toggleSelection(picture: Picture) {

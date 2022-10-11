@@ -85,13 +85,15 @@
                 <div class="h-[24px] right-0 flex flex-row items-center">
                     <div class="checkbox_option" @click="toggleASettingsFormVariable('show_hidden')">   
                         <Icon :icon="settingsForm.show_hidden? 'checked_checkbox' : 'unchecked_checkbox'" />
-                        <h2>Show hidden posts</h2>
+                        <h2>Show hidden posts and albums</h2>
                     </div>
                 </div>
             </div>
-
+            <router-link to="/help" class="absolute bottom-8 left-8 w-[fit-content] rounded-[8px]">
+                <Button type="button" text="Help" color="#525252" class="w-[fit-content] rounded-[8px]"  @click="state.popup = ''"/>
+            </router-link>
             
-            <Button type="button" text="Use Defaults" color="#a41414" class="absolute bottom-8 left-8 w-[fit-content] rounded-[8px]" @click="useDefaults()"/>
+            <Button type="button" text="Use Defaults" color="#a41414" class="absolute bottom-8 right-[25%] w-[fit-content] rounded-[8px]" @click="useDefaults()"/>
 
             <Button type="button" text="Confirm" color="#4d6d8d" class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]" @click="submit()"/>
         </form>

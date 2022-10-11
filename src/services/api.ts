@@ -38,7 +38,7 @@ class API {
     }
     
     public addPicture(data: INewPic) {
-        this.backendRequest("post", "/add-picture", data)
+        return this.backendRequest<[IPicture]>("post", "/add-picture", data)
     }
     public async createNewAlbum(data: INewAlbum) {
         const { name, album_thumbnail_file, type, isHidden } = data;
@@ -95,13 +95,17 @@ public getSettings() {
 
     public deletePicturesInAlbum = (album: string, entriesIDs: string[]) => this.backendRequest("delete", "/delete-entry-by-id", {album: album, entriesIDs: entriesIDs});
 
-    public handleHidingPicturesInAlbum = (album: string, entriesIDs: string[], hide: boolean) => this.backendRequest("post", "/handle-hide", {album: album, entriesIDs: entriesIDs, hide: hide});
+    public handleHidingPicturesInAlbum = (album: string, entriesIDs: string[], hide: boolean) => this.backendRequest("post", "/handle-hide-pictures", {album: album, entriesIDs: entriesIDs, hide: hide});
 
     public getTagsForSearchAutocomplete = (tagSearch: string, type: AlbumSchemaType) => this.backendRequest<{tags: string[]}>("post", "/autocomplete-tags", {tagSearch: tagSearch, type: type} );
 
     public getPicsInAlbum = (album: string, options: IFilterObj) => {
         return this.backendRequest<[IPicture]>("post", `/search`, {album: album, options})
     }
+
+    public deleteAlbumsByUUIDS = (albumUUIDs: string[]) => this.backendRequest('post', "/delete-albums-by-uuids", {albumUUIDs})
+
+    public handleHidingAlbumsByUUIDS = (albumUUIDs: string[], hide: boolean) => this.backendRequest('post', "/handle-hiding-albums", {albumUUIDs, hide})
 
     public getTableOfContents = () => this.backendRequest<[IAlbum]>("get", "/albums");
 

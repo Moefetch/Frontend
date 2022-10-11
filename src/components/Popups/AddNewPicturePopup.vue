@@ -132,9 +132,9 @@ const picForm = reactive<INewPic>({
   album: "",
   useSauceNao: (settingsForm.search_diff_sites),
 });
-
+let albumUUID: string | undefined = undefined;
 //make it autoselect album when you're in an album page
-if (route.name == ":album") {
+if (route.name == "album") {
   const albumObj = albumCollection.find(
     (a) => a.uuid == route.params.albumUUID
   );
@@ -143,7 +143,8 @@ if (route.name == ":album") {
     picForm.album = albumObj.name;
 
     defaultSelectedAlbumType.value = albumObj.type;
-    picForm.type = albumObj.type as INewPic["type"] ;
+    picForm.type = albumObj.type as INewPic["type"];
+    albumUUID = albumObj.uuid;
   }
 }
 
@@ -232,14 +233,17 @@ async function submit() {
     const tablesContentRes = await api.getTableOfContents();
     localStorage.setItem("albums", JSON.stringify(tablesContentRes));
   }
+
   //the actual submit function
-  await api.addPicture({
+  api.addPicture({
     url: picForm.url,
     type: picForm.type,
     album: picForm.album,
     useSauceNao: picForm.useSauceNao,
     isHidden: false
-  });
+  }).then(result => {
+    if (albumUUID) state.stateVariables.albums[albumUUID].addPictures(result)
+  })
   state.stateVariables.popup = ''; //disables the popup aka exits
   
 }

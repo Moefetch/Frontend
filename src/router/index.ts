@@ -24,6 +24,13 @@ const routes = [
     meta: {
       title: "Moefetch | Search",
     },
+  },{
+    path: "/help",
+    name: "help",
+    component: () => import("../views/Help.vue"),
+    meta: {
+      title: "Moefetch | Help",
+    },
   },
   {
     path: "/album/undefined",

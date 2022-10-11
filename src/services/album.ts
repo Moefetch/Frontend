@@ -1,9 +1,11 @@
 import { api } from "./api";
 import { Picture } from "./picture";
-import { IAlbum } from "./types";
+import { IAlbum, IPicture } from "./types";
+import { SelectableItem } from "./selectableItem";
+
 import { state } from '../../state'
 
-export class Album implements IAlbum {
+export class Album extends SelectableItem implements IAlbum {
   public albumCoverImage: string;
   public name: string;
   public uuid: string;
@@ -13,6 +15,7 @@ export class Album implements IAlbum {
   public pictures: Picture[] = []
   
   public constructor(properties: IAlbum) {
+      super();
       this.albumCoverImage = properties.albumCoverImage;            
       this.name = properties.name;
       this.uuid = properties.uuid;
@@ -45,7 +48,15 @@ export class Album implements IAlbum {
     
     state.stateVariables.isEditing = false;
   }
-
+/**
+ * addPictures
+ */
+public addPictures(pictures: IPicture[]) {
+  pictures.forEach(pic => {
+    const pictureInstance = new Picture(pic)
+    this.pictures.push(pictureInstance);
+  })
+}
   /**
   * deleteSelectedPics
   */

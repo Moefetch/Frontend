@@ -1,25 +1,29 @@
 <template>
   <div class="page-container flex">
-    <div class="albums_container grid m-auto gap">
-      <AlbumAddCard @click="state.popup = 'CreateNewAlbumPopup'" />
+    <div class="albums_container m-auto gap-16">
+      <AlbumAddCard @click="state.stateVariables.popup = 'CreateNewAlbumPopup'" />
       <AlbumCard
-        v-for="item in state.albums"
-        :name="item.name"
-        :thumbnail="item.albumCoverImage"
-        :estimatedPicCount="item.estimatedPicCount"
-        :router="item.uuid"
+        v-for="item in state.stateVariables.albums"
+        :album="item"
       />
-      <PopupSlot v-if="state.popup == 'CreateNewAlbumPopup'">
+      
+      <PopupSlot v-if="state.stateVariables.popup == 'CreateNewAlbumPopup'">
         <CreateNewAlbumPopup/>
       </PopupSlot>
+      
+    <EditControls 
+    :deleteSelection="() => state.deleteSelectedAlbums()" 
+    :hideSelection="() => state.handleHidingAlbumsByUUIDS(true)" 
+    :unhideSelection="() => state.handleHidingAlbumsByUUIDS(false)" 
+    v-if="state.stateVariables.isEditing" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 
-import type { IAlbum } from "../services/types";
 import PopupSlot from "../components/Misc/PopupSlot.vue";
+import EditControls from "../components/Misc/EditControls.vue";
 
 import { ref, inject} from "vue";
 
@@ -30,13 +34,13 @@ import AlbumCard from "../components/Cards/AlbumCard.vue";
 import AlbumAddCard from "../components/Cards/AlbumAddCard.vue";
 import CreateNewAlbumPopup from "../components/Popups/CreateNewAlbumPopup.vue";
 
-const state = (inject('state') as AppState).stateVariables;
+const state = (inject('state') as AppState)
 
 </script>
 
 <style lang="postcss">
 .albums_container {
-  grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+  @apply flex flex-row flex-wrap;
   row-gap: 32px;
   padding: 2rem;
   height: 100%;

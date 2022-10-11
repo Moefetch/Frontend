@@ -15,8 +15,8 @@ import { onClickOutside } from '@vueuse/core'
 
 const target = ref(null)
 
-onClickOutside(target, () => {
-    state.popup = '';
+onClickOutside(target, (e) => {
+  if ((e.target as HTMLElement).id !== 'editButton') state.popup = '';
 
 })
 const state = (inject('state') as AppState).stateVariables;

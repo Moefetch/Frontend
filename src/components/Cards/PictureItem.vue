@@ -1,21 +1,18 @@
 <template>
-  <div class="cursor-pointer h-[fit-content]" ref="pictureRef">
+  <div class="cursor-pointer h-[fit-content]">
     <div class="pictureCard">
       <div class="overflow-hidden rounded-[0.25rem]">
         <div class="muliImageNum" v-if="vIfVar > 1">
           <Icon icon="multi_image"/>
           <h2>{{vIfVar}}</h2>
         </div>
-        <div class="selectedTopLeft" :style="(vIfVar > 1) ? 'top: -26px;' : 'top: 0px'"  v-if="state.isEditing">
-          <Icon :icon="selected ? 'checked_checkbox' : 'unchecked_checkbox'" class="w-[24px] h-[24px]"/>
+        <SelectSlot :selected="selected" :checkboxStyle="(vIfVar > 1) ? 'top: -26px;' : 'top: 0px'" :slotStyle="`bottom: ${((vIfVar > 1) ? 26 : 0) + (state.isEditing ? 28 : 0)}px; `">
+          <div :class="'w-[fit-content] h-[fit-content] overflow-hidden relative rounded-[0.2rem] '">
+            <img :src="backendUrl + pictureURL" 
+            :class="'pictureCard overflow-hidden ' + `${doBlurBool  ? 'blurPicture' : ''}`" 
+            :draggable="false"/>
         </div>
-        <div :class="'w-[fit-content] h-[fit-content] overflow-hidden relative rounded-[0.2rem] ' + (selected ? ' border-[#254EE0] rounded-[0.5rem] border-width-[2px]': '') "
-        :style="`bottom: ${((vIfVar > 1) ? 26 : 0) + (state.isEditing ? 28 : 0)}px; `">
-          <img :src="backendUrl + pictureURL" 
-          :class="'pictureCard overflow-hidden ' + `${doBlurBool  ? 'blurPicture' : ''}`" 
-          
-          :draggable="false"/>
-        </div>
+      </SelectSlot>
       </div>
     </div>
   </div>
@@ -23,14 +20,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject } from "vue";
+import { inject } from "vue";
 import { api } from "../../services/api";
-import { IPicture } from "../../services/types";
 import Icon from "../Misc/Icon.vue";
+import SelectSlot from "../Misc/SelectSlot.vue";
 import { AppState } from '../../../state'
 import { Picture } from "../../services/picture";
 const state = (inject('state') as AppState).stateVariables;
-const pictureRef = ref<HTMLElement>();
+
 const props = defineProps<{
   picture: Picture;
   selected?: boolean

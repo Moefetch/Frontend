@@ -1,7 +1,6 @@
 <template>
   <div
     class="search"
-    :class="{ focused: searchString.length != 0 && !searchPaused }"
   >
     <div class="bar">
       <input
@@ -10,7 +9,7 @@
         :class="{ active: searchString.length != 0 }"
         type="text"
         placeholder="Search "
-        @keydown="typingTimeOut()"
+        @keydown="state.stateVariables.advancedSearch = true"
       />
       <Icon :icon="searchString.length != 0 ? 'x' : 'search'" />
     </div>
@@ -18,16 +17,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useDebounceFn } from "@vueuse/core";
+import { inject, ref,} from "vue";
+import { AppState } from "../../../state";
 import Icon from "./Icon.vue";
 let searchString = ref("");
+const state = (inject('state') as AppState);
+
+
+/* :class="{ focused: searchString.length != 0 && !searchPaused }" */ // this was in the top div class or whatever
+
+/* 
+import { useDebounceFn } from "@vueuse/core";
 let searchPaused = ref(true);
+
+
 
 const typingTimeOut = useDebounceFn(() => {
   console.log("trigged a search", searchString.value);
   searchPaused.value = false;
-}, 700);
+}, 700); */
 </script>
 
 <style lang="postcss" scoped>
@@ -39,7 +47,7 @@ const typingTimeOut = useDebounceFn(() => {
   }
 }
 .search {
-  @apply z-10 self-start flex w-72 flex-col gap-2 max-h-600px p-2 duration-200 ease;
+  @apply z-1 self-start flex w-72 flex-col gap-2 max-h-600px p-2 duration-200 ease;
 }
 .search:focus-within,
 .search.focused {

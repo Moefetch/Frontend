@@ -1,42 +1,66 @@
 <template>
-    <router-link class="container" :to="`/album/${router}`">
-        <img :src="(backendUrl + thumbnail)"/>
-        <div class="h-[20%] flex items-start w-full relative top-[1vh]">
-            <div class="text_container">
-                <h1>{{name}}</h1>
-                <h2>{{estimatedPicCount}}</h2>
+    <SelectSlot :selected="album.isSelected" 
+    :checkboxStyle="''" 
+    :slotStyle="'bottom: ' + (state.isEditing ? '28px' : '0px')">
+    <div class="w-[32vh] h-[40vh]">
+            <div class="container" @click="clickAlbum()">
+                <img :src="(backendUrl + album.albumCoverImage)"/>
+                <div class="h-[20%] flex items-start w-full relative top-[1vh]">
+                    <div class="text_container">
+                        <h1>{{album.name}}</h1>
+                        <h2>{{album.estimatedPicCount}}</h2>
+                    </div>
+                    <Button icon="info" style="max-height: 6.4vh; aspect-ratio: 1;" @click="" />
+                </div>
             </div>
-            <Button icon="info" style="max-height: 6.4vh; aspect-ratio: 1;" @click="" />
         </div>
-    </router-link>
+    </SelectSlot>
 </template>
 
 <script  setup lang="ts">
 import { api } from "../../services/api";
 import Button from "../Misc/Button.vue";
+import SelectSlot from "../Misc/SelectSlot.vue"
+import { inject, watch } from "vue";
+import { AppState } from '../../../state'
+import router from "../../router";
+import { Album } from "../../services/album";
+import { objectPick } from "@vueuse/shared";
+const state = (inject('state') as AppState).stateVariables;
+
 const backendUrl = api.getBackendUrl()
 
-defineProps<{
-  name: string;
-  thumbnail?: string;
-  router: string | undefined;
-  estimatedPicCount: number;
+const props = defineProps<{
+  album: Album;
 }>();
+
+function clickAlbum() {
+    if (!state.isEditing) router.push({name: 'album', params: {albumUUID: props.album.uuid}})
+    else {
+        props.album.isSelected = !props.album.isSelected 
+    }
+}
+
+
+watch(()=> state.isEditing, ()=> {
+  if (!state.isEditing) {
+    Object.values(state.albums).forEach(album => album.isSelected = false)
+  }
+})
 
 </script>
 
 <style lang="postcss">
 .container {
-@apply bg-[#3D3D3D]  w-[32vh] h-[40vh];
+@apply bg-[#3D3D3D]  w-[32vh] h-[40vh] relative;
 border-radius: 4px;
 display: flex;
 flex-direction: column;
 align-items: center;
-margin: auto;
-border: 3px solid #254EE0;
+
 }
 .container img {
-    @apply w-full h-[80%];
+    @apply w-[fit-content] h-[80%];
     object-fit: cover;
     border-radius: 4px 4px 0px 0px;
     aspect-ratio: 1;

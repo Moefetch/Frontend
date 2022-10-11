@@ -148,6 +148,18 @@ export interface ISize {
     orientation?: number;
     type?: string;
 }
+
+export interface IHelpElement{
+    image: boolean;
+    content: string;
+  }
+export interface IHelpContent{
+    [index: string]: {
+        clicked: boolean,
+        content: IHelpElement[],
+    }
+}
+
 /* export interface ITableOfContents extends IAlbum {
     id:  string;
     name: string;

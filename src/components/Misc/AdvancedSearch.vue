@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-2">
-    <div class="flex flex-row items-center h-[7vh] pl-4 gap-4">
+    <div class="animateSearchIn flex flex-row items-center h-[7vh] pl-4 gap-4">
 
       <FieldErrorSlot :showRedBorderOnlyBool="formErrors.noAlbumSelectedError" >
         <BaseDropMenu :defaultSelected="defaultSelected == 'Home' ? 'Select album' : selectAlbum(defaultSelected)"
@@ -42,7 +42,7 @@
         <h2>show NSFW</h2>
       </div>
   
-      <Button text="confirm" color="#4d6d8d" class="rounded-[8px]" @click="submit()"/>
+      <Button text="search" color="#4d6d8d" class="rounded-[8px]" @click="submit()"/>
         
     </div>
     <div class="lex flex-row items-center h-[7vh] pl-4 gap-4">
@@ -161,6 +161,15 @@ function submit() {
 
 <style scoped lang="postcss">
 
+@keyframes dropDownAnimation {
+  from {bottom: 50px;}
+  to {bottom: 0px;}
+}
+.animateSearchIn{
+  position: relative;
+  animation-name: dropDownAnimation;
+  animation-duration: 0.5s;
+}
 .advancedSearchInput[type="text"] {
     @apply outline-none w-[16rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
     @apply bg-[#111112];

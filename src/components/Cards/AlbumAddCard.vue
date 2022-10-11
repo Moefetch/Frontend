@@ -19,7 +19,6 @@ import Icon from "../Misc/Icon.vue";
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-  margin: auto;
 }
 .container img {
   @apply h-[12.4vh] w-[12.4vh];

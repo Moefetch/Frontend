@@ -2,6 +2,7 @@ import {Album} from './src/services/album';
 import {api} from './src/services/api';
 import { reactive, ref } from "vue";
 import { IFilterObj } from './src/services/types';
+import { objectPick } from '@vueuse/core';
 
 export class AppState {
     public stateVariables = reactive({
@@ -22,6 +23,16 @@ export class AppState {
     public deleteSelectedEntries() {
         
     }
+
+   /**
+    * clearAdvancedSearchOptions
+    */
+   public clearAdvancedSearchOptions() {
+    this.stateVariables.advancedSearchOptions = {
+        showHidden: this.stateVariables.showHidden,
+        showNSFW: this.stateVariables.showNSFW,
+    }
+   }
     
     public execute(functionToExecute: Function, idsArray: string[]) {
         this.stateVariables.selectedEntriesIndexes.forEach(index => {
@@ -48,6 +59,30 @@ export class AppState {
             this.stateVariables.showNSFW = settings.show_nsfw;
         }
     }
+
+    /**
+     * deleteSelectedAlbums
+     */
+    public deleteSelectedAlbums() {
+        const ids = this.getSelectedAlbums().map(album => album.uuid)
+        api.deleteAlbumsByUUIDS(ids);
+        state.stateVariables.isEditing = false;
+    }
+
+   /**
+    * handleHidingAlbumsByUUIDS
+    */
+   public handleHidingAlbumsByUUIDS(hide: boolean) {
+    const ids = this.getSelectedAlbums().map(album => album.uuid)
+    api.handleHidingAlbumsByUUIDS(ids, hide);
+    state.stateVariables.isEditing = false;
+   }
+   /**
+    * getSelectedAlbums
+    */
+   public getSelectedAlbums() {
+    return Object.values(this.stateVariables.albums).filter(album => album.isSelected)
+   }
 
     public constructor() {
         this.setResTable()

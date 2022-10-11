@@ -1,28 +1,28 @@
 <template>
   <div class="flex flex-col gap-2">
-    <div class="flex flex-row bg-dark-400 items-center">
+    <div class="flex flex-row bg-dark-400 items-center z-2">
       <router-link to="/">
-        <Button icon="home" />
+        <Button icon="home" @click="state.clearAdvancedSearchOptions()"/>
       </router-link>
-      <CollectionDropMenu v-if="state.albums" :albums="[defaultAlbumCollection, ...Object.values(state.albums)]"  :currentAlbum="getCurrentItemFromUUID(route.params.albumUUID)" />
+      <CollectionDropMenu v-if="state.stateVariables.albums" :albums="[defaultAlbumCollection, ...Object.values(state.stateVariables.albums)]"  :currentAlbum="getCurrentItemFromUUID(route.params.albumUUID)" />
       <div class="m-auto flex-row flex items-center justify-center">
         <SearchBar class="h-[32]"/>
-        <Button icon="filter" @click="state.advancedSearch = (!state.advancedSearch)" />
+        <Button icon="filter" @click="state.stateVariables.advancedSearch = (!state.stateVariables.advancedSearch)" />
       </div> 
-      <Button icon="plus" @click="state.popup = 'AddNewPicturePopup'" />
-      <Button :icon="`${state.isEditing? 'cancel_editing' : 'edit' }`" :class="`${state.isEditing? 'bg-[#B6222D] rounded-8px' : ''}`" @click="state.isEditing = (!state.isEditing)" />
-      <Button icon="menu" @click="state.popup = 'SetupPopup'" /> 
+      <Button icon="plus" @click="state.stateVariables.popup = 'AddNewPicturePopup'" />
+      <Button :icon="`${state.stateVariables.isEditing? 'cancel_editing' : 'edit' }`" :class="`${state.stateVariables.isEditing? 'bg-[#B6222D] rounded-8px' : ''}`" @click="state.stateVariables.isEditing = (!state.stateVariables.isEditing)" buttonID="editButton"/>
+      <Button icon="menu" @click="state.stateVariables.popup = 'SetupPopup'" /> 
       
-      <PopupSlot v-if="state.popup == 'AddNewPicturePopup'">
+      <PopupSlot v-if="state.stateVariables.popup == 'AddNewPicturePopup'">
         <AddNewPicturePopup/>
       </PopupSlot>
       
-      <PopupSlot v-if="state.popup == 'SetupPopup'">
+      <PopupSlot v-if="state.stateVariables.popup == 'SetupPopup'">
         <SetupPopup/>
       </PopupSlot>
     </div>
-    <div v-if="!!state.advancedSearch">
-      <AdvancedSearch :albums="mapAlbumsToNamesArray(Object.values(state.albums))" :defaultSelected="getCurrentItemFromUUID(route.params.albumUUID).name" />
+    <div v-if="!!state.stateVariables.advancedSearch">
+      <AdvancedSearch :albums="mapAlbumsToNamesArray(Object.values(state.stateVariables.albums))" :defaultSelected="getCurrentItemFromUUID(route.params.albumUUID).name" />
     </div>
   </div>
 </template>
@@ -42,7 +42,7 @@ import {AppState} from '../../../state'
 import AdvancedSearch from "../Misc/AdvancedSearch.vue";
 import { Album } from "../../services/album";
 
-const state = (inject('state') as AppState).stateVariables;
+const state = (inject('state') as AppState);
 
 
 const defaultAlbumCollection: IAlbum = {
@@ -60,12 +60,12 @@ const defaultAlbumCollection: IAlbum = {
 const route = useRoute();
 
 function togglePopupsOff() {
-  state.popup = ''
+  state.stateVariables.popup = ''
 }
 
 function getCurrentItemFromUUID(parm?: string | string[]) {
     if (parm && parm.length) {
-        return Object.values(state.albums).filter(a => a.uuid == parm)[0]
+        return Object.values(state.stateVariables.albums).filter(a => a.uuid == parm)[0]
     } else return defaultAlbumCollection
 }
 
