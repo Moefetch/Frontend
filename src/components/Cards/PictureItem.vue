@@ -34,7 +34,7 @@ const props = defineProps<{
 }>();
 
 
-const pictureURL = props.picture.imagesDataArray[props.picture.indexer].thumbnail_file;
+const pictureURL = props.picture.thumbnailFile || props.picture.imagesDataArray[props.picture.indexer].thumbnail_file;
 const vIfVar = props.picture.imagesDataArray.length
 const backendUrl = api.getBackendUrl()
 const settings = api.getSettings()

@@ -7,6 +7,7 @@ export class Picture extends SelectableItem implements IPicture {
     public id: string;
     public indexer: number;
     public imagesDataArray: IImageDataArray[];
+    public thumbnailFile: string;
     public alternative_names?: string[] | undefined;
     public album: string;
     public artists?: string[] | undefined;
@@ -22,6 +23,7 @@ export class Picture extends SelectableItem implements IPicture {
         super();
         this.id = parameters.id;
         this.indexer = parameters.indexer;
+        this.thumbnailFile = parameters.thumbnailFile;
         this.imagesDataArray = parameters.imagesDataArray;
         this.alternative_names = parameters.alternative_names;
         this.album = parameters.album;

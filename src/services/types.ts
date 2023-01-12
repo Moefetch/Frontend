@@ -50,6 +50,7 @@ export interface IPicture {
     indexer: number;
     imagesDataArray: IImageDataArray[];
     alternative_names?: string[];
+    thumbnailFile: string;
     album: string;
     //tags_pixiv?: string[];
     //tags_danbooru?: string[];
