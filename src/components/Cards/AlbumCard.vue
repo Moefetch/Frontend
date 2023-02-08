@@ -2,7 +2,7 @@
     <SelectSlot :selected="album.isSelected" 
     :checkboxStyle="''" 
     :slotStyle="'bottom: ' + (state.isEditing ? '28px' : '0px')">
-    <div class="w-[32vh] h-[40vh]">
+    <div class="w-[32vh] h-[40vh] cursor-pointer">
             <div class="container" @click="clickAlbum()">
                 <img :src="(backendUrl + album.albumCoverImage)"/>
                 <div class="h-[20%] flex items-start w-full relative top-[1vh]">

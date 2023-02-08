@@ -2,27 +2,57 @@
   <div class="flex flex-col gap-2">
     <div class="flex flex-row bg-dark-400 items-center z-2">
       <router-link to="/">
-        <Button icon="home" @click="state.clearAdvancedSearchOptions()"/>
+        <Button icon="home" @click="state.clearAdvancedSearchOptions()" />
       </router-link>
-      <CollectionDropMenu v-if="state.stateVariables.albums" :albums="[defaultAlbumCollection, ...Object.values(state.stateVariables.albums)]"  :currentAlbum="getCurrentItemFromUUID(route.params.albumUUID)" />
+      <CollectionDropMenu
+        v-if="state.stateVariables.albums"
+        :albums="[
+          defaultAlbumCollection,
+          ...Object.values(state.stateVariables.albums),
+        ]"
+        :currentAlbum="getCurrentItemFromUUID(route.params.albumUUID)"
+      />
       <div class="m-auto flex-row flex items-center justify-center">
-        <SearchBar class="h-[32]"/>
-        <Button icon="filter" @click="state.stateVariables.advancedSearch = (!state.stateVariables.advancedSearch)" />
-      </div> 
-      <Button icon="plus" @click="state.stateVariables.popup = 'AddNewPicturePopup'" />
-      <Button :icon="`${state.stateVariables.isEditing? 'cancel_editing' : 'edit' }`" :class="`${state.stateVariables.isEditing? 'bg-[#B6222D] rounded-8px' : ''}`" @click="state.stateVariables.isEditing = (!state.stateVariables.isEditing)" buttonID="editButton"/>
-      <Button icon="menu" @click="state.stateVariables.popup = 'SetupPopup'" /> 
-      
+        <SearchBar class="h-[32]" />
+        <Button
+          icon="filter"
+          @click="
+            state.stateVariables.advancedSearch =
+              !state.stateVariables.advancedSearch
+          "
+        />
+      </div>
+      <Button
+        icon="plus"
+        @click="state.stateVariables.popup = 'AddNewPicturePopup'"
+      />
+      <Button
+        :icon="`${state.stateVariables.isEditing ? 'cancel_editing' : 'edit'}`"
+        :class="`${
+          state.stateVariables.isEditing ? 'bg-[#B6222D] rounded-8px' : ''
+        }`"
+        @click="
+          state.stateVariables.isEditing = !state.stateVariables.isEditing
+        "
+        buttonID="editButton"
+      />
+      <Button icon="menu" @click="state.stateVariables.popup = 'SetupPopup'" />
+
       <PopupSlot v-if="state.stateVariables.popup == 'AddNewPicturePopup'">
-        <AddNewPicturePopup/>
+        <AddNewPicturePopup />
       </PopupSlot>
-      
+
       <PopupSlot v-if="state.stateVariables.popup == 'SetupPopup'">
-        <SetupPopup/>
+        <SetupPopup />
       </PopupSlot>
     </div>
     <div v-if="!!state.stateVariables.advancedSearch">
-      <AdvancedSearch :albums="mapAlbumsToNamesArray(Object.values(state.stateVariables.albums))" :defaultSelected="getCurrentItemFromUUID(route.params.albumUUID).name" />
+      <AdvancedSearch
+        :albums="
+          mapAlbumsToNamesArray(Object.values(state.stateVariables.albums))
+        "
+        :defaultSelected="getCurrentItemFromUUID(route.params.albumUUID).name"
+      />
     </div>
   </div>
 </template>
@@ -36,39 +66,45 @@ import type { IAlbum } from "../../services/types";
 import SearchBar from "../Misc/SearchBar.vue";
 import PopupSlot from "../Misc/PopupSlot.vue";
 
-import { ref, inject} from "vue";
+import { ref, inject } from "vue";
 import { useRoute } from "vue-router";
-import {AppState} from '../../../state'
+import { AppState } from "../../../state";
 import AdvancedSearch from "../Misc/AdvancedSearch.vue";
 import { Album } from "../../services/album";
 
-const state = (inject('state') as AppState);
-
+const state = inject("state") as AppState;
 
 const defaultAlbumCollection: IAlbum = {
-    albumCoverImage: "",
-    name: "Home",
-    estimatedPicCount: 0,
-    type: "",
-    uuid: '',
-  };
+  albumCoverImage: "",
+  name: "Home",
+  estimatedPicCount: 0,
+  type: "",
+  uuid: "",
+};
 
-  function mapAlbumsToNamesArray(albums: IAlbum[]) {
-    return [ ...albums.map(album => ({albumName: album.name, albumUUID: album.uuid, type: album.type }))]
-  }
+function mapAlbumsToNamesArray(albums: IAlbum[]) {
+  return [
+    ...albums.map((album) => ({
+      albumName: album.name,
+      albumUUID: album.uuid,
+      type: album.type,
+    })),
+  ];
+}
 
 const route = useRoute();
 
 function togglePopupsOff() {
-  state.stateVariables.popup = ''
+  state.stateVariables.popup = "";
 }
 
 function getCurrentItemFromUUID(parm?: string | string[]) {
-    if (parm && parm.length) {
-        return Object.values(state.stateVariables.albums).filter(a => a.uuid == parm)[0]
-    } else return defaultAlbumCollection
+  if (parm && parm.length) {
+    return Object.values(state.stateVariables.albums).filter(
+      (a) => a.uuid == parm
+    )[0];
+  } else return defaultAlbumCollection;
 }
-
 
 /* 
     const resTable: IAlbum[] = [
@@ -81,6 +117,4 @@ function getCurrentItemFromUUID(parm?: string | string[]) {
     ]
 
  */
-
-
 </script>
