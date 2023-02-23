@@ -13,15 +13,13 @@
         <textarea
           v-model="picForm.url"
           class="inputField"
-          :style="`height: ${(picForm.url.split('\n').length * 11.6) + 20 }px`"
+          :style="`height: ${picForm.url.split('\n').length * 11.6 + 20}px`"
           type="text"
           placeholder="Image URL or post URL"
           @click="picFormError.picNameError = false"
         />
-
       </FieldErrorSlot>
-      
-       
+
       <BaseDropMenu
         :dropdownItemsArray="modelTypesArray"
         @item-selected="typeSelect"
@@ -54,12 +52,54 @@
           max="64"
         />
       </FieldErrorSlot>
-      
-      <div class="checkbox_option w-[16rem]" v-if="settingsForm.saucenao_api_key" @click="toggleUseSaucenao()">   
-        <Icon :icon="picForm.useSauceNao? 'checked_checkbox' : 'unchecked_checkbox'" />
-        <h2>Use Saucenao to get highest Quality</h2>
-      </div>
+      <div v-if="picForm.optionalOverrideParams">
+        <div
+          v-for="(params, key) in picForm.optionalOverrideParams
+            .specialHostnameSpecificParams"
+        >
+          <div v-for="(value, key) in params">
+            <div class="flex flex-col gap-[0.5rem]">
+              <div
+                class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
+              >
+                <div class="h-[24px] right-0 flex flex-row items-center">
+                  <div
+                    class="checkbox_option w-[16rem]"
+                    @click="value.checkBoxValue = !value.checkBoxValue"
+                  >
+                    <Icon
+                      :icon="
+                        value.checkBoxValue
+                          ? 'checked_checkbox'
+                          : 'unchecked_checkbox'
+                      "
+                    />
+                    <h2>{{ value.checkBoxDescription }}</h2>
+                  </div>
+                </div>
+              </div>
 
+              <FieldErrorSlot
+                :errorMessage="value.errorMessage"
+                v-if="value.stringValue"
+              >
+                <input
+                  :class="`${
+                    value.checkBoxValue
+                      ? 'popupSaucenaoKeyInputField'
+                      : 'popupSaucenaoKeyInputFieldDisabled'
+                  }`"
+                  type="text"
+                  v-model="value.stringValue.value"
+                  :placeholder="value.stringValue.stringPlaceholder"
+                  :disabled="!value.checkBoxValue"
+                  @click="value.errorMessage = ''"
+                />
+              </FieldErrorSlot>
+            </div>
+          </div>
+        </div>
+      </div>
       <Button
         text="Submit"
         color="#4d6d8d"
@@ -77,17 +117,17 @@ import BaseDropMenu from "../Misc/BaseDropMenu.vue";
 import Button from "../Misc/Button.vue";
 import Icon from "../Misc/Icon.vue";
 import FieldErrorSlot from "../Misc/FieldErrorSlot.vue";
-import { AppState } from '../../../state';
+import { AppState } from "../../../state";
 
 import { api } from "../../services/api";
 import type {
   INewPic,
   AlbumSchemaType,
   IAlbum,
-  ISettings
+  ISettings,
 } from "../../services/types";
 
-const state = (inject('state') as AppState);
+const state = inject("state") as AppState;
 
 const route = useRoute();
 
@@ -96,10 +136,13 @@ let defaultAlbumCollection: IAlbum = {
   name: "Select Album",
   uuid: "",
   type: "",
-  estimatedPicCount: 0
+  estimatedPicCount: 0,
 };
 
-let albumCollection: IAlbum[] = [defaultAlbumCollection, ...Object.values(state.stateVariables.albums)]
+let albumCollection: IAlbum[] = [
+  defaultAlbumCollection,
+  ...Object.values(state.stateVariables.albums),
+];
 
 let albumsNamesArray = albumCollection.map((a) => a.name);
 
@@ -112,25 +155,16 @@ const modelTypesArray = ref(["Select type"]);
 const defaultSelectedAlbumName = ref("");
 const defaultSelectedAlbumType = ref("");
 
-const localStorageSettings = localStorage.getItem("settings") //to see if exists
+const localStorageSettings = localStorage.getItem("settings"); //to see if exists
 
-let settingsForm = reactive<ISettings>(
-  localStorageSettings ? JSON.parse(localStorageSettings) : 
-  {
-    backend_url: "",
-    database_url: "",
-    search_diff_sites: false,
-    pixiv_download_first_image_only: false,
-    saucenao_api_key: undefined,
-});
-
+let settingsForm = reactive<ISettings>(api.settings);
 
 const picForm = reactive<INewPic>({
   url: "",
   thumbnail_file: "",
   type: undefined,
   album: "",
-  useSauceNao: (settingsForm.search_diff_sites),
+  optionalOverrideParams: undefined,
 });
 let albumUUID: string | undefined = undefined;
 //make it autoselect album when you're in an album page
@@ -144,10 +178,14 @@ if (route.name == "album") {
 
     defaultSelectedAlbumType.value = albumObj.type;
     picForm.type = albumObj.type as INewPic["type"];
+    picForm.optionalOverrideParams = settingsForm.special_params
+      ? (JSON.parse(
+          JSON.stringify(settingsForm.special_params[albumObj.type])
+        ) as typeof settingsForm.special_params[string])
+      : undefined;
     albumUUID = albumObj.uuid;
   }
 }
-
 
 function toggleUseSaucenao() {
   picForm.useSauceNao = !picForm.useSauceNao;
@@ -176,8 +214,13 @@ const OnAlbumCoverChange = (event: any) => {
 }
  */
 function typeSelect(a: AlbumSchemaType) {
-  if ((a as string) == "Select type") picForm.type = undefined;
-  else picForm.type = a;
+  if ((a as string) == "Select type") {
+    picForm.type = undefined;
+    picForm.optionalOverrideParams = undefined;
+  } else picForm.type = a;
+  if (settingsForm.special_params) {
+    picForm.optionalOverrideParams = settingsForm.special_params[a];
+  }
 }
 
 function albumSelect(a: string) {
@@ -212,8 +255,7 @@ async function submit() {
     if ((picForm.album as string)[0].match(/[0-9]/))
       albumNameStartsWithNumOrSpecial();
   }
-  if (picForm.album?.match(/[^A-Za-z0-9_\s]/g))
-    albumNameContainsSpecialChar();
+  if (picForm.album?.match(/[^A-Za-z0-9_\s]/g)) albumNameContainsSpecialChar();
 
   if (
     picFormError.picAlbumError ||
@@ -235,17 +277,18 @@ async function submit() {
   }
 
   //the actual submit function
-  api.addPicture({
-    url: picForm.url,
-    type: picForm.type,
-    album: picForm.album,
-    useSauceNao: picForm.useSauceNao,
-    isHidden: false
-  }).then(result => {
-    if (albumUUID) state.stateVariables.albums[albumUUID].addPictures(result)
-  })
-  state.stateVariables.popup = ''; //disables the popup aka exits
-  
+  api
+    .addPicture({
+      url: picForm.url,
+      type: picForm.type,
+      album: picForm.album,
+      optionalOverrideParams: picForm.optionalOverrideParams,
+      isHidden: false,
+    })
+    .then((result) => {
+      if (albumUUID) state.stateVariables.albums[albumUUID].addPictures(result);
+    });
+  state.stateVariables.popup = ""; //disables the popup aka exits
 }
 
 function urlEmpty() {
@@ -287,7 +330,7 @@ function albumNameContainsSpecialChar() {
 .popup_container {
   @apply absolute top-0 left-0 right-0 bottom-0 m-auto;
   @apply p-10 pb-[10rem] h-[fit-content];
-  @apply border-[3px] border-[#254EE0] gap-[14px] text-white-400;
+  @apply border-[3px] border-[#254EE0] gap-[14px] text-light-400;
   @apply flex-row gap-[4px] align-middle;
 
   z-index: 3;
@@ -300,7 +343,6 @@ function albumNameContainsSpecialChar() {
   background-color: rgba(42, 45, 52, 1);
 
   width: var(--popup_width);
-
 }
 .album_thumbnail_preview {
   @apply h-[12.4vh] w-[12.4vh];
@@ -309,7 +351,7 @@ function albumNameContainsSpecialChar() {
 }
 
 .inputField[type="text"] {
-  @apply outline-none w-[16rem] h-[2rem] box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 placeholder-white-400;
+  @apply outline-none w-[16rem] h-[2rem] box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 placeholder-light-400;
   @apply max-h-[90vh];
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;

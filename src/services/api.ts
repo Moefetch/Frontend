@@ -1,3 +1,4 @@
+import util from "util";
 import type {
   IAlbum,
   IPicture,
@@ -7,29 +8,43 @@ import type {
   ISettingsErrorObject,
   IFilterObj,
   AlbumSchemaType,
+  ILogicSpecialSettingsDictionary,
+  ILogicSpecialParamsDictionary,
 } from "./types";
-
+import { stockSettings, defaultDatabase_url } from "./types";
+import { Settings } from "./settings";
 class API {
+  public settings: Settings;
   constructor() {
     this.setBackendURL();
+
+    this.getSpecialSettings().then((res) => {
+      this.compareSpecialSettingsToDefault(
+        this.localStorageSettings,
+        "special_settings",
+        res
+      );
+      this.getSpecialParamsDictionary().then((res) => {
+        this.compareSpecialSettingsToDefault(
+          this.localStorageSettings,
+          "special_params",
+          res
+        );
+        localStorage.setItem(
+          "settings",
+          JSON.stringify(this.localStorageSettings)
+        );
+      });
+    });
+
+    this.settings = new Settings(this.localStorageSettings);
   }
 
   public backendUrl = "";
 
   public localStorageSettingsJSONString = localStorage.getItem("settings"); //to see if exists
 
-  public localStorageSettings: ISettings = {
-    backend_url: "",
-    use_mongodb: false,
-    database_url: "",
-    search_diff_sites: false,
-    pixiv_download_first_image_only: true,
-    show_hidden: false,
-    show_nsfw: true,
-    blur_nsfw: true,
-    saucenao_api_key: undefined,
-    use_pixiv_cookie: false,
-  };
+  public localStorageSettings: ISettings = this.getSettings();
 
   /**
    * setBackendURL
@@ -93,21 +108,18 @@ class API {
     const localStorageSettingsJSONString = localStorage.getItem("settings");
     if (localStorageSettingsJSONString) {
       settings = JSON.parse(localStorageSettingsJSONString);
-    } else
-      settings = {
+    }
+    return (
+      settings ??
+      ({
         backend_url: "http://127.0.0.1:2234/",
-        use_mongodb: false,
-        show_nsfw: true,
-        use_pixiv_cookie: false,
-        blur_nsfw: true,
-        show_hidden: false,
-        search_diff_sites: false,
-        pixiv_download_first_image_only: true,
-        saucenao_api_key: undefined,
-        pixiv_cookie: undefined,
-      };
+        database_url: defaultDatabase_url,
 
-    return settings;
+        stock_settings: stockSettings,
+        special_settings: undefined,
+        special_params: undefined,
+      } as ISettings)
+    );
   }
 
   public deletePicturesInAlbum = (album: string, entriesIDs: string[]) =>
@@ -143,6 +155,89 @@ class API {
     });
   };
 
+  public compareSpecialSettingsToDefault(
+    initialSettings: ISettings,
+    divisionType: "special_settings" | "special_params",
+    defaultSpecialSettingsOrParams: { [key: string]: any }
+  ) {
+    //the flow is get settings from default and if they dont exuist in settings object add (the else part is adding)
+    let internalSettingVar = JSON.parse(JSON.stringify({ ...initialSettings }));
+    for (const categoryName in defaultSpecialSettingsOrParams) {
+      if (!internalSettingVar[divisionType]) {
+        internalSettingVar[divisionType] = defaultSpecialSettingsOrParams;
+      } else if (
+        Object.prototype.hasOwnProperty.call(
+          defaultSpecialSettingsOrParams,
+          categoryName
+        ) &&
+        Object.prototype.hasOwnProperty.call(
+          internalSettingVar[divisionType],
+          categoryName
+        )
+      ) {
+        const categoryInDefault = defaultSpecialSettingsOrParams[categoryName];
+        for (const hostOrCategorySpecific in categoryInDefault) {
+          if (
+            Object.prototype.hasOwnProperty.call(
+              categoryInDefault,
+              hostOrCategorySpecific
+            ) &&
+            Object.prototype.hasOwnProperty.call(
+              internalSettingVar[divisionType][categoryName],
+              hostOrCategorySpecific
+            )
+          ) {
+            if (
+              (internalSettingVar[divisionType][categoryName] as any)[
+                hostOrCategorySpecific
+              ]
+            ) {
+              for (const setting in categoryInDefault[hostOrCategorySpecific]) {
+                if (
+                  Object.prototype.hasOwnProperty.call(
+                    categoryInDefault[hostOrCategorySpecific],
+                    setting
+                  )
+                ) {
+                  const settingObj =
+                    categoryInDefault[hostOrCategorySpecific][setting];
+                  (internalSettingVar[divisionType][categoryName] as any)[
+                    hostOrCategorySpecific
+                  ][setting] =
+                    (
+                      (internalSettingVar[divisionType][categoryName] as any)[
+                        hostOrCategorySpecific
+                      ] as any
+                    )[setting] ?? settingObj;
+                }
+              }
+            }
+          } else
+            (internalSettingVar[divisionType][categoryName] as any)[
+              hostOrCategorySpecific
+            ] =
+              defaultSpecialSettingsOrParams[categoryName][
+                hostOrCategorySpecific
+              ];
+        }
+      } else
+        internalSettingVar[divisionType][categoryName] =
+          defaultSpecialSettingsOrParams[categoryName];
+    }
+    if (!initialSettings[divisionType]) {
+      initialSettings[divisionType] = internalSettingVar[divisionType];
+    }
+    if (
+      Object.getPrototypeOf(initialSettings[divisionType]) !==
+      Object.getPrototypeOf(internalSettingVar[divisionType])
+    ) {
+      Object.assign(initialSettings, internalSettingVar);
+    }
+    initialSettings.stock_settings = stockSettings;
+    localStorage.setItem("settings", JSON.stringify(initialSettings));
+    return internalSettingVar as typeof initialSettings;
+  }
+
   public deleteAlbumsByUUIDS = (albumUUIDs: string[]) =>
     this.backendRequest("post", "/delete-albums-by-uuids", { albumUUIDs });
 
@@ -154,6 +249,18 @@ class API {
 
   public getModelTypes = () =>
     this.backendRequest<[string]>("get", "/types-of-models");
+
+  public getSpecialSettings = () =>
+    this.backendRequest<ILogicSpecialSettingsDictionary>(
+      "get",
+      "/special-settings"
+    );
+
+  public getSpecialParamsDictionary = () =>
+    this.backendRequest<ILogicSpecialParamsDictionary>(
+      "get",
+      "/special-params-dictionary"
+    );
 
   public connectToBackendAndDB = async (settings: ISettings) => {
     const oldBackendUrl = this.localStorageSettings.backend_url;
@@ -175,13 +282,15 @@ class API {
         "/connection-test",
         settings
       );
+      console.log(req);
+
       return req;
     } catch (error) {
       this.localStorageSettings.backend_url = oldBackendUrl;
       return {
         backendUrlError: "Cannot connect to Backend, URL might be incorrect",
-        databaseUrlError: "",
-        saucenaoApiKeyError: "",
+        hasError: true,
+        responseSettings: settings,
       } as ISettingsErrorObject;
     }
   };

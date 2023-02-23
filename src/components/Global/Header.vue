@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-2">
-    <div class="flex flex-row bg-dark-400 items-center z-2">
+    <div class="flex flex-row bg-dark-400 items-center z-3">
       <router-link to="/">
         <Button icon="home" @click="state.clearAdvancedSearchOptions()" />
       </router-link>
@@ -13,7 +13,7 @@
         :currentAlbum="getCurrentItemFromUUID(route.params.albumUUID)"
       />
       <div class="m-auto flex-row flex items-center justify-center">
-        <SearchBar class="h-[32]" />
+        <SearchBar />
         <Button
           icon="filter"
           @click="
@@ -24,7 +24,8 @@
       </div>
       <Button
         icon="plus"
-        @click="state.stateVariables.popup = 'AddNewPicturePopup'"
+        @click="togglePopup('AddNewPicturePopup')"
+        buttonID="addNewPictureButton"
       />
       <Button
         :icon="`${state.stateVariables.isEditing ? 'cancel_editing' : 'edit'}`"
@@ -36,7 +37,11 @@
         "
         buttonID="editButton"
       />
-      <Button icon="menu" @click="state.stateVariables.popup = 'SetupPopup'" />
+      <Button
+        icon="menu"
+        @click="togglePopup('SetupPopup')"
+        buttonID="menuButton"
+      />
 
       <PopupSlot v-if="state.stateVariables.popup == 'AddNewPicturePopup'">
         <AddNewPicturePopup />
@@ -96,6 +101,12 @@ const route = useRoute();
 
 function togglePopupsOff() {
   state.stateVariables.popup = "";
+}
+
+function togglePopup(popup: string) {
+  if (state.stateVariables.popup == popup) {
+    state.stateVariables.popup = "";
+  } else state.stateVariables.popup = popup;
 }
 
 function getCurrentItemFromUUID(parm?: string | string[]) {

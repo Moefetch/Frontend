@@ -1,206 +1,205 @@
 <template>
   <div class="setup_popup_container">
     <form class="flex flex-col gap-[1rem]" v-if="!formSubmittedToggle">
-      <div class="flex flex-col gap-[0.5rem]">
-        <FieldErrorSlot :errorMessage="settingsFormError.backendUrlError">
-          <input
-            class="popupInputField"
-            type="text"
-            v-model="settingsForm.backend_url"
-            placeholder="Backend   URL / Hostname and port e.g. http://127.0.0.1:2234/"
-            @click="settingsFormError.backendUrlError = ''"
-          />
-        </FieldErrorSlot>
-      </div>
-      <div class="flex flex-col gap-[0.5rem]">
-        <div
-          class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
-        >
-          <div class="h-[24px] right-0 flex flex-row items-center">
-            <div
-              class="checkbox_option"
-              @click="toggleASettingsFormVariable('use_mongodb')"
-            >
-              <Icon
-                :icon="
-                  settingsForm.use_mongodb
-                    ? 'checked_checkbox'
-                    : 'unchecked_checkbox'
+      <div
+        class="flex flex-col gap-[0.5rem] overflow-y-auto overflow-x-hidden h-[70vh] w-[30rem]"
+      >
+        <div class="flex flex-col gap-[0.5rem]">
+          <FieldErrorSlot :errorMessage="settingsFormError.backendUrlError">
+            <input
+              class="popupInputField"
+              type="text"
+              v-model="settingsForm.backend_url"
+              placeholder="Backend   URL / Hostname and port e.g. http://127.0.0.1:2234/"
+              @click="settingsFormError.backendUrlError = ''"
+            />
+          </FieldErrorSlot>
+        </div>
+
+        <div class="flex flex-col gap-[0.5rem]">
+          <div
+            class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
+          >
+            <div class="h-[24px] right-0 flex flex-row items-center">
+              <div
+                class="checkbox_option"
+                @click="
+                  settingsForm.database_url.checkBoxValue =
+                    !settingsForm.database_url.checkBoxValue
                 "
-              />
-              <h2>Use a mongoDB database</h2>
+              >
+                <Icon
+                  :icon="
+                    settingsForm.database_url.checkBoxValue
+                      ? 'checked_checkbox'
+                      : 'unchecked_checkbox'
+                  "
+                />
+                <h2>{{ settingsForm.database_url.checkBoxDescription }}</h2>
+              </div>
+            </div>
+          </div>
+
+          <FieldErrorSlot
+            :errorMessage="settingsForm.database_url.errorMessage"
+            v-if="settingsForm.database_url.stringValue"
+          >
+            <input
+              :class="`${
+                settingsForm.database_url.checkBoxValue
+                  ? 'popupSaucenaoKeyInputField'
+                  : 'popupSaucenaoKeyInputFieldDisabled'
+              }`"
+              type="text"
+              v-model="settingsForm.database_url.stringValue.value"
+              :placeholder="
+                settingsForm.database_url.stringValue.stringPlaceholder
+              "
+              :disabled="!settingsForm.database_url.checkBoxValue"
+              @click="settingsForm.database_url.errorMessage = ''"
+            />
+          </FieldErrorSlot>
+        </div>
+        <HorizontalSeparator :seperatorText="'Special Settings'" />
+        <div
+          v-for="(categorySettings, category) in settingsForm.special_settings"
+        >
+          <div v-for="(value, key) in categorySettings.specialCategorySettings">
+            <div class="flex flex-col gap-[0.5rem]">
+              <div
+                class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
+              >
+                <div class="h-[24px] right-0 flex flex-row items-center">
+                  <div
+                    class="checkbox_option"
+                    @click="value.checkBoxValue = !value.checkBoxValue"
+                  >
+                    <Icon
+                      :icon="
+                        value.checkBoxValue
+                          ? 'checked_checkbox'
+                          : 'unchecked_checkbox'
+                      "
+                    />
+                    <h2>{{ value.checkBoxDescription }}</h2>
+                  </div>
+                </div>
+              </div>
+
+              <FieldErrorSlot
+                :errorMessage="value.errorMessage"
+                v-if="value.stringValue"
+              >
+                <input
+                  :class="`${
+                    value.checkBoxValue
+                      ? 'popupSaucenaoKeyInputField'
+                      : 'popupSaucenaoKeyInputFieldDisabled'
+                  }`"
+                  type="text"
+                  v-model="value.stringValue.value"
+                  :placeholder="value.stringValue.stringPlaceholder"
+                  :disabled="!value.checkBoxValue"
+                  @click="value.errorMessage = ''"
+                />
+              </FieldErrorSlot>
             </div>
           </div>
         </div>
-        <FieldErrorSlot :errorMessage="settingsFormError.databaseUrlError">
-          <input
-            :class="`${
-              settingsForm.use_mongodb
-                ? 'popupSaucenaoKeyInputField'
-                : 'popupSaucenaoKeyInputFieldDisabled'
-            }`"
-            type="text"
-            v-model="settingsForm.database_url"
-            placeholder="Database URL, use the form mongodb://username:password@host:port/moefetch"
-            :disabled="!settingsForm.use_mongodb"
-            @click="settingsFormError.databaseUrlError = ''"
-          />
-        </FieldErrorSlot>
-      </div>
 
-      <div
-        class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
-      >
-        <div class="h-[24px] right-0 flex flex-row items-center">
+        <HorizontalSeparator :seperatorText="'Special Params'" />
+        <div
+          v-for="(categorySettings, category) in settingsForm.special_params"
+        >
           <div
-            class="checkbox_option"
-            @click="
-              toggleASettingsFormVariable('pixiv_download_first_image_only')
-            "
+            v-for="(
+              params, key
+            ) in categorySettings.specialHostnameSpecificParams"
           >
-            <Icon
-              :icon="
-                !settingsForm.pixiv_download_first_image_only
-                  ? 'checked_checkbox'
-                  : 'unchecked_checkbox'
-              "
-            />
-            <h2>Download all images in pixiv pages</h2>
+            <div v-for="(value, key) in params">
+              <div class="flex flex-col gap-[0.5rem]">
+                <div
+                  class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
+                >
+                  <div class="h-[24px] right-0 flex flex-row items-center">
+                    <div
+                      class="checkbox_option"
+                      @click="value.checkBoxValue = !value.checkBoxValue"
+                    >
+                      <Icon
+                        :icon="
+                          value.checkBoxValue
+                            ? 'checked_checkbox'
+                            : 'unchecked_checkbox'
+                        "
+                      />
+                      <h2>{{ value.checkBoxDescription }}</h2>
+                    </div>
+                  </div>
+                </div>
+
+                <FieldErrorSlot
+                  :errorMessage="value.errorMessage"
+                  v-if="value.stringValue"
+                >
+                  <input
+                    :class="`${
+                      value.checkBoxValue
+                        ? 'popupSaucenaoKeyInputField'
+                        : 'popupSaucenaoKeyInputFieldDisabled'
+                    }`"
+                    type="text"
+                    v-model="value.stringValue.value"
+                    :placeholder="value.stringValue.stringPlaceholder"
+                    :disabled="!value.checkBoxValue"
+                    @click="value.errorMessage = ''"
+                  />
+                </FieldErrorSlot>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div
-        class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
-      >
-        <div class="h-[24px] right-0 flex flex-row items-center">
-          <div
-            class="checkbox_option"
-            @click="toggleASettingsFormVariable('use_pixiv_cookie')"
-          >
-            <Icon
-              :icon="
-                !settingsForm.use_pixiv_cookie
-                  ? 'unchecked_checkbox'
-                  : 'checked_checkbox'
-              "
-            />
-            <h2>use a pixiv logged in cookie to access NSFW works</h2>
-          </div>
-        </div>
-      </div>
+        <HorizontalSeparator :seperatorText="'Stock Settings'" />
+        <div v-for="(value, key) in settingsForm.stock_settings">
+          <div class="flex flex-col gap-[0.5rem]">
+            <div
+              class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
+            >
+              <div class="h-[24px] right-0 flex flex-row items-center">
+                <div
+                  class="checkbox_option"
+                  @click="toggleAStockSettingsFormVariable(key)"
+                >
+                  <Icon
+                    :icon="
+                      value.checkBoxValue
+                        ? 'checked_checkbox'
+                        : 'unchecked_checkbox'
+                    "
+                  />
+                  <h2>{{ value.checkBoxDescription }}</h2>
+                </div>
+              </div>
+            </div>
 
-      <div class="flex flex-col gap-[0.5rem]">
-        <FieldErrorSlot>
-          <input
-            :class="`${
-              settingsForm.use_pixiv_cookie
-                ? 'popupSaucenaoKeyInputField'
-                : 'popupSaucenaoKeyInputFieldDisabled'
-            }`"
-            type="text"
-            v-model="settingsForm.pixiv_cookie"
-            placeholder="Pixiv logged in cookie (for the option above)"
-            :disabled="!settingsForm.use_pixiv_cookie"
-          />
-        </FieldErrorSlot>
-      </div>
-
-      <div
-        class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
-      >
-        <div class="h-[24px] right-0 flex flex-row items-center">
-          <div
-            class="checkbox_option"
-            @click="toggleASettingsFormVariable('search_diff_sites')"
-          >
-            <Icon
-              :icon="
-                !settingsForm.search_diff_sites
-                  ? 'unchecked_checkbox'
-                  : 'checked_checkbox'
-              "
-            />
-            <h2>
-              Use SauceNao to search different sites for possibly higher quality
-            </h2>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex flex-col gap-[0.5rem]">
-        <FieldErrorSlot :errorMessage="settingsFormError.saucenaoApiKeyError">
-          <input
-            :class="`${
-              settingsForm.search_diff_sites
-                ? 'popupSaucenaoKeyInputField'
-                : 'popupSaucenaoKeyInputFieldDisabled'
-            }`"
-            type="text"
-            v-model="settingsForm.saucenao_api_key"
-            placeholder="Saucenao API key (for the option above)"
-            :disabled="!settingsForm.search_diff_sites"
-            @click="settingsFormError.saucenaoApiKeyError = ''"
-          />
-        </FieldErrorSlot>
-      </div>
-
-      <div
-        class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
-      >
-        <div class="h-[24px] right-0 flex flex-row items-center">
-          <div
-            class="checkbox_option"
-            @click="toggleASettingsFormVariable('show_nsfw')"
-          >
-            <Icon
-              :icon="
-                settingsForm.show_nsfw
-                  ? 'checked_checkbox'
-                  : 'unchecked_checkbox'
-              "
-            />
-            <h2>Show NSFW tagged posts</h2>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
-      >
-        <div class="h-[24px] right-0 flex flex-row items-center">
-          <div
-            class="checkbox_option"
-            @click="toggleASettingsFormVariable('blur_nsfw')"
-          >
-            <Icon
-              :icon="
-                settingsForm.blur_nsfw
-                  ? 'checked_checkbox'
-                  : 'unchecked_checkbox'
-              "
-            />
-            <h2>Blur NSFW tagged posts</h2>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
-      >
-        <div class="h-[24px] right-0 flex flex-row items-center">
-          <div
-            class="checkbox_option"
-            @click="toggleASettingsFormVariable('show_hidden')"
-          >
-            <Icon
-              :icon="
-                settingsForm.show_hidden
-                  ? 'checked_checkbox'
-                  : 'unchecked_checkbox'
-              "
-            />
-            <h2>Show hidden posts and albums</h2>
+            <FieldErrorSlot
+              :errorMessage="value.errorMessage"
+              v-if="value.stringValue"
+            >
+              <input
+                :class="`${
+                  value.checkBoxValue
+                    ? 'popupSaucenaoKeyInputField'
+                    : 'popupSaucenaoKeyInputFieldDisabled'
+                }`"
+                type="text"
+                v-model="value.stringValue.value"
+                :placeholder="value.stringValue.stringPlaceholder"
+                :disabled="!value.checkBoxValue"
+                @click="value.errorMessage = ''"
+              />
+            </FieldErrorSlot>
           </div>
         </div>
       </div>
@@ -263,9 +262,13 @@ import Icon from "../Misc/Icon.vue";
 import FieldErrorSlot from "../Misc/FieldErrorSlot.vue";
 import { onMounted, ref, inject, reactive } from "vue";
 import Button from "../Misc/Button.vue";
+import HorizontalSeparator from "../Misc/HorizontalSeparator.vue";
 
 import { api } from "../../services/api";
+import { Settings, Setting } from "../../services/settings";
 import type { ISettings, ISettingsErrorObject } from "../../services/types";
+import { stockSettings, defaultDatabase_url } from "../../services/types";
+
 const state = (inject("state") as AppState).stateVariables;
 
 function emitSubmit() {
@@ -273,36 +276,15 @@ function emitSubmit() {
 }
 
 const connectToBackendAndDB = api.connectToBackendAndDB;
-const HOSTS_REGEX =
-  /(?<protocol>mongodb(?:\+srv|)):\/\/(?:(?<username>[^:]*)(?::(?<password>[^@]*))?@)?(?<hosts>(?!:)[^\/?@]+)(?<rest>.*)/;
 
 const formSubmittedToggle = ref(false);
 const connectionSuccess = ref(false);
-const settingsFormError = reactive<ISettingsErrorObject>({
+const settingsFormError = reactive({
   backendUrlError: "",
-  databaseUrlError: "",
-  saucenaoApiKeyError: "",
+  hasError: false,
 });
-const localStorageSettings = localStorage.getItem("settings"); //to see if exists
-const parsedLocalStorageSettings: ISettings | null = localStorageSettings
-  ? JSON.parse(localStorageSettings)
-  : null;
-const settingsForm = reactive<ISettings>(
-  parsedLocalStorageSettings
-    ? { ...parsedLocalStorageSettings }
-    : {
-        backend_url: "",
-        use_mongodb: false,
-        use_pixiv_cookie: false,
-        show_nsfw: true,
-        blur_nsfw: true,
-        show_hidden: false,
-        search_diff_sites: false,
-        pixiv_download_first_image_only: true,
-        saucenao_api_key: undefined,
-        pixiv_cookie: undefined,
-      }
-);
+
+const settingsForm = reactive<Settings>(api.settings); /* 
 type TogglableVariable =
   | "search_diff_sites"
   | "use_mongodb"
@@ -313,68 +295,63 @@ type TogglableVariable =
   | "show_nsfw";
 function toggleASettingsFormVariable(variableNameToToggle: TogglableVariable) {
   settingsForm[variableNameToToggle] = !settingsForm[variableNameToToggle];
+} */
+type TogglableVariable2 = "show_hidden" | "blur_nsfw" | "show_nsfw";
+function toggleAStockSettingsFormVariable(
+  variableNameToToggle: TogglableVariable2
+) {
+  settingsForm.stock_settings[variableNameToToggle].checkBoxValue =
+    !settingsForm.stock_settings[variableNameToToggle].checkBoxValue;
 }
 
-const defaultSettings: ISettings = {
+const defaultSettings = new Settings({
   backend_url: "http://127.0.0.1:2234/",
-  use_mongodb: false,
-  show_nsfw: true,
-  blur_nsfw: true,
-  show_hidden: false,
-  search_diff_sites: false,
-  pixiv_download_first_image_only: true,
-  saucenao_api_key: undefined,
-  use_pixiv_cookie: false,
-};
+  database_url: defaultDatabase_url,
+  stock_settings: stockSettings,
+  special_settings: undefined,
+  special_params: undefined,
+});
+
+function checkValidMongoDb(enabledBool: boolean, stringValue?: string) {
+  if (enabledBool && !stringValue) return "No Database url was provided";
+
+  const HOSTS_REGEX =
+    /(?<protocol>mongodb(?:\+srv|)):\/\/(?:(?<username>[^:]*)(?::(?<password>[^@]*))?@)?(?<hosts>(?!:)[^\/?@]+)(?<rest>.*)/;
+
+  if (enabledBool && stringValue && !HOSTS_REGEX.test(stringValue))
+    return "Database url invalid";
+}
 
 async function submit() {
-  if (
-    parsedLocalStorageSettings &&
-    parsedLocalStorageSettings.backend_url === settingsForm.backend_url &&
-    parsedLocalStorageSettings.database_url === settingsForm.database_url &&
-    parsedLocalStorageSettings.saucenao_api_key ===
-      settingsForm.saucenao_api_key
-  ) {
-    connectToBackendAndDB(settingsForm);
-    localStorage.setItem("settings", JSON.stringify(settingsForm));
-    state.popup = "";
-    return;
-  }
   if (!settingsForm.backend_url)
     settingsFormError.backendUrlError = "No Backend url was provided";
-  if (settingsForm.use_mongodb && !settingsForm.database_url)
-    settingsFormError.databaseUrlError = "No Database url was provided";
-  if (!settingsForm.saucenao_api_key && settingsForm.search_diff_sites)
-    settingsFormError.saucenaoApiKeyError = "No saucenao api key was provided";
 
-  if (
-    settingsForm.use_mongodb &&
-    settingsForm.database_url &&
-    !HOSTS_REGEX.test(settingsForm.database_url)
-  )
-    settingsFormError.databaseUrlError = "Database url invalid";
+  settingsForm.database_url.errorMessage =
+    checkValidMongoDb(
+      settingsForm.database_url.checkBoxValue,
+      settingsForm.database_url.stringValue?.value
+    ) ?? "";
 
   if (
     settingsFormError.backendUrlError ||
-    settingsFormError.databaseUrlError ||
-    settingsFormError.saucenaoApiKeyError
+    settingsForm.database_url.errorMessage
   )
     return;
   else {
     formSubmittedToggle.value = true;
 
     const connectionResponse = await connectToBackendAndDB(settingsForm);
-    if (
-      connectionResponse.databaseUrlError ||
-      connectionResponse.saucenaoApiKeyError ||
-      connectionResponse.backendUrlError
-    ) {
+    if (connectionResponse.hasError) {
       formSubmittedToggle.value = false;
-
-      settingsFormError.backendUrlError = connectionResponse.backendUrlError;
-      settingsFormError.databaseUrlError = connectionResponse.databaseUrlError;
-      settingsFormError.saucenaoApiKeyError =
-        connectionResponse.saucenaoApiKeyError;
+      settingsForm.database_url = new Setting(
+        connectionResponse.responseSettings.database_url
+      );
+      settingsForm.stock_settings =
+        connectionResponse.responseSettings.stock_settings;
+      settingsForm.special_params =
+        connectionResponse.responseSettings.special_params;
+      settingsForm.special_settings =
+        connectionResponse.responseSettings.special_settings;
     } else {
       localStorage.setItem("settings", JSON.stringify(settingsForm));
       connectionSuccess.value = true;
@@ -386,11 +363,9 @@ async function useDefaults() {
 
   settingsForm.backend_url = defaultSettings.backend_url;
   settingsForm.database_url = defaultSettings.database_url;
-  settingsForm.pixiv_download_first_image_only =
-    defaultSettings.pixiv_download_first_image_only;
-  settingsForm.saucenao_api_key = defaultSettings.saucenao_api_key;
-  settingsForm.search_diff_sites = defaultSettings.search_diff_sites;
-
+  settingsForm.stock_settings = defaultSettings.stock_settings;
+  settingsForm.special_params = defaultSettings.special_params;
+  settingsForm.special_settings = defaultSettings.special_settings;
   await submit();
 }
 </script>
@@ -402,7 +377,7 @@ async function useDefaults() {
 }
 
 .setup_popup_container {
-  @apply absolute p-10 pb-24 text-gray-100;
+  @apply absolute p-10 pb-24 text-gray-100 top-3 max-h-[90vh] min-w-[30rem];
   @apply border-[3px] border-[#254EE0] gap-[14px];
   @apply flex-row gap-[4px] align-middle m-auto;
 
@@ -415,7 +390,7 @@ async function useDefaults() {
   border-radius: 4px;
   background-color: rgba(42, 45, 52, 1);
 
-  width: var(--setup_popup_width);
+  width: fit-content;
   height: fit-content;
 
   /* 
@@ -424,7 +399,7 @@ right: calc((100vw - var(--setup_popup_width) )/2);
 top: calc((100vh - var(--setup_popup_height) + 7vh)/2) */
 }
 .popupInputField[type="text"] {
-  @apply outline-none h-[2rem] w-[37.5rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
+  @apply outline-none h-[2rem] w-[58vw] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;
   color: rgb(202, 202, 202);
@@ -437,13 +412,13 @@ top: calc((100vh - var(--setup_popup_height) + 7vh)/2) */
 }
 
 .popupSaucenaoKeyInputField[type="text"] {
-  @apply outline-none h-[2rem] w-[37.5rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
+  @apply outline-none h-[2rem] w-[58vw] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;
   color: rgb(202, 202, 202);
 }
 .popupSaucenaoKeyInputFieldDisabled[type="text"] {
-  @apply outline-none h-[2rem] w-[37.5rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
+  @apply outline-none h-[2rem] w-[58vw] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;
   color: rgb(129, 129, 129);

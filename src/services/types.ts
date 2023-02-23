@@ -97,6 +97,7 @@ export interface INewPic {
   old_file?: string;
   thumbnail_file?: string;
   url: string;
+  optionalOverrideParams?: ILogicCategorySpecialParamsDictionary;
   useSauceNao?: boolean;
   has_results?: boolean;
   type?: AlbumSchemaType;
@@ -106,18 +107,107 @@ export interface INewPic {
 
 export type PicTypes = IPicture;
 
+export type StockSerrings = "show_nsfw" | "blur_nsfw" | "show_hidden";
+type IStockSettings = {
+  [setting in StockSerrings]: IParam;
+};
+
 export interface ISettings {
   backend_url: string;
-  use_mongodb: boolean;
-  use_pixiv_cookie: boolean;
-  database_url?: string;
-  search_diff_sites: boolean;
-  pixiv_download_first_image_only: boolean;
-  pixiv_cookie?: string;
-  saucenao_api_key?: string;
-  show_nsfw: boolean;
-  blur_nsfw: boolean;
-  show_hidden: boolean;
+  database_url: IParam;
+
+  stock_settings: IStockSettings;
+  special_settings?: ILogicSpecialSettingsDictionary;
+  special_params?: ILogicSpecialParamsDictionary;
+}
+
+export const defaultDatabase_url = {
+  containsString: true,
+  checkBoxValue: false,
+  checkBoxDescription: "Use a mongoDB database",
+  stringValue: {
+    stringPlaceholder:
+      "Database URL, use the form mongodb://username:password@host:port/moefetch",
+    value: "",
+  },
+  checkValid: (enabledBool: boolean, stringValue?: string) => {
+    if (enabledBool && !stringValue) return "No Database url was provided";
+
+    const HOSTS_REGEX =
+      /(?<protocol>mongodb(?:\+srv|)):\/\/(?:(?<username>[^:]*)(?::(?<password>[^@]*))?@)?(?<hosts>(?!:)[^\/?@]+)(?<rest>.*)/;
+
+    if (enabledBool && stringValue && !HOSTS_REGEX.test(stringValue))
+      return "Database url invalid";
+  },
+} as IParam;
+if (defaultDatabase_url.checkValid) {
+  defaultDatabase_url.checkValid(true, "sex");
+}
+
+export const stockSettings: IStockSettings = {
+  /* database_url: {
+    containsString: true,
+    checkBoxValue: false,
+    checkBoxDescription: "Use a mongoDB database",
+    stringValue: {
+      stringPlaceholder:
+        "Database URL, use the form mongodb://username:password@host:port/moefetch",
+      value: "",
+    },
+  }, */
+  blur_nsfw: {
+    containsString: false,
+    checkBoxValue: false,
+    checkBoxDescription: "Blur NSFW tagged posts",
+  },
+  show_hidden: {
+    containsString: false,
+    checkBoxValue: false,
+    checkBoxDescription: "Show hidden posts and albums",
+  },
+  show_nsfw: {
+    containsString: false,
+    checkBoxValue: false,
+    checkBoxDescription: "how NSFW tagged posts",
+  },
+};
+export interface ILogicSpecialSettingsDictionary {
+  [category: string]: ILogicCategorySpecialSettingsDictionary;
+}
+
+export interface ILogicCategorySpecialSettingsDictionary {
+  specialCategorySettings?: IModelSpecialParam;
+  specialHostnameSpecificSettings?: {
+    [hostname: string]: IModelSpecialParam;
+  };
+}
+
+export interface ILogicSpecialParamsDictionary {
+  [logicCategory: string]: ILogicCategorySpecialParamsDictionary;
+}
+
+export interface ILogicCategorySpecialParamsDictionary {
+  specialCategoryParams?: IModelSpecialParam;
+  specialHostnameSpecificParams?: {
+    [hostname: string]: IModelSpecialParam;
+  };
+}
+export interface IParam {
+  containsString: boolean;
+  checkBoxValue: boolean;
+  checkBoxDescription: string;
+  stringValue?: {
+    stringPlaceholder: string;
+    value: string;
+  };
+  errorMessage?: string;
+  checkValid?: (
+    enabledBool: boolean,
+    stringValue?: string
+  ) => string | undefined;
+}
+export interface IModelSpecialParam {
+  [name: string]: IParam;
 }
 
 export interface IErrorObject {
@@ -128,12 +218,18 @@ export interface IErrorObject {
   saucenaoAPIErrors: string;
 }
 
+export interface IResponseSettings {
+  database_url: IParam;
+  stock_settings: ISettings["stock_settings"];
+  special_settings: ISettings["special_settings"];
+  special_params: ISettings["special_params"];
+}
+
 export interface ISettingsErrorObject {
-  backendUrlError: string;
+  backendUrlError?: string;
 
-  databaseUrlError: string;
-
-  saucenaoApiKeyError: string;
+  hasError: boolean;
+  responseSettings: IResponseSettings;
 }
 
 export interface ISizeCalculationResult extends ISize {
