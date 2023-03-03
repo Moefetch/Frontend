@@ -18,6 +18,7 @@ export class Settings implements ISettings {
     show_nsfw: IParam;
     blur_nsfw: IParam;
     show_hidden: IParam;
+    thumbnail_list_to_left: IParam;
   };
   public special_params?: ILogicSpecialParamsDictionary;
   public special_settings?: ILogicSpecialSettingsDictionary;

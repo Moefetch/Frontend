@@ -52,6 +52,50 @@
           max="64"
         />
       </FieldErrorSlot>
+      <div v-if="picForm.stockOptionalOverrides">
+        <div v-for="(value, key) in picForm.stockOptionalOverrides">
+          <div class="flex flex-col gap-[0.5rem]">
+            <div
+              class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
+            >
+              <div class="h-[24px] right-0 flex flex-row items-center">
+                <div
+                  class="checkbox_option w-[16rem]"
+                  @click="value.checkBoxValue = !value.checkBoxValue"
+                >
+                  <Icon
+                    :icon="
+                      value.checkBoxValue
+                        ? 'checked_checkbox'
+                        : 'unchecked_checkbox'
+                    "
+                  />
+                  <h2>{{ value.checkBoxDescription }}</h2>
+                </div>
+              </div>
+            </div>
+
+            <FieldErrorSlot
+              :errorMessage="value.errorMessage"
+              v-if="value.stringValue"
+            >
+              <input
+                :class="`${
+                  value.checkBoxValue
+                    ? 'addNewImageInputField'
+                    : 'addNewImageInputFieldDisabled'
+                }`"
+                type="text"
+                v-model="value.stringValue.value"
+                :placeholder="value.stringValue.stringPlaceholder"
+                :disabled="!value.checkBoxValue"
+                @click="value.errorMessage = ''"
+              />
+            </FieldErrorSlot>
+          </div>
+        </div>
+      </div>
+
       <div v-if="picForm.optionalOverrideParams">
         <div
           v-for="(params, key) in picForm.optionalOverrideParams
@@ -86,8 +130,8 @@
                 <input
                   :class="`${
                     value.checkBoxValue
-                      ? 'popupSaucenaoKeyInputField'
-                      : 'popupSaucenaoKeyInputFieldDisabled'
+                      ? 'addNewImageInputField'
+                      : 'addNewImageInputFieldDisabled'
                   }`"
                   type="text"
                   v-model="value.stringValue.value"
@@ -120,11 +164,12 @@ import FieldErrorSlot from "../Misc/FieldErrorSlot.vue";
 import { AppState } from "../../../state";
 
 import { api } from "../../services/api";
-import type {
+import {
   INewPic,
   AlbumSchemaType,
   IAlbum,
   ISettings,
+  defaultPicFormStockOverrides,
 } from "../../services/types";
 
 const state = inject("state") as AppState;
@@ -155,8 +200,6 @@ const modelTypesArray = ref(["Select type"]);
 const defaultSelectedAlbumName = ref("");
 const defaultSelectedAlbumType = ref("");
 
-const localStorageSettings = localStorage.getItem("settings"); //to see if exists
-
 let settingsForm = reactive<ISettings>(api.settings);
 
 const picForm = reactive<INewPic>({
@@ -164,6 +207,9 @@ const picForm = reactive<INewPic>({
   thumbnail_file: "",
   type: undefined,
   album: "",
+  stockOptionalOverrides: JSON.parse(
+    JSON.stringify(defaultPicFormStockOverrides)
+  ) as typeof defaultPicFormStockOverrides,
   optionalOverrideParams: undefined,
 });
 let albumUUID: string | undefined = undefined;
@@ -185,10 +231,6 @@ if (route.name == "album") {
       : undefined;
     albumUUID = albumObj.uuid;
   }
-}
-
-function toggleUseSaucenao() {
-  picForm.useSauceNao = !picForm.useSauceNao;
 }
 
 const picFormError = reactive({
@@ -282,6 +324,7 @@ async function submit() {
       url: picForm.url,
       type: picForm.type,
       album: picForm.album,
+      stockOptionalOverrides: picForm.stockOptionalOverrides,
       optionalOverrideParams: picForm.optionalOverrideParams,
       isHidden: false,
     })
@@ -342,7 +385,7 @@ function albumNameContainsSpecialChar() {
   border-radius: 4px;
   background-color: rgba(42, 45, 52, 1);
 
-  width: var(--popup_width);
+  width: 28rem;
 }
 .album_thumbnail_preview {
   @apply h-[12.4vh] w-[12.4vh];
@@ -361,5 +404,18 @@ function albumNameContainsSpecialChar() {
 }
 .error {
   @apply border-rose-600 border-width-[2px] !important;
+}
+
+.addNewImageInputField[type="text"] {
+  @apply outline-none h-[2rem] w-[16rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
+  background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
+  font-family: "Work Sans", sans-serif;
+  color: rgb(202, 202, 202);
+}
+.addNewImageInputFieldDisabled[type="text"] {
+  @apply outline-none h-[2rem] w-[16rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
+  background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
+  font-family: "Work Sans", sans-serif;
+  color: rgb(129, 129, 129);
 }
 </style>

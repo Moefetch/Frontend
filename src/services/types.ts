@@ -62,6 +62,7 @@ export interface IPicture {
   //compatability with INewAnimePic
   tags?: string[];
   //imageSize?: ISizeCalculationResult;
+  isMultiSource: boolean;
 }
 
 export interface ITagsObject {
@@ -92,12 +93,35 @@ export interface INewAlbum {
   isHidden: boolean;
 }
 
+export interface IPicFormStockOverrides {
+  thumbnailFile: IParam;
+  compileAllLinksIntoOneEntry: IParam;
+}
+
+export const defaultPicFormStockOverrides: IPicFormStockOverrides = {
+  thumbnailFile: {
+    checkBoxDescription: "Use different link for cover image instead",
+    checkBoxValue: false,
+    containsString: true,
+    stringValue: {
+      value: "",
+      stringPlaceholder: "URL to the cover image",
+    },
+  },
+  compileAllLinksIntoOneEntry: {
+    checkBoxDescription: "Add all URLs into one entry",
+    checkBoxValue: false,
+    containsString: false,
+  },
+};
+
 export interface INewPic {
   file?: string;
   old_file?: string;
   thumbnail_file?: string;
   url: string;
   optionalOverrideParams?: ILogicCategorySpecialParamsDictionary;
+  stockOptionalOverrides?: IPicFormStockOverrides;
   useSauceNao?: boolean;
   has_results?: boolean;
   type?: AlbumSchemaType;
@@ -105,11 +129,17 @@ export interface INewPic {
   isHidden?: boolean;
 }
 
-export type PicTypes = IPicture;
-
-export type StockSerrings = "show_nsfw" | "blur_nsfw" | "show_hidden";
+export type PicTypes = IPicture; //probably wanted to go into a property of this but i forgot what it was about
+export type StockSettingsProps =
+  | "show_nsfw"
+  | "blur_nsfw"
+  | "show_hidden"
+  | "thumbnail_list_to_left";
 type IStockSettings = {
-  [setting in StockSerrings]: IParam;
+  show_nsfw: IParam;
+  blur_nsfw: IParam;
+  show_hidden: IParam;
+  thumbnail_list_to_left: IParam;
 };
 
 export interface ISettings {
@@ -155,6 +185,13 @@ export const stockSettings: IStockSettings = {
       value: "",
     },
   }, */
+
+  thumbnail_list_to_left: {
+    containsString: false,
+    checkBoxValue: false,
+    checkBoxDescription:
+      "Have the list of thumbnails on the left or on the bottom (in the preview popup)",
+  },
   blur_nsfw: {
     containsString: false,
     checkBoxValue: false,

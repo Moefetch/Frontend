@@ -46,7 +46,10 @@
           placeholder="Name"
           min="1"
           max="64"
-          @click="albumFormError.albumNameError = false; albumFormError.albumAlreadyExistError = false"
+          @click="
+            albumFormError.albumNameError = false;
+            albumFormError.albumAlreadyExistError = false;
+          "
         />
       </div>
       <BaseDropMenu
@@ -64,8 +67,10 @@
       >
         Album already exists, please enter a different name
       </h2>
-      <div class="checkbox_option w-[16rem]" @click="toggleAlbumIsHidden">   
-        <Icon :icon="albumForm.isHidden ? 'checked_checkbox' : 'unchecked_checkbox'" />
+      <div class="checkbox_option w-[16rem]" @click="toggleAlbumIsHidden">
+        <Icon
+          :icon="albumForm.isHidden ? 'checked_checkbox' : 'unchecked_checkbox'"
+        />
         <h2>Hidden album</h2>
       </div>
 
@@ -82,21 +87,16 @@
 <script setup lang="ts">
 ///////////////////////////////////// start of declarations afaik
 import { onMounted, ref, inject, reactive } from "vue";
-import { AppState } from '../../../state'
+import { AppState } from "../../../state";
 import BaseDropMenu from "../Misc/BaseDropMenu.vue";
 import Button from "../Misc/Button.vue";
 import Icon from "../Misc/Icon.vue";
 
 import { api } from "../../services/api";
-import type {
-  INewAlbum,
-  AlbumSchemaType,
-  IAlbum,
-} from "../../services/types";
+import type { INewAlbum, AlbumSchemaType, IAlbum } from "../../services/types";
 import { Album } from "../../services/album";
 
-
-const state = (inject('state') as AppState).stateVariables;
+const state = (inject("state") as AppState).stateVariables;
 
 const newAlbumCoverPreview = ref<string>("/icons/upload.svg");
 const albumCover = ref<HTMLDivElement | undefined>(undefined);
@@ -109,9 +109,8 @@ const albumForm = reactive<INewAlbum>({
   isHidden: false,
 });
 
-
 function toggleAlbumIsHidden() {
-  albumForm.isHidden = !albumForm.isHidden
+  albumForm.isHidden = !albumForm.isHidden;
 }
 
 const albumFormError = reactive<{
@@ -154,11 +153,9 @@ function typeSelect(a: AlbumSchemaType) {
 async function submit() {
   //name errors brrrrrr
 
-  
   if (!albumForm.name) nameEmpty();
   else if (albumForm.name[0].match(/[0-9]/)) startsWithNumOrSpecial();
-  else if (albumForm.name.match(/[^A-Za-z0-9_\s]/g))
-    containsSpecialChar();
+  else if (albumForm.name.match(/[^A-Za-z0-9_\s]/g)) containsSpecialChar();
 
   //album type errors brrrrrrrrrrrrrrrrrr
   if (!albumForm.type) noTypeSelected();
@@ -183,7 +180,7 @@ async function submit() {
     isHidden: albumForm.isHidden,
   });
   state.albums[response.uuid] = new Album(response);
-  state.popup = '';
+  state.popup = "";
 }
 
 function nameEmpty() {
@@ -213,9 +210,10 @@ function noTypeSelected() {
 }
 
 .popup_container {
-  @apply absolute p-10 text-white-400;
+  @apply absolute p-10 text-light-400;
   @apply border-[3px] border-[#254EE0] gap-[14px];
   @apply flex-row gap-[4px] m-auto;
+  @apply h-[fit-content];
 
   z-index: 3;
 
@@ -225,11 +223,6 @@ function noTypeSelected() {
   box-shadow: 0px 2px 4px rgba(255, 255, 255, 0.12);
   border-radius: 4px;
   background-color: rgba(42, 45, 52, 1);
-
-  width: var(--popup_width);
-  height: var(--popup_height);
-
-
 }
 .album_thumbnail_preview {
   @apply h-[12.4vh] w-[12.4vh];
@@ -238,7 +231,7 @@ function noTypeSelected() {
 }
 
 .inputField {
-  @apply outline-none h-[2rem] w-[16rem] box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 bg-dark-700 placeholder-white-400;
+  @apply outline-none h-[2rem] w-[16rem] box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 bg-dark-700 placeholder-light-400;
   font-family: "Work Sans", sans-serif;
   color: white;
 }

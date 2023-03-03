@@ -266,7 +266,11 @@ import HorizontalSeparator from "../Misc/HorizontalSeparator.vue";
 
 import { api } from "../../services/api";
 import { Settings, Setting } from "../../services/settings";
-import type { ISettings, ISettingsErrorObject } from "../../services/types";
+import type {
+  ISettings,
+  ISettingsErrorObject,
+  StockSettingsProps,
+} from "../../services/types";
 import { stockSettings, defaultDatabase_url } from "../../services/types";
 
 const state = (inject("state") as AppState).stateVariables;
@@ -296,9 +300,9 @@ type TogglableVariable =
 function toggleASettingsFormVariable(variableNameToToggle: TogglableVariable) {
   settingsForm[variableNameToToggle] = !settingsForm[variableNameToToggle];
 } */
-type TogglableVariable2 = "show_hidden" | "blur_nsfw" | "show_nsfw";
+
 function toggleAStockSettingsFormVariable(
-  variableNameToToggle: TogglableVariable2
+  variableNameToToggle: StockSettingsProps
 ) {
   settingsForm.stock_settings[variableNameToToggle].checkBoxValue =
     !settingsForm.stock_settings[variableNameToToggle].checkBoxValue;
