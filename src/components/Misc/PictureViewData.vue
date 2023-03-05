@@ -72,12 +72,10 @@ const props = defineProps<{
 const picName = props.item.imagesDataArray[props.indexer].file;
 let linksAsAny: any | undefined = undefined;
 let linksReformated: string[] | undefined = undefined;
-if (props.linksDictionary) {
-  linksAsAny = props.linksDictionary as any;
-  if (linksAsAny.other) linksAsAny.other = linksAsAny.other[0];
-  linksReformated = Object.getOwnPropertyNames(linksAsAny);
-} else if (props.item.links) {
-  linksAsAny = props.item.links as any;
+if (props.item.links) {
+  if (props.linksDictionary) linksAsAny = props.linksDictionary as any;
+  else linksAsAny = props.item.links as any;
+
   if (linksAsAny.other) linksAsAny.other = linksAsAny.other[0];
   linksReformated = Object.getOwnPropertyNames(linksAsAny);
 }

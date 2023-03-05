@@ -13,7 +13,9 @@
         <textarea
           v-model="picForm.url"
           class="inputField"
-          :style="`height: ${picForm.url.split('\n').length * 11.6 + 20}px`"
+          :style="`height: ${calculateHeightForTextArea(
+            picForm.url.split('\n').length * 11.6 + 20
+          )}px`"
           type="text"
           placeholder="Image URL or post URL"
           @click="picFormError.picNameError = false"
@@ -79,7 +81,25 @@
               :errorMessage="value.errorMessage"
               v-if="value.stringValue"
             >
+              <textarea
+                v-if="value.useTextArea"
+                v-model="value.stringValue.value"
+                :class="`${
+                  value.checkBoxValue
+                    ? 'addNewImageInputField'
+                    : 'addNewImageInputFieldDisabled'
+                }`"
+                :style="`height: ${calculateHeightForTextArea(
+                  value.stringValue.value.split('\n').length * 11.6 + 20,
+                  value.stringValue.stringPlaceholder
+                )}px`"
+                type="text"
+                :placeholder="value.stringValue.stringPlaceholder"
+                :disabled="!value.checkBoxValue"
+                @click="value.errorMessage = ''"
+              />
               <input
+                v-else
                 :class="`${
                   value.checkBoxValue
                     ? 'addNewImageInputField'
@@ -183,7 +203,14 @@ let defaultAlbumCollection: IAlbum = {
   type: "",
   estimatedPicCount: 0,
 };
-
+function calculateHeightForTextArea(something: number, placeholder?: string) {
+  if (placeholder && placeholder?.length > 45) {
+    return 40;
+  }
+  if (something > 300) {
+    return 300;
+  } else return something;
+}
 let albumCollection: IAlbum[] = [
   defaultAlbumCollection,
   ...Object.values(state.stateVariables.albums),
@@ -225,9 +252,11 @@ if (route.name == "album") {
     defaultSelectedAlbumType.value = albumObj.type;
     picForm.type = albumObj.type as INewPic["type"];
     picForm.optionalOverrideParams = settingsForm.special_params
-      ? (JSON.parse(
-          JSON.stringify(settingsForm.special_params[albumObj.type])
-        ) as typeof settingsForm.special_params[string])
+      ? settingsForm.special_params[albumObj.type]
+        ? (JSON.parse(
+            JSON.stringify(settingsForm.special_params[albumObj.type])
+          ) as typeof settingsForm.special_params[string])
+        : undefined
       : undefined;
     albumUUID = albumObj.uuid;
   }
@@ -407,13 +436,13 @@ function albumNameContainsSpecialChar() {
 }
 
 .addNewImageInputField[type="text"] {
-  @apply outline-none h-[2rem] w-[16rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
+  @apply outline-none h-[2rem] w-[16rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 resize-none;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;
   color: rgb(202, 202, 202);
 }
 .addNewImageInputFieldDisabled[type="text"] {
-  @apply outline-none h-[2rem] w-[16rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
+  @apply outline-none h-[2rem] w-[16rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 resize-none;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;
   color: rgb(129, 129, 129);

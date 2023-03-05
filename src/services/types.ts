@@ -96,6 +96,9 @@ export interface INewAlbum {
 export interface IPicFormStockOverrides {
   thumbnailFile: IParam;
   compileAllLinksIntoOneEntry: IParam;
+  addId: IParam;
+  addTags: IParam;
+  useProvidedFileName: IParam;
 }
 
 export const defaultPicFormStockOverrides: IPicFormStockOverrides = {
@@ -112,6 +115,37 @@ export const defaultPicFormStockOverrides: IPicFormStockOverrides = {
     checkBoxDescription: "Add all URLs into one entry",
     checkBoxValue: false,
     containsString: false,
+  },
+  addId: {
+    checkBoxDescription: "Add ID to entry",
+    checkBoxValue: false,
+    containsString: true,
+    useTextArea: true,
+    stringValue: {
+      value: "",
+      stringPlaceholder: "IDs seperated by new line",
+    },
+  },
+  addTags: {
+    checkBoxDescription: "Add Tags to entry",
+    checkBoxValue: false,
+    containsString: true,
+    useTextArea: true,
+    stringValue: {
+      value: "",
+      stringPlaceholder:
+        "Tags for entry seperated by ',' and seperated by new line for each each entry",
+    },
+  },
+  useProvidedFileName: {
+    checkBoxDescription: "Use a specified File name instead",
+    checkBoxValue: false,
+    containsString: true,
+    useTextArea: true,
+    stringValue: {
+      value: "",
+      stringPlaceholder: "File names for each entry seperated by a new line",
+    },
   },
 };
 
@@ -232,6 +266,7 @@ export interface ILogicCategorySpecialParamsDictionary {
 export interface IParam {
   containsString: boolean;
   checkBoxValue: boolean;
+  useTextArea?: boolean;
   checkBoxDescription: string;
   stringValue?: {
     stringPlaceholder: string;
