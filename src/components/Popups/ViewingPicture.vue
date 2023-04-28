@@ -16,7 +16,7 @@
     >
       <div v-for="(pic, index) in item.imagesDataArray">
         <img
-          :src="backendUrl + pic.file"
+          :src="backendUrl + pic.thumbnail_file"
           :class="`pictureViewCards ${
             indexer == index ? 'pictureViewCardSelected' : ''
           } h-20`"
@@ -24,7 +24,16 @@
         />
       </div>
     </div>
+    <div v-if="item.imagesDataArray[indexer].isVideo" class="pictureView">
+      <video
+        :src="backendUrl + item.imagesDataArray[indexer].file"
+        controls="true"
+        class="pictureView"
+        ref="target"
+      />
+    </div>
     <img
+      v-else
       :src="backendUrl + item.imagesDataArray[indexer].file"
       class="pictureView"
       ref="target"
@@ -49,7 +58,9 @@ import { IPicture } from "../../services/types";
 import { api } from "../../services/api";
 import PictureViewData from "../Misc/PictureViewData.vue";
 import { onClickOutside } from "@vueuse/core";
-
+function funny() {
+  console.log("ass");
+}
 import { ref, inject } from "vue";
 
 import { AppState } from "../../../state";
@@ -65,6 +76,7 @@ const clickedOutsideOf = {
   second: false,
   third: false,
 };
+
 onClickOutside(target, (e) => {
   if ((e.target as HTMLElement).id !== "editButton") clickOutsideFunc("first");
 });

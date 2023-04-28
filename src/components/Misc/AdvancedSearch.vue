@@ -164,11 +164,13 @@ let tagLookupTimeout: any;
 
 async function invokeSearchTags(tagSearch: string) {
   clearTimeout(tagLookupTimeout);
+
   tagLookupTimeout = setTimeout(async () => {
     if (tagSearch && albumType) {
       tagsAutocomplete.value = (
         await api.getTagsForSearchAutocomplete(tagSearch, albumType)
       ).tags;
+      console.log(tagsAutocomplete.value);
     } else tagsAutocomplete.value = [];
   }, 900);
 }
@@ -225,7 +227,7 @@ function submit() {
   @apply gap-y-[8px] gap-x-[4px] items-center flex flex-wrap;
 }
 .pictureViewDataText {
-  @apply text-white-400 w-[fit-content];
+  @apply text-light-400 w-[fit-content];
 }
 .textRoundedBg {
   @apply bg-[#4F4F4F] rounded-[12px] p-1 pl-2 pr-2;

@@ -12,7 +12,9 @@ import { ref, inject } from "vue";
 import { onClickOutside } from "@vueuse/core";
 
 const target = ref(null);
-
+function funny() {
+  console.log("ass");
+}
 onClickOutside(target, (e) => {
   if (!(e.target as HTMLElement).id) state.popup = "";
 });

@@ -53,8 +53,10 @@ export class AppState {
   public getSettingsFromLocalStorage() {
     const settings = api.getSettings();
     if (settings) {
-      this.stateVariables.showHidden = settings.show_hidden;
-      this.stateVariables.showNSFW = settings.show_nsfw;
+      this.stateVariables.showHidden =
+        settings.stock_settings.show_hidden.checkBoxValue;
+      this.stateVariables.showNSFW =
+        settings.stock_settings.show_nsfw.checkBoxValue;
     }
   }
 

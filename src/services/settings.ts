@@ -11,7 +11,6 @@ import type {
 import { defaultDatabase_url, stockSettings } from "./types";
 
 export class Settings implements ISettings {
-  private loadedSettings: ISettings;
   public backend_url: string;
   public database_url: Setting;
   public stock_settings: {
@@ -24,20 +23,18 @@ export class Settings implements ISettings {
   public special_settings?: ILogicSpecialSettingsDictionary;
 
   constructor(settings: ISettings) {
-    this.loadedSettings = settings;
+    this.backend_url = settings.backend_url;
+    this.database_url = new Setting(settings.database_url);
+    this.stock_settings = settings.stock_settings;
 
-    this.backend_url = this.loadedSettings.backend_url;
-    this.database_url = new Setting(this.loadedSettings.database_url);
-    this.stock_settings = this.loadedSettings.stock_settings;
-
-    if (this.loadedSettings.special_params) {
+    if (settings.special_params) {
       this.special_params = this.specialParamsDictionaryProcess(
-        this.loadedSettings.special_params
+        settings.special_params
       );
     }
-    if (this.loadedSettings.special_settings) {
+    if (settings.special_settings) {
       this.special_settings = this.SpecialSettingsDictionaryProcess(
-        this.loadedSettings.special_settings
+        settings.special_settings
       );
     }
   }

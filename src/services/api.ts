@@ -233,7 +233,6 @@ class API {
     ) {
       Object.assign(initialSettings, internalSettingVar);
     }
-    initialSettings.stock_settings = stockSettings;
     localStorage.setItem("settings", JSON.stringify(initialSettings));
     return internalSettingVar as typeof initialSettings;
   }

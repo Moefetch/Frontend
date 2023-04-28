@@ -32,6 +32,7 @@ export interface IArtist {
 }
 export interface IImageDataArray {
   file: string;
+  isVideo?: boolean;
   thumbnail_file: string;
   imageSize?: ISizeCalculationResult;
 }
@@ -239,7 +240,7 @@ export const stockSettings: IStockSettings = {
   show_nsfw: {
     containsString: false,
     checkBoxValue: false,
-    checkBoxDescription: "how NSFW tagged posts",
+    checkBoxDescription: "Show NSFW tagged posts",
   },
 };
 export interface ILogicSpecialSettingsDictionary {
