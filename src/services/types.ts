@@ -45,6 +45,7 @@ export interface IPostIds {
 export interface IPicture {
   id: string;
   indexer: number;
+  hasVideo?: boolean;
   imagesDataArray: IImageDataArray[];
   alternative_names?: string[];
   thumbnailFile: string;
