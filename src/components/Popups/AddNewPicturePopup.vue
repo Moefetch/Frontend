@@ -27,7 +27,7 @@
         @item-selected="typeSelect"
         :defaultSelected="defaultSelectedAlbumType"
         :class="`${picFormError.picTypeError ? 'error' : ''} box-content`"
-        @click="picFormError.picTypeError = false"
+        @click="picFormError.picTypeError = false;"
       />
       <BaseDropMenu
         v-if="!createAlbumToggle"
@@ -57,58 +57,62 @@
       <div v-if="picForm.stockOptionalOverrides">
         <div v-for="(value, key) in picForm.stockOptionalOverrides">
           <div class="flex flex-col gap-[0.5rem]">
-            <div
+            <div v-if="value.checkBox"
               class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
             >
               <div class="h-[24px] right-0 flex flex-row items-center">
                 <div
                   class="checkbox_option w-[16rem]"
-                  @click="value.checkBoxValue = !value.checkBoxValue"
+                  @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue"
                 >
                   <Icon
                     :icon="
-                      value.checkBoxValue
+                      value.checkBox.checkBoxValue
                         ? 'checked_checkbox'
                         : 'unchecked_checkbox'
                     "
                   />
-                  <h2>{{ value.checkBoxDescription }}</h2>
+                  <h2>{{ value.checkBox.checkBoxDescription }}</h2>
                 </div>
               </div>
             </div>
 
             <FieldErrorSlot
               :errorMessage="value.errorMessage"
-              v-if="value.stringValue"
+              v-if="value.textField"
             >
               <textarea
                 v-if="value.useTextArea"
-                v-model="value.stringValue.value"
+                v-model="value.textField.value"
                 :class="`${
-                  value.checkBoxValue
+                  value.checkBox ? 
+                  value.checkBox?.checkBoxValue
                     ? 'addNewImageInputField'
-                    : 'addNewImageInputFieldDisabled'
+                    : 'addNewImageInputFieldDisabled' 
+                  :  'addNewImageInputField'
                 }`"
                 :style="`height: ${calculateHeightForTextArea(
-                  value.stringValue.value.split('\n').length * 11.6 + 20,
-                  value.stringValue.stringPlaceholder
+                  value.textField.value.split('\n').length * 11.6 + 20,
+                  value.textField.fieldPlaceholder
                 )}px`"
                 type="text"
-                :placeholder="value.stringValue.stringPlaceholder"
-                :disabled="!value.checkBoxValue"
+                :placeholder="value.textField.fieldPlaceholder"
+                :disabled="value.checkBox ? !value.checkBox?.checkBoxValue : false"
                 @click="value.errorMessage = ''"
               />
               <input
                 v-else
                 :class="`${
-                  value.checkBoxValue
+                  value.checkBox ? 
+                  value.checkBox?.checkBoxValue
                     ? 'addNewImageInputField'
-                    : 'addNewImageInputFieldDisabled'
+                    : 'addNewImageInputFieldDisabled' 
+                  :  'addNewImageInputField'
                 }`"
                 type="text"
-                v-model="value.stringValue.value"
-                :placeholder="value.stringValue.stringPlaceholder"
-                :disabled="!value.checkBoxValue"
+                v-model="value.textField.value"
+                :placeholder="value.textField.fieldPlaceholder"
+                :disabled="value.checkBox ? !value.checkBox?.checkBoxValue : false"
                 @click="value.errorMessage = ''"
               />
             </FieldErrorSlot>
@@ -116,52 +120,52 @@
         </div>
       </div>
 
-      <div v-if="picForm.optionalOverrideParams">
+      <div v-if="picForm.optionalOverrideParams"> <!-- ay yo comere -->
+        
         <div
-          v-for="(params, key) in picForm.optionalOverrideParams
-            .specialHostnameSpecificParams"
+          v-for="(value, key) in picForm.optionalOverrideParams"
         >
-          <div v-for="(value, key) in params">
-            <div class="flex flex-col gap-[0.5rem]">
+        <div class="flex flex-col gap-[0.5rem]">
+          <div v-if="value.checkBox"
+            class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
+          >
+            <div class="h-[24px] right-0 flex flex-row items-center">
               <div
-                class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
+                class="checkbox_option w-[16rem]"
+                @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue"
               >
-                <div class="h-[24px] right-0 flex flex-row items-center">
-                  <div
-                    class="checkbox_option w-[16rem]"
-                    @click="value.checkBoxValue = !value.checkBoxValue"
-                  >
-                    <Icon
-                      :icon="
-                        value.checkBoxValue
-                          ? 'checked_checkbox'
-                          : 'unchecked_checkbox'
-                      "
-                    />
-                    <h2>{{ value.checkBoxDescription }}</h2>
-                  </div>
-                </div>
-              </div>
-
-              <FieldErrorSlot
-                :errorMessage="value.errorMessage"
-                v-if="value.stringValue"
-              >
-                <input
-                  :class="`${
-                    value.checkBoxValue
-                      ? 'addNewImageInputField'
-                      : 'addNewImageInputFieldDisabled'
-                  }`"
-                  type="text"
-                  v-model="value.stringValue.value"
-                  :placeholder="value.stringValue.stringPlaceholder"
-                  :disabled="!value.checkBoxValue"
-                  @click="value.errorMessage = ''"
+                <Icon
+                  :icon="
+                    value.checkBox.checkBoxValue
+                      ? 'checked_checkbox'
+                      : 'unchecked_checkbox'
+                  "
                 />
-              </FieldErrorSlot>
+                <h2>{{ value.checkBox.checkBoxDescription }}</h2>
+              </div>
             </div>
           </div>
+
+          <FieldErrorSlot
+            :errorMessage="value.errorMessage"
+            v-if="value.textField"
+          >
+            <input
+            :class="`${
+              value.checkBox ? 
+              value.checkBox?.checkBoxValue
+                ? 'addNewImageInputField'
+                : 'addNewImageInputFieldDisabled' 
+              :  'addNewImageInputField'
+            }`"
+              type="text"
+              v-model="value.textField.value"
+              :placeholder="value.textField.fieldPlaceholder"
+              :disabled="value.checkBox ? !value.checkBox?.checkBoxValue : false"
+              @click="value.errorMessage = ''"
+            />
+          </FieldErrorSlot>
+        </div>
         </div>
       </div>
       <Button
@@ -251,13 +255,12 @@ if (route.name == "album") {
 
     defaultSelectedAlbumType.value = albumObj.type;
     picForm.type = albumObj.type as INewPic["type"];
-    picForm.optionalOverrideParams = settingsForm.special_params
-      ? settingsForm.special_params[albumObj.type]
-        ? (JSON.parse(
-            JSON.stringify(settingsForm.special_params[albumObj.type])
-          ) as typeof settingsForm.special_params[string])
-        : undefined
-      : undefined;
+    if (settingsForm.special_params) {
+      picForm.optionalOverrideParams = 
+        (JSON.parse(
+              JSON.stringify(settingsForm.special_params)
+            ) as typeof settingsForm.special_params)
+    }
     albumUUID = albumObj.uuid;
   }
 }
@@ -289,8 +292,8 @@ function typeSelect(a: AlbumSchemaType) {
     picForm.type = undefined;
     picForm.optionalOverrideParams = undefined;
   } else picForm.type = a;
-  if (settingsForm.special_params) {
-    picForm.optionalOverrideParams = settingsForm.special_params[a];
+  if (settingsForm.special_params) { //where we would filter by category and somewhere by hostname
+    picForm.optionalOverrideParams = settingsForm.special_params;
   }
 }
 

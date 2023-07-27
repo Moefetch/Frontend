@@ -105,48 +105,73 @@ export interface IPicFormStockOverrides {
 
 export const defaultPicFormStockOverrides: IPicFormStockOverrides = {
   thumbnailFile: {
-    checkBoxDescription: "Use different link for cover image instead",
-    checkBoxValue: false,
-    containsString: true,
-    stringValue: {
-      value: "",
-      stringPlaceholder: "URL to the cover image",
+    checkBox: {
+      checkBoxDescription: "Use different link for cover image instead",
+      checkBoxValue: false,
+      defaultValue: false,
     },
+    type: "param",
+    valueType: "both",
+    textField: {
+      value: "",
+      defaultValue: "",
+      fieldPlaceholder: "URL to the cover image",
+
+    }
   },
   compileAllLinksIntoOneEntry: {
-    checkBoxDescription: "Add all URLs into one entry",
-    checkBoxValue: false,
-    containsString: false,
+    checkBox: {
+      checkBoxDescription: "Add all URLs into one entry",
+      checkBoxValue: false,
+      defaultValue: false,
+    },
+    type: "param",
+    valueType: "both",
   },
   addId: {
-    checkBoxDescription: "Add ID to entry",
-    checkBoxValue: false,
-    containsString: true,
+    checkBox: {
+      checkBoxDescription: "Add ID to entry",
+      checkBoxValue: false,
+      defaultValue: false,
+    },
+    type: "param",
+    valueType: "both",
     useTextArea: true,
-    stringValue: {
+    textField: {
       value: "",
-      stringPlaceholder: "IDs seperated by new line",
+      defaultValue: "",
+      fieldPlaceholder: "IDs seperated by new line",
     },
   },
   addTags: {
-    checkBoxDescription: "Add Tags to entry",
-    checkBoxValue: false,
-    containsString: true,
+    checkBox: {
+      checkBoxDescription: "Add Tags to entry",
+      checkBoxValue: false,
+      defaultValue: false,
+    },
+    type: "param",
+    valueType: "both",
     useTextArea: true,
-    stringValue: {
+    textField: {
       value: "",
-      stringPlaceholder:
+      defaultValue:"",
+      fieldPlaceholder:
         "Tags for entry seperated by ',' and seperated by new line for each each entry",
     },
   },
   useProvidedFileName: {
-    checkBoxDescription: "Use a specified File name instead",
-    checkBoxValue: false,
-    containsString: true,
+    checkBox: {
+      checkBoxDescription: "Use a specified File name instead",
+      checkBoxValue: false,
+      defaultValue: false,
+    },
+    type: "param",
+    valueType: "both",
     useTextArea: true,
-    stringValue: {
+    textField: {
       value: "",
-      stringPlaceholder: "File names for each entry seperated by a new line",
+      defaultValue:"",
+      fieldPlaceholder: "File names for each entry seperated by a new line",
     },
   },
 };
@@ -156,7 +181,7 @@ export interface INewPic {
   old_file?: string;
   thumbnail_file?: string;
   url: string;
-  optionalOverrideParams?: ILogicCategorySpecialParamsDictionary;
+  optionalOverrideParams?: IModelSpecialParam;
   stockOptionalOverrides?: IPicFormStockOverrides;
   useSauceNao?: boolean;
   has_results?: boolean;
@@ -183,18 +208,20 @@ export interface ISettings {
   database_url: IParam;
 
   stock_settings: IStockSettings;
-  special_settings?: ILogicSpecialSettingsDictionary;
-  special_params?: ILogicSpecialParamsDictionary;
+  special_settings?: IModelSpecialParam;
+  special_params?: IModelSpecialParam;
 }
 
 export const defaultDatabase_url = {
-  containsString: true,
-  checkBoxValue: false,
-  checkBoxDescription: "Use a mongoDB database",
-  stringValue: {
-    stringPlaceholder:
-      "Database URL, use the form mongodb://username:password@host:port/moefetch",
+  checkBox: {
+    checkBoxValue: false,
+    checkBoxDescription: "Use a mongoDB database",
+    defaultValue: false
+  },
+  textField: {
     value: "",
+    defaultValue: "",
+    fieldPlaceholder: "Database URL, use the form mongodb://username:password@host:port/moefetch",
   },
   checkValid: (enabledBool: boolean, stringValue?: string) => {
     if (enabledBool && !stringValue) return "No Database url was provided";
@@ -216,32 +243,48 @@ export const stockSettings: IStockSettings = {
     checkBoxValue: false,
     checkBoxDescription: "Use a mongoDB database",
     stringValue: {
-      stringPlaceholder:
+      fieldPlaceholder:
         "Database URL, use the form mongodb://username:password@host:port/moefetch",
       value: "",
     },
   }, */
 
   thumbnail_list_to_left: {
-    containsString: false,
-    checkBoxValue: false,
-    checkBoxDescription:
+    type: "setting",
+    valueType: "checkBox",
+    checkBox: {
+      checkBoxValue: false,
+      checkBoxDescription:
       "Have the list of thumbnails on the left or on the bottom (in the preview popup)",
+      defaultValue: false
+    },
   },
   blur_nsfw: {
-    containsString: false,
-    checkBoxValue: false,
-    checkBoxDescription: "Blur NSFW tagged posts",
+    type: "setting",
+    valueType: "checkBox",
+    checkBox: {
+      checkBoxValue: false,
+      checkBoxDescription: "Blur NSFW tagged posts",
+      defaultValue: false
+    },
   },
   show_hidden: {
-    containsString: false,
-    checkBoxValue: false,
-    checkBoxDescription: "Show hidden posts and albums",
+    type: "setting",
+    valueType: "checkBox",
+    checkBox: {
+      checkBoxValue: false,
+      checkBoxDescription: "Show hidden posts and albums",
+      defaultValue: false
+    },
   },
   show_nsfw: {
-    containsString: false,
-    checkBoxValue: false,
-    checkBoxDescription: "Show NSFW tagged posts",
+    type: "setting",
+    valueType: "checkBox",
+    checkBox: {
+      checkBoxValue: false,
+      checkBoxDescription: "Show NSFW tagged posts",
+      defaultValue: false
+    },
   },
 };
 export interface ILogicSpecialSettingsDictionary {
@@ -266,20 +309,28 @@ export interface ILogicCategorySpecialParamsDictionary {
   };
 }
 export interface IParam {
-  containsString: boolean;
-  checkBoxValue: boolean;
-  useTextArea?: boolean;
-  checkBoxDescription: string;
-  stringValue?: {
-    stringPlaceholder: string;
-    value: string;
-  };
-  errorMessage?: string;
-  checkValid?: (
-    enabledBool: boolean,
-    stringValue?: string
-  ) => string | undefined;
+    category?: string; //if undefined it's a global setting for all categories
+    hostname?: string; //if undefined it's a category specific setting
+    type: string; //cookie, setting, default parameter etc, use case would to to group settings later
+    valueType: "checkBox" | "textField" | "both"
+    useTextArea?: boolean;
+    checkBox?: {
+        checkBoxValue: boolean;
+        checkBoxDescription: string;
+        defaultValue: boolean;
+    }
+    textField?: {
+        value: string;
+        fieldPlaceholder: string;
+        defaultValue: string;
+    }
+    errorMessage?: string;
+    checkValid?: (
+      enabledBool: boolean,
+      stringValue?: string
+    ) => string | undefined;  
 }
+
 export interface IModelSpecialParam {
   [name: string]: IParam;
 }

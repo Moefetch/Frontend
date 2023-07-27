@@ -19,26 +19,18 @@ export class Settings implements ISettings {
     show_hidden: IParam;
     thumbnail_list_to_left: IParam;
   };
-  public special_params?: ILogicSpecialParamsDictionary;
-  public special_settings?: ILogicSpecialSettingsDictionary;
+  public special_params?: IModelSpecialParam;
+  public special_settings?: IModelSpecialParam;
 
   constructor(settings: ISettings) {
     this.backend_url = settings.backend_url;
     this.database_url = new Setting(settings.database_url);
     this.stock_settings = settings.stock_settings;
 
-    if (settings.special_params) {
-      this.special_params = this.specialParamsDictionaryProcess(
-        settings.special_params
-      );
-    }
-    if (settings.special_settings) {
-      this.special_settings = this.SpecialSettingsDictionaryProcess(
-        settings.special_settings
-      );
-    }
+    if (settings.special_params) this.special_params = settingKeyValue(settings.special_params)
+    if (settings.special_settings) this.special_settings = settingKeyValue(settings.special_settings)
   }
-
+/* 
   private SpecialSettingsDictionaryProcess(
     logicSpecialSettingsDictionary: ILogicSpecialSettingsDictionary
   ) {
@@ -163,15 +155,22 @@ export class Settings implements ISettings {
     }
     initialSettings.stock_settings = stockSettings;
     return internalSettingVar as typeof initialSettings;
-  }
+  } */
+
+
 }
 
 export class Setting implements IParam {
-  public checkBoxDescription: string;
-  public checkBoxValue: boolean;
-  public containsString: boolean;
+  public category?: string ;
+  public hostname?: string
+  public type: string;
+  public valueType: "both" | "checkBox" | "textField";
+  public useTextArea?: boolean;
+  public checkBox?: { checkBoxValue: boolean; checkBoxDescription: string; defaultValue: boolean; } | undefined;
+  public textField?: { value: string; fieldPlaceholder: string; defaultValue: string; } | undefined;
+  
   public errorMessage?: string;
-  public stringValue?: { stringPlaceholder: string; value: string };
+  
   /**
    * checkValid
    */
@@ -188,11 +187,12 @@ export class Setting implements IParam {
   ) => string | undefined;
 
   constructor(setting: IParam) {
-    this.checkBoxDescription = setting.checkBoxDescription;
-    this.checkBoxValue = setting.checkBoxValue;
-    this.containsString = setting.containsString;
+    this.checkBox = setting.checkBox;
+    this.category = setting.category;
+    this.type = setting.type;
+    this.valueType = setting.valueType;
     this.errorMessage = setting.errorMessage;
-    this.stringValue = setting.stringValue;
+    this.textField = setting.textField;
     if (setting.checkValid) {
       this.checkValid = setting.checkValid;
     }
@@ -206,7 +206,7 @@ export class Setting implements IParam {
     };
   }
 }
-
+/* 
 class CategorySpecialSettings
   implements ILogicCategorySpecialSettingsDictionary
 {
@@ -279,7 +279,7 @@ class CategorySpecialParams implements ILogicCategorySpecialParamsDictionary {
     }
   }
 }
-
+ */
 function settingKeyValue(dictionaryObject: IModelSpecialParam) {
   let outputKeyVal: { [setting: string]: Setting } = {};
   for (const settingsInSpecialParams in dictionaryObject) {

@@ -24,6 +24,6 @@ defineEmits([]);
 
 <style scoped lang="postcss">
 .helpMain{
-  @apply text-white-400 text-size-[22px];
+  @apply text-size-[22px];
 }
 </style>

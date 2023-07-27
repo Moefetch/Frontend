@@ -53,7 +53,7 @@ const backendUrl = api.getBackendUrl();
 const settings = api.getSettings();
 
 const doBlurBool =
-  props.picture.isNSFW && settings.stock_settings.blur_nsfw.checkBoxValue;
+  props.picture.isNSFW && settings.stock_settings.blur_nsfw.checkBox?.checkBoxValue;
 </script>
 
 <style lang="postcss">

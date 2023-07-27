@@ -10,6 +10,7 @@ import type {
   AlbumSchemaType,
   ILogicSpecialSettingsDictionary,
   ILogicSpecialParamsDictionary,
+  IModelSpecialParam,
 } from "./types";
 import { stockSettings, defaultDatabase_url } from "./types";
 import { Settings } from "./settings";
@@ -154,7 +155,36 @@ class API {
       options,
     });
   };
+/**
+ * compareSpecialSettingsToDefault
+ */
+public compareSpecialSettingsToDefault(
+  initialSettings: ISettings,
+  divisionType: "special_settings" | "special_params",
+  defaultSpecialSettingsOrParams: IModelSpecialParam
+) {
+  //the goal is get settings from default and if they dont exuist in settings object add (the else part is adding)
 
+  let internalSettingVar = (JSON.parse(JSON.stringify({...initialSettings}))) as typeof initialSettings;
+  if (!internalSettingVar[divisionType] || !Object.getOwnPropertyNames(internalSettingVar[divisionType]).length) {
+    initialSettings[divisionType] = defaultSpecialSettingsOrParams;
+
+    return internalSettingVar
+  }
+  
+for (const param in defaultSpecialSettingsOrParams) {
+  if (Object.prototype.hasOwnProperty.call(defaultSpecialSettingsOrParams, param)) {
+    const element = internalSettingVar[divisionType]
+    if (element && !element[param]) element[param] = defaultSpecialSettingsOrParams[param];
+  }
+}
+  return internalSettingVar as typeof initialSettings
+}
+
+
+
+
+/* 
   public compareSpecialSettingsToDefault(
     initialSettings: ISettings,
     divisionType: "special_settings" | "special_params",
@@ -241,7 +271,7 @@ class API {
 
     return internalSettingVar as typeof initialSettings;
   }
-
+ */
   public deleteAlbumsByUUIDS = (albumUUIDs: string[]) =>
     this.backendRequest("post", "/delete-albums-by-uuids", { albumUUIDs });
 
@@ -255,13 +285,13 @@ class API {
     this.backendRequest<[string]>("get", "/types-of-models");
 
   public getSpecialSettings = () =>
-    this.backendRequest<ILogicSpecialSettingsDictionary>(
+    this.backendRequest<IModelSpecialParam>(
       "get",
       "/special-settings"
     );
 
   public getSpecialParamsDictionary = () =>
-    this.backendRequest<ILogicSpecialParamsDictionary>(
+    this.backendRequest<IModelSpecialParam>(
       "get",
       "/special-params-dictionary"
     );

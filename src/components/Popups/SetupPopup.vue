@@ -17,153 +17,147 @@
         </div>
 
         <div class="flex flex-col gap-[0.5rem]">
-          <div
+          <div v-if="settingsForm.database_url.checkBox"
             class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
           >
             <div class="h-[24px] right-0 flex flex-row items-center">
               <div
                 class="checkbox_option"
                 @click="
-                  settingsForm.database_url.checkBoxValue =
-                    !settingsForm.database_url.checkBoxValue
+                  settingsForm.database_url.checkBox.checkBoxValue =
+                    !settingsForm.database_url.checkBox.checkBoxValue
                 "
               >
                 <Icon
                   :icon="
-                    settingsForm.database_url.checkBoxValue
+                    settingsForm.database_url.checkBox.checkBoxValue
                       ? 'checked_checkbox'
                       : 'unchecked_checkbox'
                   "
                 />
-                <h2>{{ settingsForm.database_url.checkBoxDescription }}</h2>
+                <h2>{{ settingsForm.database_url.checkBox.checkBoxDescription }}</h2>
               </div>
             </div>
           </div>
 
           <FieldErrorSlot
             :errorMessage="settingsForm.database_url.errorMessage"
-            v-if="settingsForm.database_url.stringValue"
+            v-if="settingsForm.database_url.textField" 
           >
             <input
-              :class="`${
-                settingsForm.database_url.checkBoxValue
-                  ? 'popupSaucenaoKeyInputField'
-                  : 'popupSaucenaoKeyInputFieldDisabled'
-              }`"
+            :class="`${
+                  settingsForm.database_url.checkBox ? 
+                  settingsForm.database_url.checkBox?.checkBoxValue
+                    ? 'addNewImageInputField'
+                    : 'addNewImageInputFieldDisabled' 
+                  :  'addNewImageInputField'
+                }`"
               type="text"
-              v-model="settingsForm.database_url.stringValue.value"
+              v-model="settingsForm.database_url.textField.value"
               :placeholder="
-                settingsForm.database_url.stringValue.stringPlaceholder
+                settingsForm.database_url.textField.fieldPlaceholder
               "
-              :disabled="!settingsForm.database_url.checkBoxValue"
+              :disabled="settingsForm.database_url.checkBox ? !settingsForm.database_url.checkBox.checkBoxValue : false"
               @click="settingsForm.database_url.errorMessage = ''"
             />
           </FieldErrorSlot>
         </div>
         <HorizontalSeparator :seperatorText="'Special Settings'" />
         <div
-          v-for="(categorySettings, category) in settingsForm.special_settings"
+          v-for="(value, category) in settingsForm.special_settings"
         >
-          <div v-for="(value, key) in categorySettings.specialCategorySettings">
-            <div class="flex flex-col gap-[0.5rem]">
+        <div class="flex flex-col gap-[0.5rem]">
+          <div v-if="value.checkBox"
+            class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
+          >
+            <div class="h-[24px] right-0 flex flex-row items-center">
               <div
-                class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
+                class="checkbox_option"
+                @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue"
               >
-                <div class="h-[24px] right-0 flex flex-row items-center">
-                  <div
-                    class="checkbox_option"
-                    @click="value.checkBoxValue = !value.checkBoxValue"
-                  >
-                    <Icon
-                      :icon="
-                        value.checkBoxValue
-                          ? 'checked_checkbox'
-                          : 'unchecked_checkbox'
-                      "
-                    />
-                    <h2>{{ value.checkBoxDescription }}</h2>
-                  </div>
-                </div>
-              </div>
-
-              <FieldErrorSlot
-                :errorMessage="value.errorMessage"
-                v-if="value.stringValue"
-              >
-                <input
-                  :class="`${
-                    value.checkBoxValue
-                      ? 'popupSaucenaoKeyInputField'
-                      : 'popupSaucenaoKeyInputFieldDisabled'
-                  }`"
-                  type="text"
-                  v-model="value.stringValue.value"
-                  :placeholder="value.stringValue.stringPlaceholder"
-                  :disabled="!value.checkBoxValue"
-                  @click="value.errorMessage = ''"
+                <Icon
+                  :icon="
+                    value.checkBox.checkBoxValue
+                      ? 'checked_checkbox'
+                      : 'unchecked_checkbox'
+                  "
                 />
-              </FieldErrorSlot>
+                <h2>{{ value.checkBox.checkBoxDescription }}</h2>
+              </div>
             </div>
           </div>
+
+          <FieldErrorSlot 
+            :errorMessage="value.errorMessage"
+            v-if="value.textField"
+          >
+            <input
+            :class="`${
+                  value.checkBox ? 
+                  value.checkBox?.checkBoxValue
+                    ? 'addNewImageInputField'
+                    : 'addNewImageInputFieldDisabled' 
+                  :  'addNewImageInputField'
+                }`"
+              type="text"
+              v-model="value.textField.value"
+              :placeholder="value.textField.fieldPlaceholder"
+              :disabled="value.checkBox ? !value.checkBox.checkBoxValue : false"
+              @click="value.errorMessage = ''"
+            />
+          </FieldErrorSlot>
+        </div>
         </div>
 
         <HorizontalSeparator :seperatorText="'Special Params'" />
-        <div
-          v-for="(categorySettings, category) in settingsForm.special_params"
-        >
-          <div
-            v-for="(
-              params, key
-            ) in categorySettings.specialHostnameSpecificParams"
-          >
-            <div v-for="(value, key) in params">
+            <div v-for="(value, key) in settingsForm.special_params">
               <div class="flex flex-col gap-[0.5rem]">
-                <div
+                <div v-if="value.checkBox"
                   class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
                 >
                   <div class="h-[24px] right-0 flex flex-row items-center">
                     <div
                       class="checkbox_option"
-                      @click="value.checkBoxValue = !value.checkBoxValue"
+                      @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue"
                     >
                       <Icon
                         :icon="
-                          value.checkBoxValue
+                          value.checkBox.checkBoxValue
                             ? 'checked_checkbox'
                             : 'unchecked_checkbox'
                         "
                       />
-                      <h2>{{ value.checkBoxDescription }}</h2>
+                      <h2>{{ value.checkBox.checkBoxDescription }}</h2>
                     </div>
                   </div>
                 </div>
 
                 <FieldErrorSlot
                   :errorMessage="value.errorMessage"
-                  v-if="value.stringValue"
+                  v-if="value.textField"
                 >
                   <input
-                    :class="`${
-                      value.checkBoxValue
-                        ? 'popupSaucenaoKeyInputField'
-                        : 'popupSaucenaoKeyInputFieldDisabled'
-                    }`"
-                    type="text"
-                    v-model="value.stringValue.value"
-                    :placeholder="value.stringValue.stringPlaceholder"
-                    :disabled="!value.checkBoxValue"
-                    @click="value.errorMessage = ''"
+                  :class="`${
+                    value.checkBox ? 
+                    value.checkBox?.checkBoxValue
+                      ? 'addNewImageInputField'
+                      : 'addNewImageInputFieldDisabled' 
+                    :  'addNewImageInputField'
+                  }`"
+                  type="text"
+                  v-model="value.textField.value"
+                  :placeholder="value.textField.fieldPlaceholder"
+                  :disabled="value.checkBox ? !value.checkBox.checkBoxValue : false"
+                  @click="value.errorMessage = ''"
                   />
                 </FieldErrorSlot>
               </div>
-            </div>
-          </div>
         </div>
 
         <HorizontalSeparator :seperatorText="'Stock Settings'" />
         <div v-for="(value, key) in settingsForm.stock_settings">
           <div class="flex flex-col gap-[0.5rem]">
-            <div
+            <div v-if="value.checkBox"
               class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
             >
               <div class="h-[24px] right-0 flex flex-row items-center">
@@ -173,30 +167,32 @@
                 >
                   <Icon
                     :icon="
-                      value.checkBoxValue
+                      value.checkBox.checkBoxValue
                         ? 'checked_checkbox'
                         : 'unchecked_checkbox'
                     "
                   />
-                  <h2>{{ value.checkBoxDescription }}</h2>
+                  <h2>{{ value.checkBox.checkBoxDescription }}</h2>
                 </div>
               </div>
             </div>
 
             <FieldErrorSlot
               :errorMessage="value.errorMessage"
-              v-if="value.stringValue"
+              v-if="value.textField"
             >
               <input
-                :class="`${
-                  value.checkBoxValue
-                    ? 'popupSaucenaoKeyInputField'
-                    : 'popupSaucenaoKeyInputFieldDisabled'
+              :class="`${
+                  value.checkBox ? 
+                  value.checkBox?.checkBoxValue
+                    ? 'addNewImageInputField'
+                    : 'addNewImageInputFieldDisabled' 
+                  :  'addNewImageInputField'
                 }`"
                 type="text"
-                v-model="value.stringValue.value"
-                :placeholder="value.stringValue.stringPlaceholder"
-                :disabled="!value.checkBoxValue"
+                v-model="value.textField.value"
+                :placeholder="value.textField.fieldPlaceholder"              
+                :disabled="value.checkBox ? !value.checkBox.checkBoxValue : false"
                 @click="value.errorMessage = ''"
               />
             </FieldErrorSlot>
@@ -304,8 +300,14 @@ function toggleASettingsFormVariable(variableNameToToggle: TogglableVariable) {
 function toggleAStockSettingsFormVariable(
   variableNameToToggle: StockSettingsProps
 ) {
-  settingsForm.stock_settings[variableNameToToggle].checkBoxValue =
-    !settingsForm.stock_settings[variableNameToToggle].checkBoxValue;
+  const checkBox = settingsForm.stock_settings[variableNameToToggle].checkBox
+  if (checkBox)
+  {
+    checkBox.checkBoxValue = !checkBox.checkBoxValue
+    settingsForm.stock_settings[variableNameToToggle].checkBox =
+    checkBox;
+
+  }
 }
 
 const defaultSettings = new Settings({
@@ -331,10 +333,11 @@ async function submit() {
     settingsFormError.backendUrlError = "No Backend url was provided";
 
   settingsForm.database_url.errorMessage =
+settingsForm.database_url.checkBox ?
     checkValidMongoDb(
-      settingsForm.database_url.checkBoxValue,
-      settingsForm.database_url.stringValue?.value
-    ) ?? "";
+      settingsForm.database_url.checkBox?.checkBoxValue,
+      settingsForm.database_url.textField?.value
+    ) : "";
 
   if (
     settingsFormError.backendUrlError ||
