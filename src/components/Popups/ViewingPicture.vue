@@ -1,14 +1,14 @@
 <template>
   <div
     :class="`pictureContainer flex items-center flex-row gap-4 ${
-      api.settings.stock_settings.thumbnail_list_to_left.checkBoxValue
+      api.settings.stock_settings.thumbnail_list_to_left.checkBox?.checkBoxValue
         ? 'flex-row'
         : 'flex-col-reverse'
     }  `"
   >
     <div
       :class="`pictureViewCardsContainerZero nice_scroll ${
-        api.settings.stock_settings.thumbnail_list_to_left.checkBoxValue
+        api.settings.stock_settings.thumbnail_list_to_left.checkBox?.checkBoxValue
           ? 'pictureViewCardsContainerLeft'
           : 'pictureViewCardsContainerBottom'
       }`"

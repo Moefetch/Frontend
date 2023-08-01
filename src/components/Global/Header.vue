@@ -4,44 +4,23 @@
       <router-link to="/">
         <Button icon="home" @click="state.clearAdvancedSearchOptions()" />
       </router-link>
-      <CollectionDropMenu
-        v-if="state.stateVariables.albums"
-        :albums="[
-          defaultAlbumCollection,
-          ...Object.values(state.stateVariables.albums),
-        ]"
-        :currentAlbum="getCurrentItemFromUUID(route.params.albumUUID)"
-      />
+      <CollectionDropMenu v-if="state.stateVariables.albums" :albums="[
+        defaultAlbumCollection,
+        ...Object.values(state.stateVariables.albums),
+      ]" :currentAlbum="getCurrentItemFromUUID(route.params.albumUUID)" />
       <div class="m-auto flex-row flex items-center justify-center">
         <SearchBar />
-        <Button
-          icon="filter"
-          @click="
-            state.stateVariables.advancedSearch =
-              !state.stateVariables.advancedSearch
-          "
-        />
+        <Button icon="filter" @click="
+          state.stateVariables.advancedSearch =
+          !state.stateVariables.advancedSearch
+          " />
       </div>
-      <Button
-        icon="plus"
-        @click="togglePopup('AddNewPicturePopup')"
-        buttonID="addNewPictureButton"
-      />
-      <Button
-        :icon="`${state.stateVariables.isEditing ? 'cancel_editing' : 'edit'}`"
-        :class="`${
-          state.stateVariables.isEditing ? 'bg-[#B6222D] rounded-8px' : ''
-        }`"
-        @click="
-          state.stateVariables.isEditing = !state.stateVariables.isEditing
-        "
-        buttonID="editButton"
-      />
-      <Button
-        icon="menu"
-        @click="togglePopup('SetupPopup')"
-        buttonID="menuButton"
-      />
+      <Button icon="plus" @click="togglePopup('AddNewPicturePopup')" buttonID="addNewPictureButton" />
+      <Button :icon="`${state.stateVariables.isEditing ? 'cancel_editing' : 'edit'}`" :class="`${state.stateVariables.isEditing ? 'bg-[#B6222D] rounded-8px' : ''
+        }`" @click="
+    state.stateVariables.isEditing = !state.stateVariables.isEditing
+    " buttonID="editButton" />
+      <Button icon="menu" @click="togglePopup('SetupPopup')" buttonID="menuButton" />
 
       <PopupSlot v-if="state.stateVariables.popup == 'AddNewPicturePopup'">
         <AddNewPicturePopup />
@@ -52,12 +31,8 @@
       </PopupSlot>
     </div>
     <div v-if="!!state.stateVariables.advancedSearch">
-      <AdvancedSearch
-        :albums="
-          mapAlbumsToNamesArray(Object.values(state.stateVariables.albums))
-        "
-        :defaultSelected="getCurrentItemFromUUID(route.params.albumUUID).name"
-      />
+      <AdvancedSearch :albums="mapAlbumsToNamesArray(Object.values(state.stateVariables.albums))
+        " :defaultSelected="getCurrentItemFromUUID(route.params.albumUUID).name" />
     </div>
   </div>
 </template>

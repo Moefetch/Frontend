@@ -10,6 +10,7 @@ import type {
   AlbumSchemaType,
   ILogicSpecialSettingsDictionary,
   ILogicSpecialParamsDictionary,
+  IModelSpecialParam,
 } from "./types";
 import { stockSettings, defaultDatabase_url } from "./types";
 import { Settings } from "./settings";
@@ -38,6 +39,8 @@ class API {
     });
 
     this.settings = new Settings(this.localStorageSettings);
+    
+    this.settings.createTree()
   }
 
   public backendUrl = "";
@@ -56,7 +59,7 @@ class API {
       ) as ISettings;
       if (
         this.localStorageSettings.backend_url[
-          this.localStorageSettings.backend_url.length - 1
+        this.localStorageSettings.backend_url.length - 1
         ] == "/"
       )
         this.localStorageSettings.backend_url =
@@ -154,89 +157,123 @@ class API {
       options,
     });
   };
+/**
+ * compareSpecialSettingsToDefault
+ */
+public compareSpecialSettingsToDefault(
+  initialSettings: ISettings,
+  divisionType: "special_settings" | "special_params",
+  defaultSpecialSettingsOrParams: IModelSpecialParam
+) {
+  //the goal is get settings from default and if they dont exuist in settings object add (the else part is adding)
 
+  let internalSettingVar = (JSON.parse(JSON.stringify({...initialSettings}))) as typeof initialSettings;
+  if (!internalSettingVar[divisionType] || !Object.getOwnPropertyNames(internalSettingVar[divisionType]).length) {
+    initialSettings[divisionType] = defaultSpecialSettingsOrParams;
+
+    return internalSettingVar
+  }
+  
+for (const param in defaultSpecialSettingsOrParams) {
+  if (Object.prototype.hasOwnProperty.call(defaultSpecialSettingsOrParams, param)) {
+    const element = internalSettingVar[divisionType]
+    if (element && !element[param]) element[param] = defaultSpecialSettingsOrParams[param];
+  }
+}
+  return internalSettingVar as typeof initialSettings
+}
+
+
+
+
+/* 
   public compareSpecialSettingsToDefault(
     initialSettings: ISettings,
     divisionType: "special_settings" | "special_params",
     defaultSpecialSettingsOrParams: { [key: string]: any }
   ) {
-    //the flow is get settings from default and if they dont exuist in settings object add (the else part is adding)
+    //the flow is get settings from default and if they dont exist in settings object add (the else part is adding)
+
     let internalSettingVar = JSON.parse(JSON.stringify({ ...initialSettings }));
-    for (const categoryName in defaultSpecialSettingsOrParams) {
-      if (!internalSettingVar[divisionType]) {
-        internalSettingVar[divisionType] = defaultSpecialSettingsOrParams;
-      } else if (
-        Object.prototype.hasOwnProperty.call(
-          defaultSpecialSettingsOrParams,
-          categoryName
-        ) &&
-        Object.prototype.hasOwnProperty.call(
-          internalSettingVar[divisionType],
-          categoryName
-        )
-      ) {
-        const categoryInDefault = defaultSpecialSettingsOrParams[categoryName];
-        for (const hostOrCategorySpecific in categoryInDefault) {
-          if (
-            Object.prototype.hasOwnProperty.call(
-              categoryInDefault,
-              hostOrCategorySpecific
-            ) &&
-            Object.prototype.hasOwnProperty.call(
-              internalSettingVar[divisionType][categoryName],
-              hostOrCategorySpecific
-            )
-          ) {
+    if (initialSettings[divisionType]) {
+      for (const categoryName in defaultSpecialSettingsOrParams) {
+        if (!internalSettingVar[divisionType]) {
+          internalSettingVar[divisionType] = defaultSpecialSettingsOrParams;
+        } else if (
+          Object.prototype.hasOwnProperty.call(
+            defaultSpecialSettingsOrParams,
+            categoryName
+          ) &&
+          Object.prototype.hasOwnProperty.call(
+            internalSettingVar[divisionType],
+            categoryName
+          )
+        ) {
+          const categoryInDefault = defaultSpecialSettingsOrParams[categoryName];
+          for (const hostOrCategorySpecific in categoryInDefault) {
             if (
-              (internalSettingVar[divisionType][categoryName] as any)[
+              Object.prototype.hasOwnProperty.call(
+                categoryInDefault,
                 hostOrCategorySpecific
-              ]
+              ) &&
+              Object.prototype.hasOwnProperty.call(
+                internalSettingVar[divisionType][categoryName],
+                hostOrCategorySpecific
+              )
             ) {
-              for (const setting in categoryInDefault[hostOrCategorySpecific]) {
-                if (
-                  Object.prototype.hasOwnProperty.call(
-                    categoryInDefault[hostOrCategorySpecific],
-                    setting
-                  )
-                ) {
-                  const settingObj =
-                    categoryInDefault[hostOrCategorySpecific][setting];
-                  (internalSettingVar[divisionType][categoryName] as any)[
-                    hostOrCategorySpecific
-                  ][setting] =
-                    (
-                      (internalSettingVar[divisionType][categoryName] as any)[
+              if (
+                (internalSettingVar[divisionType][categoryName] as any)[
+                hostOrCategorySpecific
+                ]
+              ) {
+                for (const setting in categoryInDefault[hostOrCategorySpecific]) {
+                  if (
+                    Object.prototype.hasOwnProperty.call(
+                      categoryInDefault[hostOrCategorySpecific],
+                      setting
+                    )
+                  ) {
+                    const settingObj =
+                      categoryInDefault[hostOrCategorySpecific][setting];
+                    (internalSettingVar[divisionType][categoryName] as any)[
+                      hostOrCategorySpecific
+                    ][setting] =
+                      (
+                        (internalSettingVar[divisionType][categoryName] as any)[
                         hostOrCategorySpecific
-                      ] as any
-                    )[setting] ?? settingObj;
+                        ] as any
+                      )[setting] ?? settingObj;
+                  }
                 }
               }
-            }
-          } else
-            (internalSettingVar[divisionType][categoryName] as any)[
-              hostOrCategorySpecific
-            ] =
-              defaultSpecialSettingsOrParams[categoryName][
+            } else
+              (internalSettingVar[divisionType][categoryName] as any)[
                 hostOrCategorySpecific
-              ];
-        }
-      } else
-        internalSettingVar[divisionType][categoryName] =
-          defaultSpecialSettingsOrParams[categoryName];
+              ] =
+                defaultSpecialSettingsOrParams[categoryName][
+                hostOrCategorySpecific
+                ];
+          }
+        } else
+          internalSettingVar[divisionType][categoryName] =
+            defaultSpecialSettingsOrParams[categoryName];
+      }
+      if (!initialSettings[divisionType]) {
+        initialSettings[divisionType] = internalSettingVar[divisionType];
+      }
+
+      if (
+        Object.getPrototypeOf(initialSettings[divisionType]) !==
+        Object.getPrototypeOf(internalSettingVar[divisionType])
+      ) {
+        Object.assign(initialSettings, internalSettingVar);
+      }
+      localStorage.setItem("settings", JSON.stringify(initialSettings));
     }
-    if (!initialSettings[divisionType]) {
-      initialSettings[divisionType] = internalSettingVar[divisionType];
-    }
-    if (
-      Object.getPrototypeOf(initialSettings[divisionType]) !==
-      Object.getPrototypeOf(internalSettingVar[divisionType])
-    ) {
-      Object.assign(initialSettings, internalSettingVar);
-    }
-    localStorage.setItem("settings", JSON.stringify(initialSettings));
+
     return internalSettingVar as typeof initialSettings;
   }
-
+ */
   public deleteAlbumsByUUIDS = (albumUUIDs: string[]) =>
     this.backendRequest("post", "/delete-albums-by-uuids", { albumUUIDs });
 
@@ -250,13 +287,13 @@ class API {
     this.backendRequest<[string]>("get", "/types-of-models");
 
   public getSpecialSettings = () =>
-    this.backendRequest<ILogicSpecialSettingsDictionary>(
+    this.backendRequest<IModelSpecialParam>(
       "get",
       "/special-settings"
     );
 
   public getSpecialParamsDictionary = () =>
-    this.backendRequest<ILogicSpecialParamsDictionary>(
+    this.backendRequest<IModelSpecialParam>(
       "get",
       "/special-params-dictionary"
     );
@@ -267,7 +304,7 @@ class API {
     // if it ends with a / remove the /
     if (
       this.localStorageSettings.backend_url[
-        this.localStorageSettings.backend_url.length - 1
+      this.localStorageSettings.backend_url.length - 1
       ] == "/"
     )
       this.localStorageSettings.backend_url =
