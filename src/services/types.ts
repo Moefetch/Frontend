@@ -210,8 +210,11 @@ export interface ISettings {
   stock_settings: IStockSettings;
   special_settings?: IModelSpecialParam;
   special_params?: IModelSpecialParam;
+  paramsTree?: IParamsTree;
 }
-
+export interface IParamsTree {
+  [category: string] : IModelSpecialParam;
+}
 export const defaultDatabase_url = {
   checkBox: {
     checkBoxValue: false,

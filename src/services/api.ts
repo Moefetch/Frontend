@@ -39,6 +39,8 @@ class API {
     });
 
     this.settings = new Settings(this.localStorageSettings);
+    
+    this.settings.createTree()
   }
 
   public backendUrl = "";

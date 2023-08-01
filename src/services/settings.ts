@@ -6,6 +6,7 @@ import type {
   ILogicCategorySpecialParamsDictionary,
   IModelSpecialParam,
   ILogicCategorySpecialSettingsDictionary,
+  IParamsTree,
 } from "./types";
 
 import { defaultDatabase_url, stockSettings } from "./types";
@@ -13,6 +14,7 @@ import { defaultDatabase_url, stockSettings } from "./types";
 export class Settings implements ISettings {
   public backend_url: string;
   public database_url: Setting;
+  public paramsTree?: IParamsTree = {}
   public stock_settings: {
     show_nsfw: IParam;
     blur_nsfw: IParam;
@@ -29,7 +31,25 @@ export class Settings implements ISettings {
 
     if (settings.special_params) this.special_params = settingKeyValue(settings.special_params)
     if (settings.special_settings) this.special_settings = settingKeyValue(settings.special_settings)
+    
   }
+
+  /**
+   * createTree
+   */
+  public createTree() {
+    
+    for (const param in this.special_params) {
+      if (Object.prototype.hasOwnProperty.call(this.special_params, param)) {
+        const element = this.special_params[param];
+        if (this.paramsTree && element.category) {
+          if (!this.paramsTree[element.category]) this.paramsTree[element.category] = {}
+          this.paramsTree[element.category][param] = this.special_params[param];
+        }
+      }
+    }
+  }
+
 /* 
   private SpecialSettingsDictionaryProcess(
     logicSpecialSettingsDictionary: ILogicSpecialSettingsDictionary

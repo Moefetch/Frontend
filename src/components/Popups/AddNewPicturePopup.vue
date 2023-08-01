@@ -244,6 +244,7 @@ const picForm = reactive<INewPic>({
   optionalOverrideParams: undefined,
 });
 let albumUUID: string | undefined = undefined;
+let optionalOverrideParams = settingsForm.paramsTree ?? {}
 //make it autoselect album when you're in an album page
 if (route.name == "album") {
   const albumObj = albumCollection.find(
@@ -255,12 +256,7 @@ if (route.name == "album") {
 
     defaultSelectedAlbumType.value = albumObj.type;
     picForm.type = albumObj.type as INewPic["type"];
-    if (settingsForm.special_params) {
-      picForm.optionalOverrideParams = 
-        (JSON.parse(
-              JSON.stringify(settingsForm.special_params)
-            ) as typeof settingsForm.special_params)
-    }
+    setOptionalParams();
     albumUUID = albumObj.uuid;
   }
 }
@@ -292,11 +288,18 @@ function typeSelect(a: AlbumSchemaType) {
     picForm.type = undefined;
     picForm.optionalOverrideParams = undefined;
   } else picForm.type = a;
-  if (settingsForm.special_params) { //where we would filter by category and somewhere by hostname
-    picForm.optionalOverrideParams = settingsForm.special_params;
-  }
+  
+  setOptionalParams()  
 }
 
+function setOptionalParams() {
+  if (optionalOverrideParams && settingsForm.paramsTree && picForm.type && optionalOverrideParams[picForm.type]) {
+      picForm.optionalOverrideParams = 
+      (JSON.parse(
+            JSON.stringify(optionalOverrideParams[picForm.type])
+      ) as typeof settingsForm.paramsTree[string])
+    } else picForm.optionalOverrideParams = {}
+  }
 function albumSelect(a: string) {
   if ((a as string) == "Select Album") picForm.album = "";
   else picForm.album = a;
