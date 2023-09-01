@@ -25,6 +25,18 @@
         />
       </FieldErrorSlot>
 
+      <BaseDropMenu
+        :dropdownItemsArray="modelTypesArray"
+        @item-selected="typeSelect"
+        :defaultSelected="
+            defaultSelected == 'Home'
+              ? 'Select album'
+              : selectAlbumType()
+          "
+        bg-color-hex="#111112"
+        :class="`box-content`"
+      />
+      
       <div class="flex flex-row justify-center items-center">
         <input
           class="advancedSearchInput"
@@ -95,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, inject } from "vue";
+import { reactive, ref, inject, onMounted } from "vue";
 import { api } from "../../services/api";
 import BaseDropMenu from "./BaseDropMenu.vue";
 import Button from "./Button.vue";
@@ -106,8 +118,12 @@ import FieldErrorSlot from "./FieldErrorSlot.vue";
 import { AppState } from "../../../state";
 import { AlbumSchemaType } from "../../services/types";
 
+const defaultSelectedAlbumType = ref<string | undefined>("");
+
+const modelTypesArray = ref(["All Categories"]);
 const state = inject("state") as AppState;
 const tagSearch = ref("");
+
 const tagsAutocomplete = ref<string[]>([]);
 
 const searchForm = reactive<{
@@ -131,8 +147,13 @@ const props = defineProps<{
   albums: { albumName: string; albumUUID: string; type: string }[];
   defaultSelected: string;
 }>();
-if (props.defaultSelected !== "Home") searchForm.album = props.defaultSelected;
+if (props.defaultSelected !== "Home") {
+  searchForm.album = props.defaultSelected
+};
 
+function typeSelect(a: AlbumSchemaType) {
+  albumType.value = a
+}
 const sortBy = ["Name", "Date Added", "Date Created"];
 
 function removeTag(value: string) {
@@ -143,19 +164,22 @@ function addTagToForm(tag: string) {
   tagSearch.value = "";
   tagsAutocomplete.value = [];
 }
-let albumType: AlbumSchemaType | undefined = undefined;
+const albumType = ref("")
 let albumUUID: string | undefined;
 
+const filteredAlbum = props.albums.find(
+    (album) => album.albumName == props.defaultSelected
+  );
 function selectAlbum(selected: string) {
   searchForm["album"] = selected;
-  const filteredAlbum = props.albums.find(
-    (album) => album.albumName == selected
-  );
-  albumType = filteredAlbum?.type as AlbumSchemaType | undefined;
+
+  albumType.value = filteredAlbum?.type as AlbumSchemaType ;
   albumUUID = filteredAlbum?.albumUUID;
   return props.defaultSelected;
 }
-
+function selectAlbumType() {
+  return filteredAlbum?.type
+}
 function selectSorting(selected: string) {
   searchForm["sortBy"] = selected;
 }
@@ -168,7 +192,7 @@ async function invokeSearchTags(tagSearch: string) {
   tagLookupTimeout = setTimeout(async () => {
     if (tagSearch && albumType) {
       tagsAutocomplete.value = (
-        await api.getTagsForSearchAutocomplete(tagSearch, albumType)
+        await api.getTagsForSearchAutocomplete(tagSearch, albumType.value)
       ).tags;
       console.log(tagsAutocomplete.value);
     } else tagsAutocomplete.value = [];
@@ -200,6 +224,13 @@ function submit() {
     router.push({ name: "search", params: { albumUUID: searchForm.album } });
   }
 }
+
+onMounted(async () => {
+  modelTypesArray.value = modelTypesArray.value.concat(
+    await api.getModelTypes()
+  );
+});
+
 </script>
 
 <style scoped lang="postcss">

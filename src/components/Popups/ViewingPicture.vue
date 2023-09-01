@@ -15,13 +15,22 @@
       ref="target2"
     >
       <div v-for="(pic, index) in item.imagesDataArray">
-        <img
+        <img v-if="item && (pic.thumbnail_file || !pic.isVideo)"
           :src="backendUrl + pic.thumbnail_file"
           :class="`pictureViewCards ${
             indexer == index ? 'pictureViewCardSelected' : ''
           } h-20`"
           @click="setIndexer(index)"
         />
+
+        <video v-if="item && (!pic.thumbnail_file && pic.isVideo)"
+        :src="backendUrl + pic.thumbnail_file ?? pic.file"
+        :class="`pictureViewCards ${
+            indexer == index ? 'pictureViewCardSelected' : ''
+          } h-20`"
+          @click="setIndexer(index)"
+        >
+        </video>
       </div>
     </div>
     <div v-if="item.imagesDataArray[indexer].isVideo" class="pictureView">
@@ -58,9 +67,7 @@ import { IPicture } from "../../services/types";
 import { api } from "../../services/api";
 import PictureViewData from "../Misc/PictureViewData.vue";
 import { onClickOutside } from "@vueuse/core";
-function funny() {
-  console.log("ass");
-}
+
 import { ref, inject } from "vue";
 
 import { AppState } from "../../../state";
@@ -76,24 +83,24 @@ const clickedOutsideOf = {
   second: false,
   third: false,
 };
-
 onClickOutside(target, (e) => {
   if ((e.target as HTMLElement).id !== "editButton") clickOutsideFunc("first");
-});
+}, {event: "click"});
 
 onClickOutside(target2, (e) => {
   if ((e.target as HTMLElement).id !== "editButton") clickOutsideFunc("second");
-});
+}, {event: "click"});
 
 onClickOutside(target3, (e) => {
   if ((e.target as HTMLElement).id !== "editButton") clickOutsideFunc("third");
-});
+}, {event: "click"});
 
 function clickOutsideFunc(ofWhich: "first" | "second" | "third") {
   clickedOutsideOf[ofWhich] = true;
 
   setTimeout(() => {
     if (
+      state.popup == "ViewingPicture" &&
       clickedOutsideOf.first &&
       clickedOutsideOf.second &&
       clickedOutsideOf.third
@@ -135,7 +142,7 @@ function setIndexer(params: number) {
   column-gap: 1rem;
 }
 .pictureViewCardsContainerZero {
-  @apply flex gap-4 items-center;
+  @apply flex gap-4 items-center justify-center;
 }
 .pictureViewCardsContainerLeft {
   @apply flex-wrap ml-8 h-[84vh] w-[220px];

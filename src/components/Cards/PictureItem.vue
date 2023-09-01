@@ -16,7 +16,7 @@
           <div
             :class="'w-[fit-content] h-[fit-content] overflow-hidden relative rounded-[0.2rem] '"
           >
-            <img
+            <img v-if=" !picture.imagesDataArray[picture.indexer].isVideo"
               :src="backendUrl + pictureURL"
               :class="
                 'pictureCard overflow-hidden ' +
@@ -24,6 +24,16 @@
               "
               :draggable="false"
             />
+            <video 
+            v-if="picture.imagesDataArray[picture.indexer].isVideo"
+            :src="backendUrl + pictureURL"
+            :class="
+                'pictureCard overflow-hidden ' +
+                `${doBlurBool ? 'blurPicture' : ''}`
+              "
+              :draggable="false"
+            />
+    
           </div>
         </SelectSlot>
       </div>

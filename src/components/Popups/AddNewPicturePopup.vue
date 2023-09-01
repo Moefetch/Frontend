@@ -29,6 +29,7 @@
         :class="`${picFormError.picTypeError ? 'error' : ''} box-content`"
         @click="picFormError.picTypeError = false;"
       />
+      
       <BaseDropMenu
         v-if="!createAlbumToggle"
         :dropdownItemsArray="albumsNamesArray"
@@ -39,6 +40,7 @@
         :class="`${picFormError.picAlbumError ? 'error' : ''} box-content`"
         @click="picFormError.picAlbumError = false"
       />
+
       <FieldErrorSlot :errorMessage="AlbumNameErrorMessage">
         <input
           v-if="createAlbumToggle"
@@ -54,7 +56,12 @@
           max="64"
         />
       </FieldErrorSlot>
-      <div v-if="picForm.stockOptionalOverrides">
+
+      <div class="flex flex-row gap-2 pl-1" @click="advancedOptionsToggle = !advancedOptionsToggle">
+        <h2>Advanced options</h2> <div class="w-[16px] "><Icon :icon="advancedOptionsToggle ? 'up' : 'down'" /></div>
+      </div>
+
+      <div v-if="picForm.stockOptionalOverrides && advancedOptionsToggle">
         <div v-for="(value, key) in picForm.stockOptionalOverrides">
           <div class="flex flex-col gap-[0.5rem]">
             <div v-if="value.checkBox"
@@ -120,19 +127,23 @@
         </div>
       </div>
 
-      <div v-if="picForm.optionalOverrideParams"> <!-- ay yo comere -->
+      <div class="flex flex-row gap-2 pl-1" @click="advancedParamsToggle = !advancedParamsToggle">
+        <h2>Category Parameters</h2> <div class="w-[16px] "><Icon :icon="advancedParamsToggle ? 'up' : 'down'" /></div>
+      </div>
+
+      <div v-if="picForm.optionalOverrideParams && advancedParamsToggle"> <!-- ay yo comere -->
         
         <div
           v-for="(value, key) in picForm.optionalOverrideParams"
         >
         <div class="flex flex-col gap-[0.5rem]">
-          <div v-if="value.checkBox"
+          <div v-if="value && value.checkBox"
             class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
           >
             <div class="h-[24px] right-0 flex flex-row items-center">
               <div
                 class="checkbox_option w-[16rem]"
-                @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue"
+                @click="value.checkBox.checkBoxValue = !value.checkBox?.checkBoxValue"
               >
                 <Icon
                   :icon="
@@ -168,6 +179,7 @@
         </div>
         </div>
       </div>
+      
       <Button
         text="Submit"
         color="#4d6d8d"
@@ -226,6 +238,8 @@ const picPreview = ref<string>("/icons/image.svg");
 const picHTMLElement = ref<HTMLDivElement | undefined>(undefined);
 const newAlbumInput = ref<HTMLDivElement | undefined>(undefined);
 const createAlbumToggle = ref(false);
+const advancedOptionsToggle = ref(false);
+const advancedParamsToggle = ref(false);
 const modelTypesArray = ref(["Select type"]);
 
 const defaultSelectedAlbumName = ref("");

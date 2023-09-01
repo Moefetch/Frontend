@@ -86,7 +86,7 @@ export interface IPixivTag {
   romaji?: string;
   enTranslation?: string;
 }
-export type AlbumSchemaType = "Anime Pic";
+export type AlbumSchemaType = string;
 
 export interface INewAlbum {
   name: string;

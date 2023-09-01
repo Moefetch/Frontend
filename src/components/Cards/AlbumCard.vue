@@ -87,7 +87,7 @@ watch(
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   font-style: normal;
   font-weight: 600;
-  font-size: 2.8vh;
+  font-size: 1.8vh;
   line-height: 100%;
   align-items: center;
   color: #ffffff;

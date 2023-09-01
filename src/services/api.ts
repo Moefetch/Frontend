@@ -44,6 +44,14 @@ class API {
   }
 
   public backendUrl = "";
+  /**
+   * capitalize
+   */
+  public capitalize(input: string) {
+    let output = input.substring(1)
+    output = input[0].toUpperCase() + output
+    return output
+  }
 
   public localStorageSettingsJSONString = localStorage.getItem("settings"); //to see if exists
 

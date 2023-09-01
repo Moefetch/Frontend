@@ -42,19 +42,24 @@
       </a>
     </div>
 
-    <div class="pictureViewTagDiv flex-col gap-col-12" v-if="item.tags">
+    <div class="pictureViewTagDiv flex-col gap-col-12">
       <h2 class="pictureViewDataText text-size-[30px] relative top-6">Tags:</h2>
       <div class="tagsContainer">
-        <div v-if="item.tags" class="tagsContainer">
+        <div class="tagsContainer" v-if="item.tags" >
           <h2
             class="pictureViewDataText textRoundedBg h-[fit-content] whitespace-nowrap"
             v-for="tag in item.tags"
           >
             {{ tag }}
           </h2>
-          <div class="addNewTag">
-            <Icon icon="plus" />
-          </div>
+        </div>
+          <div :class="`addNewTag cursor-pointer ${addNewTagToggle ? '' : 'bg-[#4F4F4F]'}`" @click="addNewTagToggle = true">
+            <input v-if="addNewTagToggle" 
+            v-model="newTag"
+            type="text" 
+            class="h-[32px] bg-[#4f4f4f] rounded-[8px] text-light-100"
+            >
+            <Icon icon="plus" v-if="!addNewTagToggle"/>
         </div>
       </div>
     </div>
@@ -62,8 +67,11 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from "vue";
 import { IPicture } from "../../services/types";
 import Icon from "./Icon.vue";
+const newTag = ref('');
+const addNewTagToggle = ref(false);
 const props = defineProps<{
   item: IPicture;
   indexer: number;
@@ -101,7 +109,7 @@ if (props.item.links) {
   @apply w-full flex flex-col;
 }
 .addNewTag {
-  @apply bg-[#4F4F4F] rounded-[12px] p-1 pl-2 pr-2;
+  @apply rounded-[12px] p-1 pl-2 pr-2;
   @apply h-8 w-8;
 }
 </style>

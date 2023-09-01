@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "@vueuse/core": "^6.9.2",
+    "i": "^0.3.7",
     "nanoid": "^3.3.0",
+    "npm": "^9.8.1",
     "vue": "^3.2.31",
     "vue-router": "^4.0.12"
   },
@@ -23,9 +25,24 @@
     "windicss": "^3.4.3"
   },
   "pkg": {
-    "scripts": ["./src/Logic/*.js", "./src/Logic/LogicCategories/*.js", "./src/Logic/LogicCategories/*/*.js", "./src/Logic/LogicCategories/*/*/*.js", "./src/Logic/LogicCategories/*/*/*/*.js"],
-    "assets": ["./src/Logic/*.js", "./src/Logic/LogicCategories/*.js", "./src/Logic/LogicCategories/*/*.js", "./src/Logic/LogicCategories/*/*/*.js", "./src/Logic/LogicCategories/*/*/*/*.js"],
-    "targets": [ "latest-linux-x64", "latest-win-x64" ],
+    "scripts": [
+      "./src/Logic/*.js",
+      "./src/Logic/LogicCategories/*.js",
+      "./src/Logic/LogicCategories/*/*.js",
+      "./src/Logic/LogicCategories/*/*/*.js",
+      "./src/Logic/LogicCategories/*/*/*/*.js"
+    ],
+    "assets": [
+      "./src/Logic/*.js",
+      "./src/Logic/LogicCategories/*.js",
+      "./src/Logic/LogicCategories/*/*.js",
+      "./src/Logic/LogicCategories/*/*/*.js",
+      "./src/Logic/LogicCategories/*/*/*/*.js"
+    ],
+    "targets": [
+      "latest-linux-x64",
+      "latest-win-x64"
+    ],
     "outputPath": "dist"
   },
   "bin": "./index.js"

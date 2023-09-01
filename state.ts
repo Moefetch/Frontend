@@ -2,6 +2,16 @@ import { Album } from "./src/services/album";
 import { api } from "./src/services/api";
 import { reactive, ref } from "vue";
 import { IFilterObj } from "./src/services/types";
+import { stockSettings, defaultDatabase_url } from "./src/services/types";
+import { Settings } from "./src/services/settings";
+
+const defaultSettings = new Settings({
+  backend_url: "http://127.0.0.1:2234/",
+  database_url: defaultDatabase_url,
+  stock_settings: stockSettings,
+  special_settings: undefined,
+  special_params: undefined,
+});
 
 export class AppState {
   public stateVariables = reactive({
@@ -13,8 +23,21 @@ export class AppState {
     advancedSearchOptions: {} as IFilterObj,
     showNSFW: true,
     showHidden: true,
+    settingsInstance: api.settings,
   });
-
+  /**
+   * saveSettings
+   */
+  public saveSettings() {
+    localStorage.setItem('settings', JSON.stringify(this.stateVariables.settingsInstance))
+  }
+  /**
+   * useDefaultSettings
+   */
+  public useDefaultSettings() {
+    localStorage.setItem('settings', JSON.stringify(defaultSettings))
+  }
+  
   /**
    * deleteSelectedEntries
    */
@@ -54,9 +77,9 @@ export class AppState {
     const settings = api.getSettings();
     if (settings) {
       this.stateVariables.showHidden =
-        settings.stock_settings.show_hidden.checkBoxValue;
+        !!settings.stock_settings.show_hidden.checkBox?.checkBoxValue;
       this.stateVariables.showNSFW =
-        settings.stock_settings.show_nsfw.checkBoxValue;
+        !!settings.stock_settings.show_nsfw.checkBox?.checkBoxValue;
     }
   }
 

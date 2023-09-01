@@ -1,7 +1,7 @@
 <template>
   <div
     class="pictures_container grid"
-    v-if="album.pictures"
+    v-if="album && album.pictures"
     @mouseup="mouseRelease()"
     @mousedown="mouseClickBackground()"
   >
@@ -9,7 +9,7 @@
       v-for="(picture, index) in album.pictures"
       :picture="picture"
       :key="picture.id"
-      @click="handleMouseClick(picture, index)"
+      @click="e => handleMouseClick(e, picture, index)"
       @mousedown="holdDownMouseStart()"
       :selected="picture.isSelected && state.stateVariables.isEditing"
       @mouseup="mouseDownBool = false"
@@ -53,6 +53,7 @@ const route = useRoute();
 const state = inject("state") as AppState;
 
 const album = computed(() => {
+  if (state.stateVariables.albums[route.params.albumUUID as string]) state.stateVariables.albums[route.params.albumUUID as string].getPictures(state.stateVariables.advancedSearchOptions)
   return state.stateVariables.albums[route.params.albumUUID as string];
 });
 
@@ -84,7 +85,7 @@ onKeyStroke("ArrowRight", (e) => {
 });
 
 onMounted(async () => {
-  album.value.getPictures(state.stateVariables.advancedSearchOptions);
+  if (album.value) album.value.getPictures(state.stateVariables.advancedSearchOptions);
   state.clearAdvancedSearchOptions();
 });
 
@@ -97,7 +98,8 @@ function turnOffMouseDown() {
   mouseDownBool.value = false;
   mouseDownOnPic.value = false;
 }
-function handleMouseClick(picture: Picture, index: number) {
+function handleMouseClick(e: Event, picture: Picture, index: number) {
+  e.stopPropagation()
   if (!state.stateVariables.isEditing) {
     turnOffMouseDown();
     picIndexer.value = index;

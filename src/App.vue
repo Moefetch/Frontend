@@ -5,10 +5,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, provide } from "vue";
+import { provide } from "vue";
 import Header from "./components/Global/Header.vue";
 import { state } from "../state";
-import { api } from "./services/api";
 
 provide("state", state);
 </script>
