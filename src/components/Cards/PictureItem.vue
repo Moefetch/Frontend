@@ -16,7 +16,7 @@
           <div
             :class="'w-[fit-content] h-[fit-content] overflow-hidden relative rounded-[0.2rem] '"
           >
-            <img v-if=" !picture.imagesDataArray[picture.indexer].isVideo"
+            <img v-if="!(picture.imagesDataArray[picture.indexer].isVideo && !thumbnailFile)"
               :src="backendUrl + pictureURL"
               :class="
                 'pictureCard overflow-hidden ' +
@@ -25,7 +25,7 @@
               :draggable="false"
             />
             <video 
-            v-if="picture.imagesDataArray[picture.indexer].isVideo"
+            v-if="picture.imagesDataArray[picture.indexer].isVideo && !thumbnailFile"
             :src="backendUrl + pictureURL"
             :class="
                 'pictureCard overflow-hidden ' +
@@ -54,10 +54,11 @@ const props = defineProps<{
   picture: Picture;
   selected?: boolean;
 }>();
-
+const thumbnailFile = props.picture.thumbnailFile;
 const pictureURL =
-  props.picture.thumbnailFile ||
+  thumbnailFile ||
   props.picture.imagesDataArray[props.picture.indexer].thumbnail_file;
+
 const vIfVar = props.picture.imagesDataArray.length;
 const backendUrl = api.getBackendUrl();
 const settings = api.getSettings();

@@ -3,14 +3,14 @@
     class="pictures_container grid"
     v-if="album && album.pictures"
     @mouseup="mouseRelease()"
-    @mousedown="mouseClickBackground()"
+    @mousedown="mouseClickBackground"
   >
     <PictureItem
       v-for="(picture, index) in album.pictures"
       :picture="picture"
       :key="picture.id"
       @click="e => handleMouseClick(e, picture, index)"
-      @mousedown="holdDownMouseStart()"
+      @mousedown="holdDownMouseStart"
       :selected="picture.isSelected && state.stateVariables.isEditing"
       @mouseup="mouseDownBool = false"
       @mouseover="hoverOverPics(picture)"
@@ -61,9 +61,12 @@ const picIndexer = ref(0);
 const mouseDownBool = ref(false);
 const mouseDownOnPic = ref(false);
 
-function mouseClickBackground() {
-  if (state.stateVariables.popup) turnOffMouseDown();
-  else mouseDownBool.value = true;
+function mouseClickBackground(e: Event) {
+  console.log(e);
+  if ((e as any).buttons == 1) { 
+    if (state.stateVariables.popup) turnOffMouseDown();
+    else mouseDownBool.value = true;
+  }
 }
 
 onKeyStroke("ArrowLeft", (e) => {
@@ -109,13 +112,16 @@ function handleMouseClick(e: Event, picture: Picture, index: number) {
   }
 }
 
-function holdDownMouseStart() {
+function holdDownMouseStart(e: Event) {
   /*  if (state.stateVariables.isEditing) {
     picture.select()
     
   }   */
-  mouseDownOnPic.value = true;
-  mouseDownBool.value = true;
+  if ((e as any ).buttons == 1) {
+    console.log(e);
+    mouseDownOnPic.value = true;
+    mouseDownBool.value = true;
+  }
 }
 
 function hoverOverPics(picture: Picture) {
