@@ -177,13 +177,19 @@ export const defaultPicFormStockOverrides: IPicFormStockOverrides = {
 };
 
 export interface INewPic {
-  file?: string;
+  files?: string[];
+  tempFileStore?: {
+    fileName: string,
+    filePreviewURL: string,
+    fileBlob: File,
+  }[];
+  createAlbumToggle?: boolean;
+  createAlbumName?: string;
   old_file?: string;
   thumbnail_file?: string;
   url: string;
   optionalOverrideParams?: IModelSpecialParam;
   stockOptionalOverrides?: IPicFormStockOverrides;
-  useSauceNao?: boolean;
   has_results?: boolean;
   type?: AlbumSchemaType;
   album: string;

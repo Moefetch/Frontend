@@ -62,7 +62,6 @@ const mouseDownBool = ref(false);
 const mouseDownOnPic = ref(false);
 
 function mouseClickBackground(e: Event) {
-  console.log(e);
   if ((e as any).buttons == 1) { 
     if (state.stateVariables.popup) turnOffMouseDown();
     else mouseDownBool.value = true;
@@ -118,7 +117,6 @@ function holdDownMouseStart(e: Event) {
     
   }   */
   if ((e as any ).buttons == 1) {
-    console.log(e);
     mouseDownOnPic.value = true;
     mouseDownBool.value = true;
   }

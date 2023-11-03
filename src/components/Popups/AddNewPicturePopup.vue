@@ -1,26 +1,75 @@
 <template>
-  <div class="popup_container">
-    <div class="text-[12px] flex flex-col gap-[0.5rem]">
-      <!--<div :class="`rounded-[4px] border-[#3D3D3D] border-[4px]`">
-                <img :src="picPreview" alt="" class="album_thumbnail_preview h-[100px] w-[100px] max-h-[100px] max-w-[100px]"/>
-            </div>
-            <form>
-                <input type="file" @change="OnAlbumCoverChange" style="display: none" id="picHTMLElement" name="picHTMLElement" ref="picHTMLElement" accept="image/*" />
-            </form> -->
-    </div>
+  <div class="add_new_popup_container">
     <div class="flex flex-col gap-2">
-      <FieldErrorSlot :errorMessage="picUrlErrorMessage">
-        <textarea
-          v-model="picForm.url"
-          class="inputField"
-          :style="`height: ${calculateHeightForTextArea(
-            picForm.url.split('\n').length * 11.6 + 20
-          )}px`"
-          type="text"
-          placeholder="Image URL or post URL"
-          @click="picFormError.picNameError = false"
-        />
-      </FieldErrorSlot>
+      <div class="m-auto w-full justify-center align-middle items-center flex flex-col">
+        <div class="overflow-hidden rounded-[0.25rem] max-w-[180px] max-h-[140px] min-h-2" >
+          <div v-if="picForm.tempFileStore?.length" class="flex flex-row gap-1 overflow-x-scroll">
+            <div v-for="pic in picForm.tempFileStore" class="border-transparent border-b-width-[10px] border-t-width-[10px]">
+              <img 
+                class="max-w-[90px] max-h-[100px] rounded-[8px] relative object-contain"
+                :src="pic.filePreviewURL" alt=""
+              >
+            </div>
+          </div>
+        </div>
+        <div v-if="picFormArrayLength > 1" class="m-auto w-full justify-center align-middle items-center flex flex-row">
+          <Button
+            text=""
+            icon="left"
+            color=""
+            :disabled="(entryIndexer == 0 && picFormArrayLength == 1)"
+            class="w-[36px] rounded-[8px]"
+            @click="changeIndexer('minus')"
+            />
+
+          <h2 >{{ (entryIndexer + 1) + " / " + picFormArrayLength }}</h2>
+
+          <Button
+            text=""
+            icon="right"
+            :disabled="((entryIndexer - 1) == picFormArrayLength)"
+            color=""
+            class="w-[36px] rounded-[8px]"
+            @click="changeIndexer('plus')"
+            />
+        </div>
+      </div>
+
+      <div class="flex flex-row gap-1">
+        <div class="flex flex-col gap-1">
+          <FieldErrorSlot :errorMessage="picUrlErrorMessage">
+            <input v-if="!editBulkToggle"
+            v-model="picForm.url"
+              class="inputField"
+              type="text"
+              :disabled="!!picForm.tempFileStore?.length"
+              placeholder="Image URL or post URL"
+              @click="picUrlErrorMessage = ''"
+            />
+            <textarea v-else
+              v-model="picForm.url"
+              class="inputField"
+              :style="`height: ${calculateHeightForTextArea(
+                picForm.url.split('\n').length * 11.6 + 20
+              )}px`"
+              type="text"
+              :disabled="!!picForm.tempFileStore?.length"
+              placeholder="Image URL or post URL"
+              @click="picUrlErrorMessage = ''"
+            />
+          </FieldErrorSlot>
+        </div>
+        <img 
+          class="w-[28px]"
+          src="/icons/image_add.svg" alt="" 
+          @click="picHTMLElement?.click()">
+      <input 
+      type="file" multiple 
+      style="display: none;"
+      ref="picHTMLElement"
+      @change="onAddFiles"
+      >
+      </div>
 
       <BaseDropMenu
         :dropdownItemsArray="modelTypesArray"
@@ -31,7 +80,7 @@
       />
       
       <BaseDropMenu
-        v-if="!createAlbumToggle"
+        v-if="!picForm.createAlbumToggle"
         :dropdownItemsArray="albumsNamesArray"
         :defaultSelected="defaultSelectedAlbumName"
         :specialItem="'Create New Album'"
@@ -43,9 +92,9 @@
 
       <FieldErrorSlot :errorMessage="AlbumNameErrorMessage">
         <input
-          v-if="createAlbumToggle"
+          v-if="picForm.createAlbumToggle"
           type="text"
-          v-model="picForm.album"
+          v-model="picForm.createAlbumName"
           ref="newAlbumInput"
           id="newAlbumInput"
           name="newAlbumInput"
@@ -61,7 +110,7 @@
         <h2>Advanced options</h2> <div class="w-[16px] "><Icon :icon="advancedOptionsToggle ? 'up' : 'down'" /></div>
       </div>
 
-      <div v-if="picForm.stockOptionalOverrides && advancedOptionsToggle">
+      <div v-if="picForm.stockOptionalOverrides && advancedOptionsToggle"> 
         <div v-for="(value, key) in picForm.stockOptionalOverrides">
           <div class="flex flex-col gap-[0.5rem]">
             <div v-if="value.checkBox"
@@ -88,8 +137,23 @@
               :errorMessage="value.errorMessage"
               v-if="value.textField"
             >
+            <input
+                v-if="!value.useTextArea && !editBulkToggle"
+                :class="`${
+                  value.checkBox ? 
+                  value.checkBox?.checkBoxValue
+                    ? 'addNewImageInputField'
+                    : 'addNewImageInputFieldDisabled' 
+                  :  'addNewImageInputField'
+                }`"
+                type="text"
+                v-model="value.textField.value"
+                :placeholder="value.textField.fieldPlaceholder"
+                :disabled="value.checkBox ? !value.checkBox?.checkBoxValue : false"
+                @click="value.errorMessage = ''"
+              />
               <textarea
-                v-if="value.useTextArea"
+                v-else
                 v-model="value.textField.value"
                 :class="`${
                   value.checkBox ? 
@@ -107,21 +171,7 @@
                 :disabled="value.checkBox ? !value.checkBox?.checkBoxValue : false"
                 @click="value.errorMessage = ''"
               />
-              <input
-                v-else
-                :class="`${
-                  value.checkBox ? 
-                  value.checkBox?.checkBoxValue
-                    ? 'addNewImageInputField'
-                    : 'addNewImageInputFieldDisabled' 
-                  :  'addNewImageInputField'
-                }`"
-                type="text"
-                v-model="value.textField.value"
-                :placeholder="value.textField.fieldPlaceholder"
-                :disabled="value.checkBox ? !value.checkBox?.checkBoxValue : false"
-                @click="value.errorMessage = ''"
-              />
+              
             </FieldErrorSlot>
           </div>
         </div>
@@ -131,7 +181,7 @@
         <h2>Category Parameters</h2> <div class="w-[16px] "><Icon :icon="advancedParamsToggle ? 'up' : 'down'" /></div>
       </div>
 
-      <div v-if="picForm.optionalOverrideParams && advancedParamsToggle"> <!-- ay yo comere -->
+      <div v-if="picForm.optionalOverrideParams && advancedParamsToggle">
         
         <div
           v-for="(value, key) in picForm.optionalOverrideParams"
@@ -148,8 +198,8 @@
                 <Icon
                   :icon="
                     value.checkBox.checkBoxValue
-                      ? 'checked_checkbox'
-                      : 'unchecked_checkbox'
+                    ? 'checked_checkbox'
+                    : 'unchecked_checkbox'
                   "
                 />
                 <h2>{{ value.checkBox.checkBoxDescription }}</h2>
@@ -181,6 +231,28 @@
       </div>
       
       <Button
+        text=""
+        icon="remove"
+        color="#991b1b"
+        :disabled="(entryIndexer == 0 && picFormArray.length == 1)"
+        class="absolute bottom-8 left-8 w-[32px] rounded-[8px]"
+        @click="removeCurrentEntrt()"/>
+
+      <Button
+        text=""
+        icon="plus"
+        color="#4d6d8d"
+        class="absolute bottom-8 left-17 w-[32px] rounded-[8px]"
+        @click="addNewEntry()"/>
+
+        <Button
+        text=""
+        icon="bulk_edit"
+        color="#4d6d8d"
+        class="absolute bottom-8 right-30 w-[32px] rounded-[8px]"
+        @click="editBulkToggle = !editBulkToggle"/>
+
+      <Button
         text="Submit"
         color="#4d6d8d"
         class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]"
@@ -192,7 +264,7 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { onMounted, ref, inject, reactive } from "vue";
+import { onMounted, ref, inject, reactive, computed } from "vue";
 import BaseDropMenu from "../Misc/BaseDropMenu.vue";
 import Button from "../Misc/Button.vue";
 import Icon from "../Misc/Icon.vue";
@@ -234,21 +306,25 @@ let albumCollection: IAlbum[] = [
 
 let albumsNamesArray = albumCollection.map((a) => a.name);
 
-const picPreview = ref<string>("/icons/image.svg");
 const picHTMLElement = ref<HTMLDivElement | undefined>(undefined);
 const newAlbumInput = ref<HTMLDivElement | undefined>(undefined);
-const createAlbumToggle = ref(false);
 const advancedOptionsToggle = ref(false);
 const advancedParamsToggle = ref(false);
 const modelTypesArray = ref(["Select type"]);
+
+const entryIndexer  = ref(0);
+const editBulkToggle = ref(false);
 
 const defaultSelectedAlbumName = ref("");
 const defaultSelectedAlbumType = ref("");
 
 let settingsForm = reactive<ISettings>(api.settings);
 
-const picForm = reactive<INewPic>({
+const newPicForm: () => INewPic = () => ({
+  files: undefined,
+  tempFileStore: [],
   url: "",
+  createAlbumName: "",
   thumbnail_file: "",
   type: undefined,
   album: "",
@@ -256,7 +332,13 @@ const picForm = reactive<INewPic>({
     JSON.stringify(defaultPicFormStockOverrides)
   ) as typeof defaultPicFormStockOverrides,
   optionalOverrideParams: undefined,
-});
+})
+
+const picFormArray: INewPic[]= [newPicForm()]
+const picFormArrayLength = ref(1);
+
+const picForm = ref<INewPic>(picFormArray[entryIndexer.value]);
+
 let albumUUID: string | undefined = undefined;
 let optionalOverrideParams = settingsForm.paramsTree ?? {}
 //make it autoselect album when you're in an album page
@@ -266,17 +348,16 @@ if (route.name == "album") {
   );
   if (albumObj) {
     defaultSelectedAlbumName.value = albumObj.name;
-    picForm.album = albumObj.name;
+    picForm.value.album = albumObj.name;
 
     defaultSelectedAlbumType.value = albumObj.type;
-    picForm.type = albumObj.type as INewPic["type"];
+    picForm.value.type = albumObj.type as INewPic["type"];
     setOptionalParams();
     albumUUID = albumObj.uuid;
   }
 }
 
 const picFormError = reactive({
-  picNameError: false,
   picTypeError: false,
   picAlbumError: false,
 });
@@ -290,93 +371,156 @@ onMounted(async () => {
   );
 });
 
-/* let newAlbumCover: File | "" = ""; //on the event that i wanna give the option to upload images as input this'll be handy maybe
+const onAddFiles = (event: any) => {
+  if (picForm.value.url) {
+    picUrlErrorMessage.value = "Cannot use both URL and Files in an Entry";
+    setTimeout(() => {
+    picUrlErrorMessage.value = "";
+    }, 3000);
+  }
+  picForm.value.url = "";
+  const newFiles = event.target.files as File[];  
+  if (editBulkToggle.value) {
+    if (!picForm.value.tempFileStore) {
+      picForm.value.tempFileStore =  [];
+    }
 
-const OnAlbumCoverChange = (event: any) => {
-    newAlbumCover = event.target.files[0];
-    picPreview.value = URL.createObjectURL(newAlbumCover);
+    for (let index = 0; index < newFiles.length; index++) {
+    const file = newFiles[index];
+      
+      picForm.value.tempFileStore?.push({
+      fileBlob: file,
+      fileName: file.name,
+      filePreviewURL: URL.createObjectURL(file)
+      })
+
+      
+    } 
+
+  } else {
+    let skipfirst = !picForm.value.tempFileStore?.length ? 1 : 0;
+    if (skipfirst) picForm.value.tempFileStore = [{
+      fileBlob: newFiles[0],
+      fileName: newFiles[0].name,
+      filePreviewURL: URL.createObjectURL(newFiles[0])
+    }]
+
+    for (let index = skipfirst; index < newFiles.length; index++) {
+    addNewEntry();
+      picForm.value.tempFileStore = [{
+      fileBlob: newFiles[index],
+      fileName: newFiles[index].name,
+      filePreviewURL: URL.createObjectURL(newFiles[index])
+      }]
+    } 
+    
+  }
+  
 }
- */
+
 function typeSelect(a: AlbumSchemaType) {
   if ((a as string) == "Select type") {
-    picForm.type = undefined;
-    picForm.optionalOverrideParams = undefined;
-  } else picForm.type = a;
+    picForm.value.type = undefined;
+    picForm.value.optionalOverrideParams = undefined;
+  } else picForm.value.type = a;
   
   setOptionalParams()  
 }
 
 function setOptionalParams() {
-  if (optionalOverrideParams && settingsForm.paramsTree && picForm.type && optionalOverrideParams[picForm.type]) {
-      picForm.optionalOverrideParams = 
+  const currentPicFormType = picForm.value.type;
+  if (optionalOverrideParams && settingsForm.paramsTree && currentPicFormType && optionalOverrideParams[currentPicFormType]) {
+      picForm.value.optionalOverrideParams = 
       (JSON.parse(
-            JSON.stringify(optionalOverrideParams[picForm.type])
+            JSON.stringify(optionalOverrideParams[currentPicFormType])
       ) as typeof settingsForm.paramsTree[string])
-    } else picForm.optionalOverrideParams = {}
+    } else picForm.value.optionalOverrideParams = {}
   }
 function albumSelect(a: string) {
-  if ((a as string) == "Select Album") picForm.album = "";
-  else picForm.album = a;
+  if ((a as string) == "Select Album") picForm.value.album = "";
+  else picForm.value.album = a;
 }
 
 function toggleCreateNewAblum() {
-  createAlbumToggle.value = !createAlbumToggle.value;
+  picForm.value.createAlbumToggle = !picForm.value.createAlbumToggle;
   setTimeout(() => {
     newAlbumInput.value?.focus();
   }, 200);
+}
+function addNewEntry() {
+  picFormArray.push(newPicForm())
+  entryIndexer.value = picFormArray.length -1;
+  picFormArrayLength.value = picFormArray.length;
+  picForm.value = picFormArray[entryIndexer.value];
+}
+
+
+
+function changeIndexer(direction: "plus" | "minus") {
+  if (direction == "minus" && entryIndexer.value > 0) {
+    entryIndexer.value--
+  } else if (direction == "plus" && (entryIndexer.value + 1) < picFormArray.length) {   
+    entryIndexer.value++
+  }
+  picForm.value = picFormArray[entryIndexer.value];
+}
+
+function removeCurrentEntrt() {
+  if (!(entryIndexer.value == 0 && picFormArray.length == 1)) {
+    picFormArray.splice(entryIndexer.value, 1);
+  }
+  entryIndexer.value = !entryIndexer.value ? 0 : (entryIndexer.value - 1)
+  picFormArrayLength.value = picFormArray.length;
+  picForm.value = picFormArray[entryIndexer.value];
+
 }
 
 //garbage checks for incorrect entries
 
 async function submit() {
-  //url errors brrrrrr
-  if (!picForm.url) urlEmpty();
-
-  //pic type errors brrrrrrrrrrrrrrrrrr
-  if (!picForm.type) noTypeSelected();
-
-  if (!picForm.album && !createAlbumToggle.value) noAlbumelected();
-
-  if (
-    (picForm.album == undefined || picForm.album == "") &&
-    createAlbumToggle.value
-  )
-    albumNameEmpty();
-  if (picForm.album && createAlbumToggle.value) {
-    if ((picForm.album as string)[0].match(/[0-9]/))
-      albumNameStartsWithNumOrSpecial();
+  for (let index = 0; index < picFormArray.length; index++) {
+    const pic = picFormArray[index];
+      //url errors brrrrrr
+      if (!pic.url && !pic.tempFileStore?.length) urlEmpty();
+    
+      //pic type errors brrrrrrrrrrrrrrrrrr
+      if (!pic.type) noTypeSelected();
+    
+      if (!pic.album && !pic.createAlbumToggle) noAlbumelected();
+    
+      if (
+        (pic.album == undefined || pic.album == "") &&
+        pic.createAlbumToggle
+      )
+        albumNameEmpty();
+      if (pic.album && pic.createAlbumToggle) {
+        if ((pic.album as string)[0].match(/[0-9]/))
+          albumNameStartsWithNumOrSpecial();
+      }
+      if (pic.album?.match(/[^A-Za-z0-9_\s]/g)) albumNameContainsSpecialChar();
+    
+      if (
+        picFormError.picAlbumError ||
+        picUrlErrorMessage.value ||
+        picFormError.picTypeError
+      )
+        return;
+    
+      if (pic.createAlbumToggle && pic.createAlbumName) {
+        await api.createNewAlbum({
+          name: pic.createAlbumName,
+          type: pic.type,
+          album_thumbnail_file: "",
+          isHidden: false,
+        });
+    
+        const tablesContentRes = await api.getTableOfContents();
+        localStorage.setItem("albums", JSON.stringify(tablesContentRes));
+      }
   }
-  if (picForm.album?.match(/[^A-Za-z0-9_\s]/g)) albumNameContainsSpecialChar();
-
-  if (
-    picFormError.picAlbumError ||
-    picFormError.picNameError ||
-    picFormError.picTypeError
-  )
-    return;
-
-  if (createAlbumToggle.value) {
-    await api.createNewAlbum({
-      name: picForm.album,
-      type: picForm.type,
-      album_thumbnail_file: "",
-      isHidden: false,
-    });
-
-    const tablesContentRes = await api.getTableOfContents();
-    localStorage.setItem("albums", JSON.stringify(tablesContentRes));
-  }
-
   //the actual submit function
   api
-    .addPicture({
-      url: picForm.url,
-      type: picForm.type,
-      album: picForm.album,
-      stockOptionalOverrides: picForm.stockOptionalOverrides,
-      optionalOverrideParams: picForm.optionalOverrideParams,
-      isHidden: false,
-    })
+    .addPictures(picFormArray)
     .then((result) => {
       if (albumUUID) state.stateVariables.albums[albumUUID].addPictures(result);
     });
@@ -384,8 +528,7 @@ async function submit() {
 }
 
 function urlEmpty() {
-  picFormError.picNameError = true;
-  picUrlErrorMessage.value = "Please provide a url to picture";
+  picUrlErrorMessage.value = "Please provide a url to picture or upload";
 }
 
 function noTypeSelected() {
@@ -419,9 +562,9 @@ function albumNameContainsSpecialChar() {
   --popup_width: 480px;
 }
 
-.popup_container {
+.add_new_popup_container {
   @apply absolute top-0 left-0 right-0 bottom-0 m-auto;
-  @apply p-10 pb-[10rem] h-[fit-content];
+  @apply p-10 pt-6 pb-[5rem] h-[fit-content];
   @apply border-[3px] border-[#254EE0] gap-[14px] text-light-400;
   @apply flex-row gap-[4px] align-middle;
 
@@ -434,7 +577,7 @@ function albumNameContainsSpecialChar() {
   border-radius: 4px;
   background-color: rgba(42, 45, 52, 1);
 
-  width: 28rem;
+  width: 19.5rem;
 }
 .album_thumbnail_preview {
   @apply h-[12.4vh] w-[12.4vh];
@@ -443,7 +586,7 @@ function albumNameContainsSpecialChar() {
 }
 
 .inputField[type="text"] {
-  @apply outline-none w-[16rem] h-[2rem] box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 placeholder-light-400;
+  @apply outline-none w-[12rem] h-[2rem] box-content transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 placeholder-light-400;
   @apply max-h-[90vh];
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;
@@ -456,15 +599,27 @@ function albumNameContainsSpecialChar() {
 }
 
 .addNewImageInputField[type="text"] {
-  @apply outline-none h-[2rem] w-[16rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 resize-none;
+  @apply outline-none h-[2rem] w-[14rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 resize-none;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;
   color: rgb(202, 202, 202);
 }
 .addNewImageInputFieldDisabled[type="text"] {
-  @apply outline-none h-[2rem] w-[16rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 resize-none;
+  @apply outline-none h-[2rem] w-[14rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 resize-none;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;
   color: rgb(129, 129, 129);
 }
+
+.muliNewImageNum {
+  @apply relative p-[2px] rounded-[6px] z-1;
+  background-color: rgba(134, 134, 134, 0.575);
+  margin-left: auto;
+  padding:  0px 6px 0px 6px;
+  width: fit-content;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
 </style>

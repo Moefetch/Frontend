@@ -16,18 +16,16 @@
           class="album_thumbnail_preview h-[100px] w-[100px] max-h-[100px] max-w-[100px]"
         />
       </div>
-      <form>
-        <input
-          type="file"
-          @change="OnAlbumCoverChange"
-          style="display: none"
-          id="albumcover"
-          name="albumCover"
-          ref="albumCover"
-          accept="image/*"
-        />
-        <!-- <h2 class="max-w-[100px] text-center">Upload album cover</h2> -->
-      </form>
+      <input
+        type="file"
+        @change="OnAlbumCoverChange"
+        style="display: none"
+        id="albumcover"
+        name="albumCover"
+        ref="albumCover"
+        accept="image/*"
+      />
+      
     </div>
     <div class="flex flex-col gap-2">
       <h2
@@ -137,8 +135,9 @@ let newAlbumCover: File | "" = "";
 
 const OnAlbumCoverChange = (event: any) => {
   newAlbumCover = event.target.files[0];
+  
   if (typeof newAlbumCover != "string")
-    newAlbumCoverPreview.value = URL.createObjectURL(newAlbumCover);
+  newAlbumCoverPreview.value = URL.createObjectURL(newAlbumCover);
   else newAlbumCoverPreview.value = newAlbumCover;
 };
 

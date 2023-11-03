@@ -1,6 +1,6 @@
 <template>
-  <Header class="min-h-[7vh] h-{fit-content]" />
-  <div class="max-h-[93vh] nice_scroll h-{fit-content]">
+  <Header class="min-h-[40px] h-{fit-content]" />
+  <div class="max-h-[calc(100vh-40px)] nice_scroll h-[calc(100vh-40px)]">
     <router-view />
   </div>
 </template>

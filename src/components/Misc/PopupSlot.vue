@@ -23,7 +23,7 @@ const state = (inject("state") as AppState).stateVariables;
 
 <style lang="postcss">
 .popupContainer {
-  @apply absolute cursor-pointer w-[100%] h-[93vh] left-0 top-[5vh] z-1 max-h-[93vh] items-center flex justify-center;
+  @apply absolute cursor-pointer w-[100%] h-[calc(100vh-40px)] left-0 top-[40px] z-1 max-h-[calc(100vh-40px)] items-center flex justify-center;
   background-color: rgb(53, 53, 53, 0.4);
 }
 .slottedElement {

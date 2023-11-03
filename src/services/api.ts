@@ -78,8 +78,27 @@ class API {
     } else this.localStorageSettings.backend_url = "http://localhost:2234";
   }
 
-  public addPicture(data: INewPic) {
-    return this.backendRequest<[IPicture]>("post", "/add-picture", data);
+  public async addPictures(data: INewPic[]) {
+    let filesArray: File[] = [];
+    const formData = new FormData();
+    data.forEach(picFormElement => {
+      picFormElement.files = [];
+      if (picFormElement.tempFileStore?.length) {
+        picFormElement.tempFileStore.forEach((el, index) => {
+          filesArray.push(el.fileBlob);
+          picFormElement.files?.push(el.fileName);
+        })
+
+        delete picFormElement.tempFileStore;
+        delete picFormElement.createAlbumName;
+        delete picFormElement.createAlbumToggle;
+      }
+    })
+    formData.append("entries", JSON.stringify(data));
+    filesArray.forEach(file => formData.append("temp_download", file))
+    
+    //await this.backendRequest<void>("post", "/download-files", formData);
+    return this.backendRequest<[IPicture]>("post", "/add-pictures", formData);
   }
   public async createNewAlbum(data: INewAlbum) {
     const { name, album_thumbnail_file, type, isHidden } = data;
