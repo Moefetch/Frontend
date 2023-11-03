@@ -20,13 +20,13 @@ class API {
     this.setBackendURL();
 
     this.getSpecialSettings().then((res) => {
-      this.compareSpecialSettingsToDefault(
+      this.localStorageSettings = this.compareSpecialSettingsToDefault(
         this.localStorageSettings,
         "special_settings",
         res
-      );
+      )
       this.getSpecialParamsDictionary().then((res) => {
-        this.compareSpecialSettingsToDefault(
+        this.localStorageSettings = this.compareSpecialSettingsToDefault(
           this.localStorageSettings,
           "special_params",
           res
@@ -205,6 +205,7 @@ for (const param in defaultSpecialSettingsOrParams) {
   if (Object.prototype.hasOwnProperty.call(defaultSpecialSettingsOrParams, param)) {
     const element = internalSettingVar[divisionType]
     if (element && !element[param]) element[param] = defaultSpecialSettingsOrParams[param];
+    internalSettingVar[divisionType] = element;
   }
 }
   return internalSettingVar as typeof initialSettings

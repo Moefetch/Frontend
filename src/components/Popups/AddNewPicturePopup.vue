@@ -452,6 +452,23 @@ function addNewEntry() {
   entryIndexer.value = picFormArray.length -1;
   picFormArrayLength.value = picFormArray.length;
   picForm.value = picFormArray[entryIndexer.value];
+
+
+  if (route.name == "album") {
+  const albumObj = albumCollection.find(
+    (a) => a.uuid == route.params.albumUUID
+  );
+  if (albumObj) {
+    defaultSelectedAlbumName.value = albumObj.name;
+    picForm.value.album = albumObj.name;
+
+    defaultSelectedAlbumType.value = albumObj.type;
+    picForm.value.type = albumObj.type as INewPic["type"];
+    setOptionalParams();
+    albumUUID = albumObj.uuid;
+  }
+}
+
 }
 
 
