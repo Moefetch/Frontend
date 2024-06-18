@@ -1,3 +1,10 @@
+export interface IAutoCompleteTags {
+  tag: string;
+  category?: string;
+}
+
+
+
 export interface IAlbum {
   albumCoverImage: string;
   name: string;

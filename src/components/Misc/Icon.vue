@@ -1,5 +1,5 @@
 <template>
-  <img
+  <img 
     class="icon h-full w-full"
     :src="`/icons/${icon}.svg`"
     style="aspect-ratio: 1 / 1; object-fit: contain"
@@ -8,8 +8,6 @@
 </template>
 
 <script setup lang="ts">
-
-import { ref } from "vue";
   defineProps<{icon: string}>();
   //const modeProd = ref(import.meta.env.PROD); //add /moefetch-client in the '' up above if you wanna build for github and add ${modeProd? '' : ''} before /icons/
 </script>

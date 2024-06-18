@@ -3,6 +3,6 @@
   "typescript.inlayHints.parameterNames.enabled": "all",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": false,
+    "source.organizeImports": "never"
   }
 }

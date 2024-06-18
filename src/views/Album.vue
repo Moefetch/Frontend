@@ -1,35 +1,17 @@
 <template>
-  <div
-    class="pictures_container grid"
-    v-if="album && album.pictures"
-    @mouseup="mouseRelease()"
-    @mousedown="mouseClickBackground"
-  >
-    <PictureItem
-      v-for="(picture, index) in album.pictures"
-      :picture="picture"
-      :key="picture.id"
-      @click="e => handleMouseClick(e, picture, index)"
-      @mousedown="holdDownMouseStart"
-      :selected="picture.isSelected && state.stateVariables.isEditing"
-      @mouseup="mouseDownBool = false"
-      @mouseover="hoverOverPics(picture)"
-      @mouseleave="handleMouseLeave(picture)"
-    />
+  <div class="pictures_container grid" v-if="album && album.pictures" @mouseup="mouseRelease()"
+    @mousedown="mouseClickBackground">
+    <PictureItem v-for="(picture, index) in album.pictures" :picture="picture" :key="picture.id"
+      @click="(e: Event) => handleMouseClick(e, picture, index)" @mousedown="holdDownMouseStart"
+      :selected="picture.isSelected && state.stateVariables.isEditing" @mouseup="mouseDownBool = false"
+      @mouseover="hoverOverPics(picture)" @mouseleave="handleMouseLeave(picture)" />
 
     <PopupSlot v-if="state.stateVariables.popup == 'ViewingPicture'">
-      <ViewingPicture
-        :item="album.pictures[picIndexer]"
-        :backendUrl="backendUrl"
-      />
+      <ViewingPicture :item="album.pictures[picIndexer]" :backendUrl="backendUrl" />
     </PopupSlot>
 
-    <EditControls
-      :deleteSelection="() => album.deleteSelectedPics()"
-      :hideSelection="() => album.handleHiding(true)"
-      :unhideSelection="() => album.handleHiding(false)"
-      v-if="state.stateVariables.isEditing"
-    />
+    <EditControls :deleteSelection="() => album.deleteSelectedPics()" :hideSelection="() => album.handleHiding(true)"
+      :unhideSelection="() => album.handleHiding(false)" v-if="state.stateVariables.isEditing" />
   </div>
 </template>
 
@@ -62,7 +44,7 @@ const mouseDownBool = ref(false);
 const mouseDownOnPic = ref(false);
 
 function mouseClickBackground(e: Event) {
-  if ((e as any).buttons == 1) { 
+  if ((e as any).buttons == 1) {
     if (state.stateVariables.popup) turnOffMouseDown();
     else mouseDownBool.value = true;
   }
@@ -116,7 +98,7 @@ function holdDownMouseStart(e: Event) {
     picture.select()
     
   }   */
-  if ((e as any ).buttons == 1) {
+  if ((e as any).buttons == 1) {
     mouseDownOnPic.value = true;
     mouseDownBool.value = true;
   }

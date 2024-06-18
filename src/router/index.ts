@@ -62,7 +62,7 @@ const routes = [
       {
         name: "keys",
         path: "keys",
-        component: () => import("../components/SettingsPages/Parameters.vue")
+        component: () => import("../components/SettingsPages/Keys.vue")
       },
     ]
   },

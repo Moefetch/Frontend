@@ -1,8 +1,11 @@
 <template>
   <div class="p-4 flex flex-row">
     <div class="p-4">
-      <SettingsMenuItem v-for="setting in settings" :name="setting"/>
+      <div class="rounded-t-[4px] h-[fit-content] w-[fit-content] overflow-hidden">
+        <SettingsMenuItem v-for="setting in settings" :name="setting"/>
+      </div>
     </div>
+    
     <VerticalSeparator seperatorText="" class="h-[86vh]"></VerticalSeparator>
     <div class="settingView flex-col-reverse h-[85vh]">
       <router-view class="h-full"/>

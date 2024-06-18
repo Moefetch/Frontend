@@ -11,6 +11,7 @@ import type {
   ILogicSpecialSettingsDictionary,
   ILogicSpecialParamsDictionary,
   IModelSpecialParam,
+  IAutoCompleteTags,
 } from "./types";
 import { stockSettings, defaultDatabase_url } from "./types";
 import { Settings } from "./settings";
@@ -173,7 +174,7 @@ class API {
     tagSearch: string,
     type: AlbumSchemaType
   ) =>
-    this.backendRequest<{ tags: string[] }>("post", "/autocomplete-tags", {
+    this.backendRequest<{ tags: IAutoCompleteTags[] }>("post", "/autocomplete-tags", {
       tagSearch: tagSearch,
       type: type,
     });

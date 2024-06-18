@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-for="(value, key) in settingsForm.special_params">
+    <div v-for="(value, category) in settingsForm.special_settings">
       <div class="flex flex-col gap-[0.5rem]">
         <BinaryTextField :value="value" />
       </div>
@@ -14,7 +14,6 @@ import BinaryTextField from "../Misc/BinaryTextField.vue";
 import { inject } from "vue";
 import { AppState } from "../../../state";
 const state = inject("state") as AppState;
-
 
 const settingsForm = state.stateVariables.settingsInstance
 
