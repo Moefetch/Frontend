@@ -1,9 +1,5 @@
 <template>
-  <h2
-    class="text-red-500 indent-2px text-14px"
-    v-if="errorMessage"
-    :style="`${errorMessage ? '' : 'display: none;'}`"
-  >
+  <h2 class="text-red-500 indent-2px text-14px" v-if="errorMessage" :style="`${errorMessage ? '' : 'display: none;'}`">
     {{ errorMessage }}
   </h2>
   <div :class="`${errorMessage || showRedBorderOnlyBool ? 'error' : ''}`">

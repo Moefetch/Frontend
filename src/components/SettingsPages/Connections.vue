@@ -1,83 +1,108 @@
 <template>
   <div>
     <div class="flex flex-col gap-[0.5rem]">
-        <FieldErrorSlot :errorMessage="settingsFormError.backendUrlError">
-        <input
-            class="popupInputField"
-            type="text"
-            v-model="settingsForm.backend_url"
-            placeholder="Backend   URL / Hostname and port e.g. http://127.0.0.1:2234/"
-            @click="settingsFormError.backendUrlError = ''"
-        />
+      <FieldErrorSlot :errorMessage="state.stateVariables.settingsFormError.backendUrlError">
+        <input class="popupInputField" type="text" v-model="settingsForm.backend_url"
+          placeholder="Backend   URL / Hostname and port e.g. http://127.0.0.1:2234/"
+          @click="state.stateVariables.settingsFormError.backendUrlError = ''" />
+      </FieldErrorSlot>
+      <fieldset class="border-light-50 border-1 rounded-[4px] h-[fit-content] p-2 flex flex-col gap-3">
+        <legend class="text-light-50 pl-1">Database </legend>
+        <FieldErrorSlot
+          :errorMessage="state.stateVariables.settingsFormError.selectDabase ? 'Please select a database type' : undefined">
+          <BaseDropMenu :dropdownItemsArray="typeORMSupportedDatabases" @item-selected="selectDB"
+            :defaultSelected="settingsForm?.database?.type || 'Select Type'"
+            :class="`w-36 ${state.stateVariables.settingsFormError.selectDabase ? 'error' : ''} box-content`"
+            @click="state.stateVariables.settingsFormError.selectDabase = false;" />
         </FieldErrorSlot>
-    </div>
-
-    <div class="flex flex-col gap-[0.5rem]">
-          <div v-if="settingsForm.database_url.checkBox"
-            class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
-          >
-            <div class="h-[24px] right-0 flex flex-row items-center">
-              <div
-                class="checkbox_option"
-                @click="
-                  settingsForm.database_url.checkBox.checkBoxValue =
-                    !settingsForm.database_url.checkBox.checkBoxValue
-                "
-              >
-                <Icon
-                  :icon="
-                    settingsForm.database_url.checkBox.checkBoxValue
-                      ? 'checked_checkbox'
-                      : 'unchecked_checkbox'
-                  "
-                />
-                <h2>{{ settingsForm.database_url.checkBox.checkBoxDescription }}</h2>
-              </div>
+        <div id="databaseUrl">
+          <input class="inputFieldText text-[#CACACA] w-60" type="text" placeholder="Host"
+            v-model="settingsForm.database.host">
+          <h2 class="text-gray-100">:</h2>
+          <input class="inputFieldText text-[#CACACA] w-30" type="text" placeholder="Port"
+            v-model="settingsForm.database.port">
+          <h2 class="text-gray-100">/</h2>
+          <input class="inputFieldText text-[#CACACA] w-60" type="text" placeholder="Database"
+            v-model="settingsForm.database.database">
+        </div>
+        <div class="checkbox_option" @click="settingsForm.database.useLogin = !settingsForm.database.useLogin">
+          <Icon :icon="settingsForm.database.useLogin
+        ? 'checked_checkbox'
+        : 'unchecked_checkbox'
+        " />
+          <h2>Use Login</h2>
+        </div>
+        <div id="databaseUrl" v-if="settingsForm.database.useLogin">
+          <input :class="`inputFieldText w-70 ${settingsForm.database.useLogin ? 'text-[#CACACA]' : 'text-[#818181]'}`"
+            type="text" placeholder="Username" v-model="settingsForm.database.username"
+            :disabled="!settingsForm.database.useLogin">
+          <input :class="`inputFieldText w-70 ${settingsForm.database.useLogin ? 'text-[#CACACA]' : 'text-[#818181]'}`"
+            type="text" placeholder="Password" v-model="settingsForm.database.password"
+            :disabled="!settingsForm.database.useLogin">
+        </div>
+        <div>
+          <Button text="Migrate from legacy NeDB" color="#4d6d8d"
+            class="text-size-[14px] w-52 rounded-[4px] text-light-100" @click="api.migrateFromNeDB()" />
+        </div>
+      </fieldset>
+      <div class="flex flex-col gap-[0.5rem]">
+        <div v-if="settingsForm.legacyMongoDB.checkBox"
+          class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
+          <div class="h-[24px] right-0 flex flex-row items-center">
+            <div class="checkbox_option" @click="
+        settingsForm.legacyMongoDB.checkBox.checkBoxValue =
+        !settingsForm.legacyMongoDB.checkBox.checkBoxValue
+        ">
+              <Icon :icon="settingsForm.legacyMongoDB.checkBox.checkBoxValue
+        ? 'checked_checkbox'
+        : 'unchecked_checkbox'
+        " />
+              <h2>{{ settingsForm.legacyMongoDB.checkBox.checkBoxDescription }}</h2>
             </div>
           </div>
-
-          <FieldErrorSlot
-            :errorMessage="settingsForm.database_url.errorMessage"
-            v-if="settingsForm.database_url.textField" 
-          >
-            <input
-            :class="`${
-                  settingsForm.database_url.checkBox ? 
-                  settingsForm.database_url.checkBox?.checkBoxValue
-                    ? 'settingsInputField'
-                    : 'settingsInputFieldDisabled' 
-                  :  'settingsInputField'
-                }`"
-              type="text"
-              v-model="settingsForm.database_url.textField.value"
-              :placeholder="
-                settingsForm.database_url.textField.fieldPlaceholder
-              "
-              :disabled="settingsForm.database_url.checkBox ? !settingsForm.database_url.checkBox.checkBoxValue : false"
-              @click="settingsForm.database_url.errorMessage = ''"
-            />
-          </FieldErrorSlot>
         </div>
+
+        <FieldErrorSlot :errorMessage="settingsForm.legacyMongoDB.errorMessage"
+          v-if="settingsForm.legacyMongoDB.textField">
+          <input :class="`${settingsForm.legacyMongoDB.checkBox ?
+        settingsForm.legacyMongoDB.checkBox?.checkBoxValue
+          ? 'settingsInputField'
+          : 'settingsInputFieldDisabled'
+        : 'settingsInputField'
+        }`" type="text" v-model="settingsForm.legacyMongoDB.textField.value" :placeholder="settingsForm.legacyMongoDB.textField.fieldPlaceholder
+        " :disabled="settingsForm.legacyMongoDB.checkBox ? !settingsForm.legacyMongoDB.checkBox.checkBoxValue : false"
+            @click="settingsForm.legacyMongoDB.errorMessage = ''" />
+        </FieldErrorSlot>
+      </div>
+
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import FieldErrorSlot from "../Misc/FieldErrorSlot.vue";
-import { inject, reactive } from "vue";
+import BaseDropMenu from "../Misc/BaseDropMenu.vue";
+import Button from "../Misc/Button.vue";
+import { inject, reactive, ref } from "vue";
 import Icon from "../Misc/Icon.vue";
 import { AppState } from "../../../state";
+import { ITypeORMDatabase } from "../../services/types";
+import { api } from "../../services/api";
 const state = inject("state") as AppState;
 
-
 const settingsForm = state.stateVariables.settingsInstance
-const settingsFormError = reactive({
-  backendUrlError: "",
-  hasError: false,
-});
+
+const typeORMSupportedDatabases = ["Select Type", "sqlite", "mysql", "postgres", "cockroachdb", "sap", "spanner", "mariadb", "better-sqlite3", "legacy mongodb"]
+function selectDB(db: ITypeORMDatabase["type"]) {
+  if ((db as string) == "Select Type") {
+    settingsForm.database.type = undefined;
+  } else settingsForm.database.type = db;
+}
 
 /* defineProps<{}>();
 defineEmits([]);
  */
+
 </script>
 
 <style scoped lang="postcss">
@@ -108,11 +133,22 @@ left: calc((100vw - var(--setup_popup_width))/2);
 right: calc((100vw - var(--setup_popup_width) )/2);
 top: calc((100vh - var(--setup_popup_height) + 7vh)/2) */
 }
+
+#databaseUrl {
+  @apply flex flex-row gap-2;
+}
+
 .popupInputField[type="text"] {
   @apply outline-none h-[2rem] w-[48rem] max-w-[48rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;
   color: rgb(202, 202, 202);
+}
+
+.inputFieldText[type="text"] {
+  @apply outline-none box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
+  background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
+  font-family: "Work Sans", sans-serif;
 }
 
 .textLoadClass {
@@ -127,22 +163,26 @@ top: calc((100vh - var(--setup_popup_height) + 7vh)/2) */
   font-family: "Work Sans", sans-serif;
   color: rgb(202, 202, 202);
 }
+
 .popupSaucenaoKeyInputFieldDisabled[type="text"] {
   @apply outline-none h-[2rem] w-[58vw] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;
   color: rgb(129, 129, 129);
 }
+
 .checkbox_option_container h1 {
   @apply text-12px w-[100%];
   font-family: "Work Sans", sans-serif;
   color: white;
 }
+
 .checkbox_option {
   @apply text-12px flex flex-row items-center h-[24px] align-middle w-[35rem] gap-1 cursor-pointer;
   font-family: "Work Sans", sans-serif;
   color: white;
 }
+
 .checkbox_option img {
   @apply h-[24px] w-[24px];
 }
@@ -157,6 +197,7 @@ top: calc((100vh - var(--setup_popup_height) + 7vh)/2) */
   font-family: "Work Sans", sans-serif;
   color: rgb(202, 202, 202);
 }
+
 .settingsInputFieldDisabled[type="text"] {
   @apply outline-none h-[2rem] w-[48rem] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2 resize-none;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));

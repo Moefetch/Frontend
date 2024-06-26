@@ -7,13 +7,15 @@ import type {
   IModelSpecialParam,
   ILogicCategorySpecialSettingsDictionary,
   IParamsTree,
+  ITypeORMDatabase,
 } from "./types";
 
-import { defaultDatabase_url, stockSettings } from "./types";
+import { defaultLegacyMongoDB, stockSettings } from "./types";
 
 export class Settings implements ISettings {
   public backend_url: string;
-  public database_url: Setting;
+  public legacyMongoDB: Setting;
+  public database: ITypeORMDatabase;
   public paramsTree?: IParamsTree = {}
   public stock_settings: {
     show_nsfw: IParam;
@@ -26,9 +28,10 @@ export class Settings implements ISettings {
 
   constructor(settings: ISettings) {
     this.backend_url = settings.backend_url;
-    this.database_url = new Setting(settings.database_url);
+    this.database = settings.database;
+    this.legacyMongoDB = new Setting(settings.legacyMongoDB);
     this.stock_settings = settings.stock_settings;
-
+    
     if (settings.special_params) this.special_params = settingKeyValue(settings.special_params)
     if (settings.special_settings) this.special_settings = settingKeyValue(settings.special_settings)
     
@@ -330,7 +333,7 @@ export function getSettings() {
     settings ??
     ({
       backend_url: "http://127.0.0.1:2234/",
-      database_url: defaultDatabase_url,
+      legacyMongoDB: defaultLegacyMongoDB,
 
       stock_settings: stockSettings,
       special_settings: {},

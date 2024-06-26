@@ -1,253 +1,148 @@
 <template>
   <div class="setup_popup_container">
     <form class="flex flex-col gap-[1rem]" v-if="!formSubmittedToggle">
-      <div
-        class="flex flex-col gap-[0.5rem] overflow-y-auto overflow-x-hidden h-[70vh] w-[30rem]"
-      >
+      <div class="flex flex-col gap-[0.5rem] overflow-y-auto overflow-x-hidden h-[70vh] w-[30rem]">
         <div class="flex flex-col gap-[0.5rem]">
           <FieldErrorSlot :errorMessage="settingsFormError.backendUrlError">
-            <input
-              class="popupInputField"
-              type="text"
-              v-model="settingsForm.backend_url"
+            <input class="popupInputField" type="text" v-model="settingsForm.backend_url"
               placeholder="Backend   URL / Hostname and port e.g. http://127.0.0.1:2234/"
-              @click="settingsFormError.backendUrlError = ''"
-            />
+              @click="settingsFormError.backendUrlError = ''" />
           </FieldErrorSlot>
         </div>
 
         <div class="flex flex-col gap-[0.5rem]">
-          <div v-if="settingsForm.database_url.checkBox"
-            class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
-          >
+          <div v-if="settingsForm.legacyMongoDB.checkBox"
+            class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
             <div class="h-[24px] right-0 flex flex-row items-center">
-              <div
-                class="checkbox_option"
-                @click="
-                  settingsForm.database_url.checkBox.checkBoxValue =
-                    !settingsForm.database_url.checkBox.checkBoxValue
-                "
-              >
-                <Icon
-                  :icon="
-                    settingsForm.database_url.checkBox.checkBoxValue
-                      ? 'checked_checkbox'
-                      : 'unchecked_checkbox'
-                  "
-                />
-                <h2>{{ settingsForm.database_url.checkBox.checkBoxDescription }}</h2>
+              <div class="checkbox_option" @click="
+      settingsForm.legacyMongoDB.checkBox.checkBoxValue =
+      !settingsForm.legacyMongoDB.checkBox.checkBoxValue
+      ">
+                <Icon :icon="settingsForm.legacyMongoDB.checkBox.checkBoxValue
+      ? 'checked_checkbox'
+      : 'unchecked_checkbox'
+      " />
+                <h2>{{ settingsForm.legacyMongoDB.checkBox.checkBoxDescription }}</h2>
               </div>
             </div>
           </div>
 
-          <FieldErrorSlot
-            :errorMessage="settingsForm.database_url.errorMessage"
-            v-if="settingsForm.database_url.textField" 
-          >
-            <input
-            :class="`${
-                  settingsForm.database_url.checkBox ? 
-                  settingsForm.database_url.checkBox?.checkBoxValue
-                    ? 'addNewImageInputField'
-                    : 'addNewImageInputFieldDisabled' 
-                  :  'addNewImageInputField'
-                }`"
-              type="text"
-              v-model="settingsForm.database_url.textField.value"
-              :placeholder="
-                settingsForm.database_url.textField.fieldPlaceholder
-              "
-              :disabled="settingsForm.database_url.checkBox ? !settingsForm.database_url.checkBox.checkBoxValue : false"
-              @click="settingsForm.database_url.errorMessage = ''"
-            />
+          <FieldErrorSlot :errorMessage="settingsForm.legacyMongoDB.errorMessage"
+            v-if="settingsForm.legacyMongoDB.textField">
+            <input :class="`${settingsForm.legacyMongoDB.checkBox ?
+      settingsForm.legacyMongoDB.checkBox?.checkBoxValue
+        ? 'addNewImageInputField'
+        : 'addNewImageInputFieldDisabled'
+      : 'addNewImageInputField'
+      }`" type="text" v-model="settingsForm.legacyMongoDB.textField.value" :placeholder="settingsForm.legacyMongoDB.textField.fieldPlaceholder
+      " :disabled="settingsForm.legacyMongoDB.checkBox ? !settingsForm.legacyMongoDB.checkBox.checkBoxValue : false"
+              @click="settingsForm.legacyMongoDB.errorMessage = ''" />
           </FieldErrorSlot>
         </div>
         <HorizontalSeparator :seperatorText="'Special Settings'" />
-        <div
-          v-for="(value, category) in settingsForm.special_settings"
-        >
-        <div class="flex flex-col gap-[0.5rem]">
-          <div v-if="value.checkBox"
-            class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
-          >
-            <div class="h-[24px] right-0 flex flex-row items-center">
-              <div
-                class="checkbox_option"
-                @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue"
-              >
-                <Icon
-                  :icon="
-                    value.checkBox.checkBoxValue
-                      ? 'checked_checkbox'
-                      : 'unchecked_checkbox'
-                  "
-                />
-                <h2>{{ value.checkBox.checkBoxDescription }}</h2>
+        <div v-for="(value, category) in settingsForm.special_settings">
+          <div class="flex flex-col gap-[0.5rem]">
+            <div v-if="value.checkBox"
+              class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
+              <div class="h-[24px] right-0 flex flex-row items-center">
+                <div class="checkbox_option" @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue">
+                  <Icon :icon="value.checkBox.checkBoxValue
+      ? 'checked_checkbox'
+      : 'unchecked_checkbox'
+      " />
+                  <h2>{{ value.checkBox.checkBoxDescription }}</h2>
+                </div>
               </div>
             </div>
-          </div>
 
-          <FieldErrorSlot 
-            :errorMessage="value.errorMessage"
-            v-if="value.textField"
-          >
-            <input
-            :class="`${
-                  value.checkBox ? 
-                  value.checkBox?.checkBoxValue
-                    ? 'addNewImageInputField'
-                    : 'addNewImageInputFieldDisabled' 
-                  :  'addNewImageInputField'
-                }`"
-              type="text"
-              v-model="value.textField.value"
-              :placeholder="value.textField.fieldPlaceholder"
-              :disabled="value.checkBox ? !value.checkBox.checkBoxValue : false"
-              @click="value.errorMessage = ''"
-            />
-          </FieldErrorSlot>
-        </div>
+            <FieldErrorSlot :errorMessage="value.errorMessage" v-if="value.textField">
+              <input :class="`${value.checkBox ?
+      value.checkBox?.checkBoxValue
+        ? 'addNewImageInputField'
+        : 'addNewImageInputFieldDisabled'
+      : 'addNewImageInputField'
+      }`" type="text" v-model="value.textField.value" :placeholder="value.textField.fieldPlaceholder"
+                :disabled="value.checkBox ? !value.checkBox.checkBoxValue : false" @click="value.errorMessage = ''" />
+            </FieldErrorSlot>
+          </div>
         </div>
 
         <HorizontalSeparator :seperatorText="'Special Params'" />
-            <div v-for="(value, key) in settingsForm.special_params">
-              <div class="flex flex-col gap-[0.5rem]">
-                <div v-if="value.checkBox"
-                  class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
-                >
-                  <div class="h-[24px] right-0 flex flex-row items-center">
-                    <div
-                      class="checkbox_option"
-                      @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue"
-                    >
-                      <Icon
-                        :icon="
-                          value.checkBox.checkBoxValue
-                            ? 'checked_checkbox'
-                            : 'unchecked_checkbox'
-                        "
-                      />
-                      <h2>{{ value.checkBox.checkBoxDescription }}</h2>
-                    </div>
-                  </div>
+        <div v-for="(value, key) in settingsForm.special_params">
+          <div class="flex flex-col gap-[0.5rem]">
+            <div v-if="value.checkBox"
+              class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
+              <div class="h-[24px] right-0 flex flex-row items-center">
+                <div class="checkbox_option" @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue">
+                  <Icon :icon="value.checkBox.checkBoxValue
+      ? 'checked_checkbox'
+      : 'unchecked_checkbox'
+      " />
+                  <h2>{{ value.checkBox.checkBoxDescription }}</h2>
                 </div>
-
-                <FieldErrorSlot
-                  :errorMessage="value.errorMessage"
-                  v-if="value.textField"
-                >
-                  <input
-                  :class="`${
-                    value.checkBox ? 
-                    value.checkBox?.checkBoxValue
-                      ? 'addNewImageInputField'
-                      : 'addNewImageInputFieldDisabled' 
-                    :  'addNewImageInputField'
-                  }`"
-                  type="text"
-                  v-model="value.textField.value"
-                  :placeholder="value.textField.fieldPlaceholder"
-                  :disabled="value.checkBox ? !value.checkBox.checkBoxValue : false"
-                  @click="value.errorMessage = ''"
-                  />
-                </FieldErrorSlot>
               </div>
+            </div>
+
+            <FieldErrorSlot :errorMessage="value.errorMessage" v-if="value.textField">
+              <input :class="`${value.checkBox ?
+      value.checkBox?.checkBoxValue
+        ? 'addNewImageInputField'
+        : 'addNewImageInputFieldDisabled'
+      : 'addNewImageInputField'
+      }`" type="text" v-model="value.textField.value" :placeholder="value.textField.fieldPlaceholder"
+                :disabled="value.checkBox ? !value.checkBox.checkBoxValue : false" @click="value.errorMessage = ''" />
+            </FieldErrorSlot>
+          </div>
         </div>
 
         <HorizontalSeparator :seperatorText="'Stock Settings'" />
         <div v-for="(value, key) in settingsForm.stock_settings">
           <div class="flex flex-col gap-[0.5rem]">
             <div v-if="value.checkBox"
-              class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center"
-            >
+              class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
               <div class="h-[24px] right-0 flex flex-row items-center">
-                <div
-                  class="checkbox_option"
-                  @click="toggleAStockSettingsFormVariable(key)"
-                >
-                  <Icon
-                    :icon="
-                      value.checkBox.checkBoxValue
-                        ? 'checked_checkbox'
-                        : 'unchecked_checkbox'
-                    "
-                  />
+                <div class="checkbox_option" @click="toggleAStockSettingsFormVariable(key)">
+                  <Icon :icon="value.checkBox.checkBoxValue
+      ? 'checked_checkbox'
+      : 'unchecked_checkbox'
+      " />
                   <h2>{{ value.checkBox.checkBoxDescription }}</h2>
                 </div>
               </div>
             </div>
 
-            <FieldErrorSlot
-              :errorMessage="value.errorMessage"
-              v-if="value.textField"
-            >
-              <input
-              :class="`${
-                  value.checkBox ? 
-                  value.checkBox?.checkBoxValue
-                    ? 'addNewImageInputField'
-                    : 'addNewImageInputFieldDisabled' 
-                  :  'addNewImageInputField'
-                }`"
-                type="text"
-                v-model="value.textField.value"
-                :placeholder="value.textField.fieldPlaceholder"              
-                :disabled="value.checkBox ? !value.checkBox.checkBoxValue : false"
-                @click="value.errorMessage = ''"
-              />
+            <FieldErrorSlot :errorMessage="value.errorMessage" v-if="value.textField">
+              <input :class="`${value.checkBox ?
+      value.checkBox?.checkBoxValue
+        ? 'addNewImageInputField'
+        : 'addNewImageInputFieldDisabled'
+      : 'addNewImageInputField'
+      }`" type="text" v-model="value.textField.value" :placeholder="value.textField.fieldPlaceholder"
+                :disabled="value.checkBox ? !value.checkBox.checkBoxValue : false" @click="value.errorMessage = ''" />
             </FieldErrorSlot>
           </div>
         </div>
       </div>
-      <router-link
-        to="/help"
-        class="absolute bottom-8 left-8 w-[fit-content] rounded-[8px]"
-      >
-        <Button
-          type="button"
-          text="Help"
-          color="#525252"
-          class="w-[fit-content] rounded-[8px]"
-          @click="state.popup = ''"
-        />
+      <router-link to="/help" class="absolute bottom-8 left-8 w-[fit-content] rounded-[8px]">
+        <Button type="button" text="Help" color="#525252" class="w-[fit-content] rounded-[8px]"
+          @click="state.popup = ''" />
       </router-link>
 
-      <Button
-        type="button"
-        text="Use Defaults"
-        color="#a41414"
-        class="absolute bottom-8 right-[25%] w-[fit-content] rounded-[8px]"
-        @click="useDefaults()"
-      />
-      <Button
-        type="button"
-        text="Confirm"
-        color="#4d6d8d"
-        class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]"
-        @click="submit()"
-      />
+      <Button type="button" text="Use Defaults" color="#a41414"
+        class="absolute bottom-8 right-[25%] w-[fit-content] rounded-[8px]" @click="useDefaults()" />
+      <Button type="button" text="Confirm" color="#4d6d8d"
+        class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]" @click="submit()" />
     </form>
     <div v-else class="m-auto items-center flex flex-col pt-25 pb-25">
-      <img
-        :src="`${
-          connectionSuccess
-            ? '/Gifs/ok_success.gif'
-            : '/Gifs/loading_three_circles.gif'
-        }`"
-        alt=""
-        class="w-[6rem]"
-      />
+      <img :src="`${connectionSuccess
+      ? '/Gifs/ok_success.gif'
+      : '/Gifs/loading_three_circles.gif'
+      }`" alt="" class="w-[6rem]" />
       <h2 class="textLoadClass">
         {{ connectionSuccess ? "Connected" : "Connecting" }}
       </h2>
-      <Button
-        v-if="connectionSuccess"
-        type="button"
-        text="Done"
-        color="#254ee0"
-        class="absolute bottom-8 w-[10rem] text-center rounded-[8px]"
-        @click="emitSubmit()"
-      />
+      <Button v-if="connectionSuccess" type="button" text="Done" color="#254ee0"
+        class="absolute bottom-8 w-[10rem] text-center rounded-[8px]" @click="emitSubmit()" />
     </div>
   </div>
 </template>
@@ -267,7 +162,7 @@ import type {
   ISettingsErrorObject,
   StockSettingsProps,
 } from "../../services/types";
-import { stockSettings, defaultDatabase_url } from "../../services/types";
+import { stockSettings, defaultLegacyMongoDB } from "../../services/types";
 
 const state = (inject("state") as AppState).stateVariables;
 
@@ -301,18 +196,21 @@ function toggleAStockSettingsFormVariable(
   variableNameToToggle: StockSettingsProps
 ) {
   const checkBox = settingsForm.stock_settings[variableNameToToggle].checkBox
-  if (checkBox)
-  {
+  if (checkBox) {
     checkBox.checkBoxValue = !checkBox.checkBoxValue
     settingsForm.stock_settings[variableNameToToggle].checkBox =
-    checkBox;
+      checkBox;
 
   }
 }
 
 const defaultSettings = new Settings({
   backend_url: "http://127.0.0.1:2234/",
-  database_url: defaultDatabase_url,
+  legacyMongoDB: defaultLegacyMongoDB,
+  database: {
+    type: "sqlite",
+    database: "database.sqlite"
+  },
   stock_settings: stockSettings,
   special_settings: undefined,
   special_params: undefined,
@@ -332,16 +230,16 @@ async function submit() {
   if (!settingsForm.backend_url)
     settingsFormError.backendUrlError = "No Backend url was provided";
 
-  settingsForm.database_url.errorMessage =
-settingsForm.database_url.checkBox ?
-    checkValidMongoDb(
-      settingsForm.database_url.checkBox?.checkBoxValue,
-      settingsForm.database_url.textField?.value
-    ) : "";
+  settingsForm.legacyMongoDB.errorMessage =
+    settingsForm.legacyMongoDB.checkBox ?
+      checkValidMongoDb(
+        settingsForm.legacyMongoDB.checkBox?.checkBoxValue,
+        settingsForm.legacyMongoDB.textField?.value
+      ) : "";
 
   if (
     settingsFormError.backendUrlError ||
-    settingsForm.database_url.errorMessage
+    settingsForm.legacyMongoDB.errorMessage
   )
     return;
   else {
@@ -350,8 +248,8 @@ settingsForm.database_url.checkBox ?
     const connectionResponse = await connectToBackendAndDB(settingsForm);
     if (connectionResponse.hasError) {
       formSubmittedToggle.value = false;
-      settingsForm.database_url = new Setting(
-        connectionResponse.responseSettings.database_url
+      settingsForm.legacyMongoDB = new Setting(
+        connectionResponse.responseSettings.legacyMongoDB
       );
       settingsForm.stock_settings =
         connectionResponse.responseSettings.stock_settings;
@@ -369,7 +267,7 @@ async function useDefaults() {
   //i have to to do this retarded bs cus it's a const reactive
 
   settingsForm.backend_url = defaultSettings.backend_url;
-  settingsForm.database_url = defaultSettings.database_url;
+  settingsForm.legacyMongoDB = defaultSettings.legacyMongoDB;
   settingsForm.stock_settings = defaultSettings.stock_settings;
   settingsForm.special_params = defaultSettings.special_params;
   settingsForm.special_settings = defaultSettings.special_settings;
@@ -405,6 +303,7 @@ left: calc((100vw - var(--setup_popup_width))/2);
 right: calc((100vw - var(--setup_popup_width) )/2);
 top: calc((100vh - var(--setup_popup_height) + 7vh)/2) */
 }
+
 .popupInputField[type="text"] {
   @apply outline-none h-[2rem] w-[58vw] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
@@ -424,22 +323,26 @@ top: calc((100vh - var(--setup_popup_height) + 7vh)/2) */
   font-family: "Work Sans", sans-serif;
   color: rgb(202, 202, 202);
 }
+
 .popupSaucenaoKeyInputFieldDisabled[type="text"] {
   @apply outline-none h-[2rem] w-[58vw] box-border transition duration-100 ease rounded-4px font-medium text-12px border-none px-6px py-2;
   background-color: rgba(28, 27, 34, var(--tw-bg-opacity));
   font-family: "Work Sans", sans-serif;
   color: rgb(129, 129, 129);
 }
+
 .checkbox_option_container h1 {
   @apply text-12px w-[100%];
   font-family: "Work Sans", sans-serif;
   color: white;
 }
+
 .checkbox_option {
   @apply text-12px flex flex-row items-center h-[24px] align-middle w-[35rem] gap-1 cursor-pointer;
   font-family: "Work Sans", sans-serif;
   color: white;
 }
+
 .checkbox_option img {
   @apply h-[24px] w-[24px];
 }

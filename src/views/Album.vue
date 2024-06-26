@@ -7,7 +7,8 @@
       @mouseover="hoverOverPics(picture)" @mouseleave="handleMouseLeave(picture)" />
 
     <PopupSlot v-if="state.stateVariables.popup == 'ViewingPicture'">
-      <ViewingPicture :item="album.pictures[picIndexer]" :backendUrl="backendUrl" />
+      <ViewingPicture :item="album.pictures[picIndexer.value.value]" :backendUrl="backendUrl" :indexer="picIndexer"
+        :maxIndex="album.pictures.length - 1" />
     </PopupSlot>
 
     <EditControls :deleteSelection="() => album.deleteSelectedPics()" :hideSelection="() => album.handleHiding(true)"
@@ -38,8 +39,19 @@ const album = computed(() => {
   if (state.stateVariables.albums[route.params.albumUUID as string]) state.stateVariables.albums[route.params.albumUUID as string].getPictures(state.stateVariables.advancedSearchOptions)
   return state.stateVariables.albums[route.params.albumUUID as string];
 });
+class PicIndexer {
+  public value = ref(0);
+  /**
+   * set
+   */
+  public set(value: number) {
+    this.value.value = value
+  }
+  constructor() {
 
-const picIndexer = ref(0);
+  }
+}
+const picIndexer = new PicIndexer()
 const mouseDownBool = ref(false);
 const mouseDownOnPic = ref(false);
 
@@ -49,11 +61,11 @@ function mouseClickBackground(e: Event) {
     else mouseDownBool.value = true;
   }
 }
-
+/* 
 onKeyStroke("ArrowLeft", (e) => {
   if (state.stateVariables.popup != "AddNewPicturePopup") {
-    if (picIndexer.value != 0) {
-      picIndexer.value = --picIndexer.value;
+    if (picIndexer.value.value != 0) {
+      picIndexer.set(picIndexer.value.value - 1);
     }
     e.preventDefault();
   }
@@ -61,13 +73,13 @@ onKeyStroke("ArrowLeft", (e) => {
 
 onKeyStroke("ArrowRight", (e) => {
   if (state.stateVariables.popup != "AddNewPicturePopup") {
-    if (picIndexer.value != album.value.pictures.length - 1) {
-      picIndexer.value = ++picIndexer.value;
+    if (picIndexer.value.value != album.value.pictures.length - 1) {
+      picIndexer.set(picIndexer.value.value + 1);
     }
     e.preventDefault();
   }
 });
-
+ */
 onMounted(async () => {
   if (album.value) album.value.getPictures(state.stateVariables.advancedSearchOptions);
   state.clearAdvancedSearchOptions();
@@ -86,7 +98,7 @@ function handleMouseClick(e: Event, picture: Picture, index: number) {
   e.stopPropagation()
   if (!state.stateVariables.isEditing) {
     turnOffMouseDown();
-    picIndexer.value = index;
+    picIndexer.set(index);
     state.stateVariables.popup = "ViewingPicture";
   } else {
     toggleSelection(picture);

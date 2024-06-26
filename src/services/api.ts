@@ -13,13 +13,13 @@ import type {
   IModelSpecialParam,
   IAutoCompleteTags,
 } from "./types";
-import { stockSettings, defaultDatabase_url } from "./types";
+import { stockSettings, defaultLegacyMongoDB } from "./types";
 import { Settings } from "./settings";
 class API {
   public settings: Settings;
   constructor() {
     this.setBackendURL();
-
+    this.settings = new Settings(this.localStorageSettings);
     this.getSpecialSettings().then((res) => {
       this.localStorageSettings = this.compareSpecialSettingsToDefault(
         this.localStorageSettings,
@@ -36,12 +36,15 @@ class API {
           "settings",
           JSON.stringify(this.localStorageSettings)
         );
+
+        this.settings = new Settings(this.localStorageSettings);
+        
+        this.settings.createTree()
+        
+
       });
     });
-
-    this.settings = new Settings(this.localStorageSettings);
     
-    this.settings.createTree()
   }
 
   public backendUrl = "";
@@ -144,8 +147,11 @@ class API {
       settings ??
       ({
         backend_url: "http://127.0.0.1:2234/",
-        database_url: defaultDatabase_url,
-
+        legacyMongoDB: defaultLegacyMongoDB,
+        database: {
+          type: "sqlite",
+          database:"database.sqlite"
+        },
         stock_settings: stockSettings,
         special_settings: undefined,
         special_params: undefined,
@@ -197,8 +203,8 @@ public compareSpecialSettingsToDefault(
 
   let internalSettingVar = (JSON.parse(JSON.stringify({...initialSettings}))) as typeof initialSettings;
   if (!internalSettingVar[divisionType] || !Object.getOwnPropertyNames(internalSettingVar[divisionType]).length) {
-    initialSettings[divisionType] = defaultSpecialSettingsOrParams;
-
+    internalSettingVar[divisionType] = defaultSpecialSettingsOrParams;
+    
     return internalSettingVar
   }
   
@@ -209,6 +215,7 @@ for (const param in defaultSpecialSettingsOrParams) {
     internalSettingVar[divisionType] = element;
   }
 }
+
   return internalSettingVar as typeof initialSettings
 }
 
@@ -303,6 +310,8 @@ for (const param in defaultSpecialSettingsOrParams) {
     return internalSettingVar as typeof initialSettings;
   }
  */
+
+  public migrateFromNeDB = () => this.backendRequest("post","/migrate-database");
   public deleteAlbumsByUUIDS = (albumUUIDs: string[]) =>
     this.backendRequest("post", "/delete-albums-by-uuids", { albumUUIDs });
 

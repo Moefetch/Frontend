@@ -218,20 +218,32 @@ type IStockSettings = {
 
 export interface ISettings {
   backend_url: string;
-  database_url: IParam;
+  legacyMongoDB: IParam;
+  database: ITypeORMDatabase;
 
   stock_settings: IStockSettings;
   special_settings?: IModelSpecialParam;
   special_params?: IModelSpecialParam;
   paramsTree?: IParamsTree;
 }
+
+export interface ITypeORMDatabase {
+  type?: "sqlite" | "mysql" | "postgres" |"cockroachdb" | "sap" | "spanner" | "mariadb" | "better-sqlite3" | "legacy mongodb" ;
+  host?: string;
+  port?: number;
+  useLogin?: boolean;
+  database: string;
+  username?: string;
+  password?:string;
+}
+
 export interface IParamsTree {
   [category: string] : IModelSpecialParam;
 }
-export const defaultDatabase_url = {
+export const defaultLegacyMongoDB = {
   checkBox: {
     checkBoxValue: false,
-    checkBoxDescription: "Use a mongoDB database",
+    checkBoxDescription: "Use a Legacy mongoDB database",
     defaultValue: false
   },
   textField: {
@@ -249,8 +261,8 @@ export const defaultDatabase_url = {
       return "Database url invalid";
   },
 } as IParam;
-if (defaultDatabase_url.checkValid) {
-  defaultDatabase_url.checkValid(true, "sex");
+if (defaultLegacyMongoDB.checkValid) {
+  defaultLegacyMongoDB.checkValid(true, "sex");
 }
 
 export const stockSettings: IStockSettings = {
@@ -360,7 +372,7 @@ export interface IErrorObject {
 }
 
 export interface IResponseSettings {
-  database_url: IParam;
+  legacyMongoDB: IParam;
   stock_settings: ISettings["stock_settings"];
   special_settings: ISettings["special_settings"];
   special_params: ISettings["special_params"];

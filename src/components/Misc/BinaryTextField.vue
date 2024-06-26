@@ -6,9 +6,9 @@
         <button class="checkBoxButtonSelected checkbox_option"
           @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue">
           <Icon :icon="value.checkBox.checkBoxValue
-            ? 'checked_checkbox'
-            : 'unchecked_checkbox'
-            " />
+      ? 'checked_checkbox'
+      : 'unchecked_checkbox'
+      " />
           <h2>{{ value.checkBox.checkBoxDescription }}</h2>
         </button>
       </div>
@@ -16,17 +16,18 @@
 
     <FieldErrorSlot :errorMessage="value.errorMessage" v-if="value.textField">
       <input :class="`${value.checkBox ?
-        value.checkBox?.checkBoxValue
-          ? 'addNewImageInputField'
-          : 'addNewImageInputFieldDisabled'
-        : 'addNewImageInputField'
-        }`" type="text" v-model="value.textField.value" :placeholder="value.textField.fieldPlaceholder"
+      value.checkBox?.checkBoxValue
+        ? 'addNewImageInputField'
+        : 'addNewImageInputFieldDisabled'
+      : 'addNewImageInputField'
+      }`" type="text" v-model="value.textField.value" :placeholder="value.textField.fieldPlaceholder"
         :disabled="value.checkBox ? !value.checkBox.checkBoxValue : false" @click="value.errorMessage = ''" />
     </FieldErrorSlot>
   </div>
 </template>
 
 <script setup lang="ts">
+import FieldErrorSlot from "./FieldErrorSlot.vue";
 import { IParam } from '../../services/types';
 import Icon from './Icon.vue';
 
