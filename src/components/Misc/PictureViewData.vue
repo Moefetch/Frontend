@@ -16,10 +16,10 @@
       </h2>
     </div>
 
-    <div class="pictureViewDataTextDiv" v-if="item.ids && item.storedResult">
+    <div class="pictureViewDataTextDiv" v-if="item.ids">
       <h2 class="pictureViewDataText">PostID</h2>
-      <h2 class="pictureViewDataText textRoundedBg fixedPos">
-        {{ item.ids[item.storedResult] }}
+      <h2 class="pictureViewDataText textRoundedBg fixedPos" v-for="id in item.ids">
+        {{ id }}
       </h2>
     </div>
 
@@ -53,17 +53,17 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { IPicture } from "../../services/types";
+import { IMediaItem } from "../../services/types";
 import Icon from "./Icon.vue";
 const newTag = ref('');
 const addNewTagToggle = ref(false);
 const props = defineProps<{
-  item: IPicture;
+  item: IMediaItem;
   indexer: number;
   linksDictionary: { [key: string]: string } | undefined;
 }>();
 
-const picName = props.item.imagesDataArray[props.indexer].file;
+const picName = props.item.file;
 let linksAsAny: any | undefined = undefined;
 let linksReformated: string[] | undefined = undefined;
 if (props.item.links) {

@@ -218,7 +218,7 @@ const newPicForm: () => INewPic = () => ({
   tempFileStore: [],
   url: "",
   createAlbumName: "",
-  thumbnail_file: "",
+  thumbnailFile: "",
   type: undefined,
   album: "",
   stockOptionalOverrides: JSON.parse(

@@ -1,6 +1,6 @@
 import { api } from "./api";
 import { Picture } from "./picture";
-import { IAlbum, IPicture } from "./types";
+import { IAlbum, IEntry } from "./types";
 import { SelectableItem } from "./selectableItem";
 
 import { state } from "../../state";
@@ -58,7 +58,7 @@ export class Album extends SelectableItem implements IAlbum {
   /**
    * addPictures
    */
-  public addPictures(pictures: IPicture[]) {
+  public addPictures(pictures: IEntry[]) {
     pictures.forEach((pic) => {
       const pictureInstance = new Picture(pic);
       this.pictures.push(pictureInstance);

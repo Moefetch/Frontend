@@ -16,7 +16,7 @@
           <div
             :class="'w-[fit-content] h-[fit-content] overflow-hidden relative rounded-[0.2rem] '"
           >
-            <img v-if="!(picture.imagesDataArray[picture.indexer].isVideo && !thumbnailFile)"
+            <img v-if="!(picture.media[picture.indexer].isVideo && !thumbnailFile)"
               :src="backendUrl + pictureURL"
               :class="
                 'pictureCard overflow-hidden ' +
@@ -25,7 +25,7 @@
               :draggable="false"
             />
             <video 
-            v-if="picture.imagesDataArray[picture.indexer].isVideo && !thumbnailFile"
+            v-if="picture.media[picture.indexer].isVideo && !thumbnailFile"
             :src="backendUrl + pictureURL"
             :class="
                 'pictureCard overflow-hidden ' +
@@ -57,14 +57,14 @@ const props = defineProps<{
 const thumbnailFile = props.picture.thumbnailFile;
 const pictureURL =
   thumbnailFile ||
-  props.picture.imagesDataArray[props.picture.indexer].thumbnail_file;
+  props.picture.media[props.picture.indexer].thumbnailFile;
 
-const vIfVar = props.picture.imagesDataArray.length;
+const vIfVar = props.picture.media.length;
 const backendUrl = api.getBackendUrl();
 const settings = api.getSettings();
 
 const doBlurBool =
-  props.picture.isNSFW && settings.stock_settings.blur_nsfw.checkBox?.checkBoxValue;
+  props.picture.hasNSFW && settings.stock_settings.blur_nsfw.checkBox?.checkBoxValue;
 </script>
 
 <style lang="postcss">

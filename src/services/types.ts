@@ -40,7 +40,7 @@ export interface IArtist {
 export interface IImageDataArray {
   file: string;
   isVideo?: boolean;
-  thumbnail_file: string;
+  thumbnailFile: string;
   imageSize?: ISizeCalculationResult;
 }
 export interface IPostIds {
@@ -49,29 +49,80 @@ export interface IPostIds {
   pixiv?: number;
 }
 
-export interface IPicture {
+export interface IMediaItem  {
+  file: string;
+  thumbnailFile?: string;
+  isVideo: boolean;
+  alternative_names?: string[];
+  imageSize?: ISizeCalculationResult;
+  index: number;
+tags?: string[];
+artists?: string[];
+isNSFW?: boolean;
+links?: IPostLinks;
+ids?: IPostIds;
+date_created?: number;
+text?: string;
+}
+
+export interface IOldMedia  {
+  file: string;
+  isVideo: boolean;
+  thumbnailFile?: string;
+  imageSize?: ISizeCalculationResult;
+}
+
+export interface IDBEntry {
   id: string;
   indexer: number;
-  hasVideo?: boolean;
-  imagesDataArray: IImageDataArray[];
-  alternative_names?: string[];
+  //name?: string;
+  //hasVideo?: boolean;
+  media: IMediaItem[];
   thumbnailFile: string;
+  //alternative_names?: string[];
+  oldMedia?: IOldMedia[];
   album: string;
   //tags_pixiv?: string[];
   //tags_danbooru?: string[];
-  artists?: string[];
-  storedResult?: "danbooru" | "pixiv" | "yande";
-  links: IPostLinks;
-  ids: IPostIds;
+  //artists?: string[];
+  //storedResult?: string;
+  //links?: IPostLinks;
+  //ids?: IPostIds;
   isHidden: boolean;
-  isNSFW: boolean;
-  hasResults?: boolean;
+  hasNSFW: boolean;
+  //hasResults?: boolean;
   //pixiv_post_id?: number;
 
   //compatability with INewAnimePic
-  tags?: string[];
+  //tags?: string[];
+  date_added?: number;
+  //date_created?: number;
   //imageSize?: ISizeCalculationResult;
-  isMultiSource: boolean;
+}
+
+export interface IEntry {
+  id: string;
+  indexer: number;
+  media: IMediaItem[];
+  thumbnailFile: string;
+  
+  album: string;
+  //tags_pixiv?: string[];
+  //tags_danbooru?: string[];
+  //artists?: string[];
+  //storedResult?: "danbooru" | "pixiv" | "yande";
+  //links: IPostLinks;
+  //ids: IPostIds;
+  isHidden: boolean;
+  hasNSFW: boolean;
+  //hasResults?: boolean;
+  //pixiv_post_id?: number;
+  date_added?: number;
+
+  //compatability with INewAnimePic
+  //tags?: string[];
+  //imageSize?: ISizeCalculationResult;
+  //isMultiSource: boolean;
 }
 
 export interface ITagsObject {
@@ -193,7 +244,7 @@ export interface INewPic {
   createAlbumToggle?: boolean;
   createAlbumName?: string;
   old_file?: string;
-  thumbnail_file?: string;
+  thumbnailFile?: string;
   url: string;
   optionalOverrideParams?: IModelSpecialParam;
   stockOptionalOverrides?: IPicFormStockOverrides;
@@ -203,7 +254,7 @@ export interface INewPic {
   isHidden?: boolean;
 }
 
-export type PicTypes = IPicture; //probably wanted to go into a property of this but i forgot what it was about
+export type PicTypes = IEntry; //probably wanted to go into a property of this but i forgot what it was about
 export type StockSettingsProps =
   | "show_nsfw"
   | "blur_nsfw"

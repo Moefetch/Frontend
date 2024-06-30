@@ -1,7 +1,7 @@
 import util from "util";
 import type {
   IAlbum,
-  IPicture,
+  IEntry,
   INewAlbum,
   INewPic,
   ISettings,
@@ -102,7 +102,7 @@ class API {
     filesArray.forEach(file => formData.append("temp_download", file))
     
     //await this.backendRequest<void>("post", "/download-files", formData);
-    return this.backendRequest<[IPicture]>("post", "/add-pictures", formData);
+    return this.backendRequest<[IEntry]>("post", "/add-pictures", formData);
   }
   public async createNewAlbum(data: INewAlbum) {
     const { name, album_thumbnail_file, type, isHidden } = data;
@@ -186,7 +186,7 @@ class API {
     });
 
   public getPicsInAlbum = (album: string, options: IFilterObj) => {
-    return this.backendRequest<[IPicture]>("post", `/search`, {
+    return this.backendRequest<[IEntry]>("post", `/search`, {
       album: album,
       options,
     });
