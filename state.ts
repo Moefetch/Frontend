@@ -2,13 +2,15 @@ import { Album } from "./src/services/album";
 import { api } from "./src/services/api";
 import { reactive, ref } from "vue";
 import { IFilterObj } from "./src/services/types";
-import { stockSettings, defaultLegacyMongoDB } from "./src/services/types";
+import { stockSettings } from "./src/services/types";
 import { Setting, Settings } from "./src/services/settings";
 
 const defaultSettings = new Settings({
   backend_url: "http://127.0.0.1:2234/",
-  legacyMongoDB: defaultLegacyMongoDB,
-  database: {type:"sqlite",database:"database.sqlite"},
+  database: {
+    type: "better-sqlite3",
+    database: "database.sqlite"
+  },
   stock_settings: stockSettings,
   special_settings: undefined,
   special_params: undefined,
@@ -44,38 +46,18 @@ export class AppState {
   
   
 private async submit() {
-  if (!this.stateVariables.settingsInstance.backend_url)
-  this.stateVariables.settingsFormError.backendUrlError = "No Backend url was provided";
-
-  this.stateVariables.settingsInstance.legacyMongoDB.errorMessage =
-  this.stateVariables.settingsInstance.legacyMongoDB.checkBox ?
-      this.checkValidMongoDb(
-        this.stateVariables.settingsInstance.legacyMongoDB.checkBox?.checkBoxValue,
-        this.stateVariables.settingsInstance.legacyMongoDB.textField?.value
-      ) : "";
-
-  if (
-    this.stateVariables.settingsFormError.backendUrlError ||
-    this.stateVariables.settingsInstance.legacyMongoDB.errorMessage
-  )
-    return;
-  else {
-
-    const connectionResponse = await api.connectToBackendAndDB(this.stateVariables.settingsInstance);
-    if (connectionResponse.hasError) {
-      this.stateVariables.settingsInstance.legacyMongoDB = new Setting(
-        connectionResponse.responseSettings.legacyMongoDB
-      );
-      this.stateVariables.settingsInstance.stock_settings =
-        connectionResponse.responseSettings.stock_settings;
-      this.stateVariables.settingsInstance.special_params =
-        connectionResponse.responseSettings.special_params;
-      this.stateVariables.settingsInstance.special_settings =
-        connectionResponse.responseSettings.special_settings;
-    } else {
-      localStorage.setItem("settings", JSON.stringify(this.stateVariables.settingsInstance));
-      //connectionSuccess.value = true;
-    }
+  
+  const connectionResponse = await api.connectToBackendAndDB(this.stateVariables.settingsInstance);
+  if (connectionResponse.hasError) {
+    this.stateVariables.settingsInstance.stock_settings =
+      connectionResponse.responseSettings.stock_settings;
+    this.stateVariables.settingsInstance.special_params =
+      connectionResponse.responseSettings.special_params;
+    this.stateVariables.settingsInstance.special_settings =
+      connectionResponse.responseSettings.special_settings;
+  } else {
+    localStorage.setItem("settings", JSON.stringify(this.stateVariables.settingsInstance));
+    //connectionSuccess.value = true;
   }
 }
 

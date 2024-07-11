@@ -40,40 +40,7 @@
             type="text" placeholder="Password" v-model="settingsForm.database.password"
             :disabled="!settingsForm.database.useLogin">
         </div>
-        <div>
-          <Button text="Migrate from legacy NeDB" color="#4d6d8d"
-            class="text-size-[14px] w-52 rounded-[4px] text-light-100" @click="api.migrateFromNeDB()" />
-        </div>
       </fieldset>
-      <div class="flex flex-col gap-[0.5rem]">
-        <div v-if="settingsForm.legacyMongoDB.checkBox"
-          class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
-          <div class="h-[24px] right-0 flex flex-row items-center">
-            <div class="checkbox_option" @click="
-        settingsForm.legacyMongoDB.checkBox.checkBoxValue =
-        !settingsForm.legacyMongoDB.checkBox.checkBoxValue
-        ">
-              <Icon :icon="settingsForm.legacyMongoDB.checkBox.checkBoxValue
-        ? 'checked_checkbox'
-        : 'unchecked_checkbox'
-        " />
-              <h2>{{ settingsForm.legacyMongoDB.checkBox.checkBoxDescription }}</h2>
-            </div>
-          </div>
-        </div>
-
-        <FieldErrorSlot :errorMessage="settingsForm.legacyMongoDB.errorMessage"
-          v-if="settingsForm.legacyMongoDB.textField">
-          <input :class="`${settingsForm.legacyMongoDB.checkBox ?
-        settingsForm.legacyMongoDB.checkBox?.checkBoxValue
-          ? 'settingsInputField'
-          : 'settingsInputFieldDisabled'
-        : 'settingsInputField'
-        }`" type="text" v-model="settingsForm.legacyMongoDB.textField.value" :placeholder="settingsForm.legacyMongoDB.textField.fieldPlaceholder
-        " :disabled="settingsForm.legacyMongoDB.checkBox ? !settingsForm.legacyMongoDB.checkBox.checkBoxValue : false"
-            @click="settingsForm.legacyMongoDB.errorMessage = ''" />
-        </FieldErrorSlot>
-      </div>
 
     </div>
   </div>
@@ -92,7 +59,7 @@ const state = inject("state") as AppState;
 
 const settingsForm = state.stateVariables.settingsInstance
 
-const typeORMSupportedDatabases = ["Select Type", "sqlite", "mysql", "postgres", "cockroachdb", "sap", "spanner", "mariadb", "better-sqlite3", "legacy mongodb"]
+const typeORMSupportedDatabases = ["Select Type", "sqlite", "mysql", "postgres", "cockroachdb", "sap", "spanner", "mariadb", "better-sqlite3"]
 function selectDB(db: ITypeORMDatabase["type"]) {
   if ((db as string) == "Select Type") {
     settingsForm.database.type = undefined;

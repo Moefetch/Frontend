@@ -9,36 +9,6 @@
               @click="settingsFormError.backendUrlError = ''" />
           </FieldErrorSlot>
         </div>
-
-        <div class="flex flex-col gap-[0.5rem]">
-          <div v-if="settingsForm.legacyMongoDB.checkBox"
-            class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
-            <div class="h-[24px] right-0 flex flex-row items-center">
-              <div class="checkbox_option" @click="
-      settingsForm.legacyMongoDB.checkBox.checkBoxValue =
-      !settingsForm.legacyMongoDB.checkBox.checkBoxValue
-      ">
-                <Icon :icon="settingsForm.legacyMongoDB.checkBox.checkBoxValue
-      ? 'checked_checkbox'
-      : 'unchecked_checkbox'
-      " />
-                <h2>{{ settingsForm.legacyMongoDB.checkBox.checkBoxDescription }}</h2>
-              </div>
-            </div>
-          </div>
-
-          <FieldErrorSlot :errorMessage="settingsForm.legacyMongoDB.errorMessage"
-            v-if="settingsForm.legacyMongoDB.textField">
-            <input :class="`${settingsForm.legacyMongoDB.checkBox ?
-      settingsForm.legacyMongoDB.checkBox?.checkBoxValue
-        ? 'addNewImageInputField'
-        : 'addNewImageInputFieldDisabled'
-      : 'addNewImageInputField'
-      }`" type="text" v-model="settingsForm.legacyMongoDB.textField.value" :placeholder="settingsForm.legacyMongoDB.textField.fieldPlaceholder
-      " :disabled="settingsForm.legacyMongoDB.checkBox ? !settingsForm.legacyMongoDB.checkBox.checkBoxValue : false"
-              @click="settingsForm.legacyMongoDB.errorMessage = ''" />
-          </FieldErrorSlot>
-        </div>
         <HorizontalSeparator :seperatorText="'Special Settings'" />
         <div v-for="(value, category) in settingsForm.special_settings">
           <div class="flex flex-col gap-[0.5rem]">
@@ -162,7 +132,7 @@ import type {
   ISettingsErrorObject,
   StockSettingsProps,
 } from "../../services/types";
-import { stockSettings, defaultLegacyMongoDB } from "../../services/types";
+import { stockSettings } from "../../services/types";
 
 const state = (inject("state") as AppState).stateVariables;
 
@@ -206,9 +176,8 @@ function toggleAStockSettingsFormVariable(
 
 const defaultSettings = new Settings({
   backend_url: "http://127.0.0.1:2234/",
-  legacyMongoDB: defaultLegacyMongoDB,
   database: {
-    type: "sqlite",
+    type: "better-sqlite3",
     database: "database.sqlite"
   },
   stock_settings: stockSettings,
@@ -227,47 +196,27 @@ function checkValidMongoDb(enabledBool: boolean, stringValue?: string) {
 }
 
 async function submit() {
-  if (!settingsForm.backend_url)
-    settingsFormError.backendUrlError = "No Backend url was provided";
 
-  settingsForm.legacyMongoDB.errorMessage =
-    settingsForm.legacyMongoDB.checkBox ?
-      checkValidMongoDb(
-        settingsForm.legacyMongoDB.checkBox?.checkBoxValue,
-        settingsForm.legacyMongoDB.textField?.value
-      ) : "";
+  formSubmittedToggle.value = true;
 
-  if (
-    settingsFormError.backendUrlError ||
-    settingsForm.legacyMongoDB.errorMessage
-  )
-    return;
-  else {
-    formSubmittedToggle.value = true;
-
-    const connectionResponse = await connectToBackendAndDB(settingsForm);
-    if (connectionResponse.hasError) {
-      formSubmittedToggle.value = false;
-      settingsForm.legacyMongoDB = new Setting(
-        connectionResponse.responseSettings.legacyMongoDB
-      );
-      settingsForm.stock_settings =
-        connectionResponse.responseSettings.stock_settings;
-      settingsForm.special_params =
-        connectionResponse.responseSettings.special_params;
-      settingsForm.special_settings =
-        connectionResponse.responseSettings.special_settings;
-    } else {
-      localStorage.setItem("settings", JSON.stringify(settingsForm));
-      connectionSuccess.value = true;
-    }
+  const connectionResponse = await connectToBackendAndDB(settingsForm);
+  if (connectionResponse.hasError) {
+    formSubmittedToggle.value = false;
+    settingsForm.stock_settings =
+      connectionResponse.responseSettings.stock_settings;
+    settingsForm.special_params =
+      connectionResponse.responseSettings.special_params;
+    settingsForm.special_settings =
+      connectionResponse.responseSettings.special_settings;
+  } else {
+    localStorage.setItem("settings", JSON.stringify(settingsForm));
+    connectionSuccess.value = true;
   }
 }
 async function useDefaults() {
   //i have to to do this retarded bs cus it's a const reactive
 
   settingsForm.backend_url = defaultSettings.backend_url;
-  settingsForm.legacyMongoDB = defaultSettings.legacyMongoDB;
   settingsForm.stock_settings = defaultSettings.stock_settings;
   settingsForm.special_params = defaultSettings.special_params;
   settingsForm.special_settings = defaultSettings.special_settings;

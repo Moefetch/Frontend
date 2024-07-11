@@ -56,13 +56,13 @@ export interface IMediaItem  {
   alternative_names?: string[];
   imageSize?: ISizeCalculationResult;
   index: number;
-tags?: string[];
-artists?: string[];
-isNSFW?: boolean;
-links?: IPostLinks;
-ids?: IPostIds;
-date_created?: number;
-text?: string;
+  tags?: string[];
+  artists?: string[];
+  isNSFW?: boolean;
+  links?: IPostLinks;
+  ids?: IPostIds;
+  date_created?: number;
+  text?: string;
 }
 
 export interface IOldMedia  {
@@ -254,7 +254,7 @@ export interface INewPic {
   isHidden?: boolean;
 }
 
-export type PicTypes = IEntry; //probably wanted to go into a property of this but i forgot what it was about
+//export type PicTypes = IEntry; //probably wanted to go into a property of this but i forgot what it was about
 export type StockSettingsProps =
   | "show_nsfw"
   | "blur_nsfw"
@@ -269,7 +269,6 @@ type IStockSettings = {
 
 export interface ISettings {
   backend_url: string;
-  legacyMongoDB: IParam;
   database: ITypeORMDatabase;
 
   stock_settings: IStockSettings;
@@ -279,7 +278,7 @@ export interface ISettings {
 }
 
 export interface ITypeORMDatabase {
-  type?: "sqlite" | "mysql" | "postgres" |"cockroachdb" | "sap" | "spanner" | "mariadb" | "better-sqlite3" | "legacy mongodb" ;
+  type?: "sqlite" | "mysql" | "postgres" |"cockroachdb" | "sap" | "spanner" | "mariadb" | "better-sqlite3";
   host?: string;
   port?: number;
   useLogin?: boolean;
@@ -290,30 +289,6 @@ export interface ITypeORMDatabase {
 
 export interface IParamsTree {
   [category: string] : IModelSpecialParam;
-}
-export const defaultLegacyMongoDB = {
-  checkBox: {
-    checkBoxValue: false,
-    checkBoxDescription: "Use a Legacy mongoDB database",
-    defaultValue: false
-  },
-  textField: {
-    value: "",
-    defaultValue: "",
-    fieldPlaceholder: "Database URL, use the form mongodb://username:password@host:port/moefetch",
-  },
-  checkValid: (enabledBool: boolean, stringValue?: string) => {
-    if (enabledBool && !stringValue) return "No Database url was provided";
-
-    const HOSTS_REGEX =
-      /(?<protocol>mongodb(?:\+srv|)):\/\/(?:(?<username>[^:]*)(?::(?<password>[^@]*))?@)?(?<hosts>(?!:)[^\/?@]+)(?<rest>.*)/;
-
-    if (enabledBool && stringValue && !HOSTS_REGEX.test(stringValue))
-      return "Database url invalid";
-  },
-} as IParam;
-if (defaultLegacyMongoDB.checkValid) {
-  defaultLegacyMongoDB.checkValid(true, "sex");
 }
 
 export const stockSettings: IStockSettings = {
@@ -423,7 +398,6 @@ export interface IErrorObject {
 }
 
 export interface IResponseSettings {
-  legacyMongoDB: IParam;
   stock_settings: ISettings["stock_settings"];
   special_settings: ISettings["special_settings"];
   special_params: ISettings["special_params"];

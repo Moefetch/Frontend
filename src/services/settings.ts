@@ -10,11 +10,10 @@ import type {
   ITypeORMDatabase,
 } from "./types";
 
-import { defaultLegacyMongoDB, stockSettings } from "./types";
+import {stockSettings } from "./types";
 
 export class Settings implements ISettings {
   public backend_url: string;
-  public legacyMongoDB: Setting;
   public database: ITypeORMDatabase;
   public paramsTree?: IParamsTree = {}
   public stock_settings: {
@@ -29,7 +28,6 @@ export class Settings implements ISettings {
   constructor(settings: ISettings) {
     this.backend_url = settings.backend_url;
     this.database = settings.database;
-    this.legacyMongoDB = new Setting(settings.legacyMongoDB);
     this.stock_settings = settings.stock_settings;
     
     if (settings.special_params) this.special_params = settingKeyValue(settings.special_params)
@@ -333,8 +331,6 @@ export function getSettings() {
     settings ??
     ({
       backend_url: "http://127.0.0.1:2234/",
-      legacyMongoDB: defaultLegacyMongoDB,
-
       stock_settings: stockSettings,
       special_settings: {},
       special_params: {},

@@ -13,7 +13,7 @@ import type {
   IModelSpecialParam,
   IAutoCompleteTags,
 } from "./types";
-import { stockSettings, defaultLegacyMongoDB } from "./types";
+import { stockSettings } from "./types";
 import { Settings } from "./settings";
 class API {
   public settings: Settings;
@@ -147,10 +147,9 @@ class API {
       settings ??
       ({
         backend_url: "http://127.0.0.1:2234/",
-        legacyMongoDB: defaultLegacyMongoDB,
         database: {
-          type: "sqlite",
-          database:"database.sqlite"
+          type: "better-sqlite3",
+          database: "database.sqlite"
         },
         stock_settings: stockSettings,
         special_settings: undefined,
@@ -310,8 +309,6 @@ for (const param in defaultSpecialSettingsOrParams) {
     return internalSettingVar as typeof initialSettings;
   }
  */
-
-  public migrateFromNeDB = () => this.backendRequest("post","/migrate-database");
   public deleteAlbumsByUUIDS = (albumUUIDs: string[]) =>
     this.backendRequest("post", "/delete-albums-by-uuids", { albumUUIDs });
 
