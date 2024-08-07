@@ -5,25 +5,32 @@
         <Button icon="home" @click="state.clearAdvancedSearchOptions()" />
       </router-link>
       <CollectionDropMenu v-if="state.stateVariables.albums" :albums="[
-        defaultAlbumCollection,
-        ...Object.values(state.stateVariables.albums),
-      ]" :currentAlbum="getCurrentItemFromUUID(route.params.albumUUID)" />
+          defaultAlbumCollection,
+          ...Object.values(state.stateVariables.albums),
+        ]" :currentAlbum="getCurrentItemFromUUID(route.params.albumUUID)" />
       <div class="m-auto flex-row flex items-center justify-center">
-        
+
       </div>
       <Button icon="plus" @click="togglePopup('AddNewPicturePopup')" buttonID="addNewPictureButton" />
+      <Button icon="queue" @click="togglePopup('queuePopup')" buttonID="queueButton" />
       <Button icon="filter" @click="
           state.stateVariables.advancedSearch =
           !state.stateVariables.advancedSearch
           " />
       <Button :icon="`${state.stateVariables.isEditing ? 'cancel_editing' : 'edit'}`" :class="`${state.stateVariables.isEditing ? 'bg-[#B6222D] rounded-8px' : ''
-        }`" @click="
-    state.stateVariables.isEditing = !state.stateVariables.isEditing
-    " buttonID="editButton" />
-      <Button icon="menu" @click="togglePopup('SetupPopup')" buttonID="menuButton" />
+          }`" @click="
+          state.stateVariables.isEditing = !state.stateVariables.isEditing
+          " buttonID="editButton" />
+      <router-link to="/settings/">
+        <Button icon="settings" buttonID="menuButton" />
+      </router-link>
 
       <PopupSlot v-if="state.stateVariables.popup == 'AddNewPicturePopup'">
         <AddNewPicturePopup />
+      </PopupSlot>
+
+      <PopupSlot v-if="state.stateVariables.popup == 'queuePopup'">
+        <QueuePopup />
       </PopupSlot>
 
       <PopupSlot v-if="state.stateVariables.popup == 'SetupPopup'">
@@ -31,8 +38,8 @@
       </PopupSlot>
     </div>
     <div v-if="!!state.stateVariables.advancedSearch">
-      <AdvancedSearch :albums="mapAlbumsToNamesArray(Object.values(state.stateVariables.albums))" 
-      :defaultSelected="getCurrentItemFromUUID(route.params.albumUUID).name" />
+      <AdvancedSearch :albums="mapAlbumsToNamesArray(Object.values(state.stateVariables.albums))"
+        :defaultSelected="getCurrentItemFromUUID(route.params.albumUUID).name" />
     </div>
   </div>
 </template>
@@ -41,16 +48,15 @@
 import Button from "../Misc/Button.vue";
 import CollectionDropMenu from "../Misc/CollectionDropMenu.vue";
 import AddNewPicturePopup from "../Popups/AddNewPicturePopup.vue";
+import QueuePopup from "../Popups/QueuePopup.vue";
 import SetupPopup from "../Popups/SetupPopup.vue";
 import type { IAlbum } from "../../services/types";
-import SearchBar from "../Misc/SearchBar.vue";
 import PopupSlot from "../Misc/PopupSlot.vue";
 
-import { ref, inject } from "vue";
+import { inject } from "vue";
 import { useRoute } from "vue-router";
 import { AppState } from "../../../state";
 import AdvancedSearch from "../Misc/AdvancedSearch.vue";
-import { Album } from "../../services/album";
 
 const state = inject("state") as AppState;
 
