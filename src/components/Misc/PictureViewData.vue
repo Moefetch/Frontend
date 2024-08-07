@@ -60,15 +60,15 @@ const addNewTagToggle = ref(false);
 const props = defineProps<{
   item: IMediaItem;
   indexer: number;
-  linksDictionary: { [key: string]: string } | undefined;
+  //linksDictionary: { [key: string]: string } | undefined;
 }>();
 
 const picName = props.item.file;
 let linksAsAny: any | undefined = undefined;
 let linksReformated: string[] | undefined = undefined;
 if (props.item.links) {
-  if (props.linksDictionary) linksAsAny = props.linksDictionary as any;
-  else linksAsAny = props.item.links as any;
+  //if (props.linksDictionary) linksAsAny = props.linksDictionary as any;
+  linksAsAny = props.item.links;
 
   if (linksAsAny.other) linksAsAny.other = linksAsAny.other[0];
   linksReformated = Object.getOwnPropertyNames(linksAsAny);

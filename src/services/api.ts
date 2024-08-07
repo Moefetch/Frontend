@@ -3,7 +3,7 @@ import type {
   IAlbum,
   IEntry,
   INewAlbum,
-  INewPic,
+  INewMediaSubmittionItem,
   ISettings,
   ISettingsErrorObject,
   IFilterObj,
@@ -15,6 +15,8 @@ import type {
 } from "./types";
 import { stockSettings } from "./types";
 import { Settings } from "./settings";
+
+
 class API {
   public settings: Settings;
   constructor() {
@@ -80,9 +82,11 @@ class API {
             this.localStorageSettings.backend_url.length - 1
           );
     } else this.localStorageSettings.backend_url = "http://localhost:2234";
+
+    this.backendUrl = this.localStorageSettings.backend_url;
   }
 
-  public async addPictures(data: INewPic[]) {
+  public async addPictures(data: INewMediaSubmittionItem[]) {
     let filesArray: File[] = [];
     const formData = new FormData();
     data.forEach(picFormElement => {
@@ -315,7 +319,7 @@ for (const param in defaultSpecialSettingsOrParams) {
   public handleHidingAlbumsByUUIDS = (albumUUIDs: string[], hide: boolean) =>
     this.backendRequest("post", "/handle-hiding-albums", { albumUUIDs, hide });
 
-  public getTableOfContents = () =>
+  public getAlbums = () =>
     this.backendRequest<[IAlbum]>("get", "/albums");
 
   public getModelTypes = () =>

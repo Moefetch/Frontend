@@ -1,8 +1,8 @@
 import { Album } from "./src/services/album";
 import { api } from "./src/services/api";
+import { requestsWebSocketsWrapper } from "./src/services/webSockets";
 import { reactive, ref } from "vue";
-import { IFilterObj } from "./src/services/types";
-import { stockSettings } from "./src/services/types";
+import { IFilterObj, stockSettings, queueDictionary } from "./src/services/types";
 import { Setting, Settings } from "./src/services/settings";
 
 const defaultSettings = new Settings({
@@ -31,7 +31,11 @@ export class AppState {
       backendUrlError: "",
       selectDabase: false,
       hasError: false,
-    }
+    },
+    queue: {
+      requests: {},
+      downloadProgressBars: {}
+    } as queueDictionary
   });
   
   private checkValidMongoDb(enabledBool: boolean, stringValue?: string) {
@@ -98,13 +102,17 @@ private async submit() {
 
   public async setResTable() {
     api
-      .getTableOfContents()
+      .getAlbums()
       .then((tablesContentRes) => {
         tablesContentRes.forEach((album) => {
           this.stateVariables.albums[album.uuid] = new Album(album);
         });
       })
       .catch(console.log);
+  }
+
+  public async initQueue(){
+    
   }
 
   /**
@@ -153,3 +161,4 @@ private async submit() {
 }
 
 export const state = new AppState();
+export const wsW = new requestsWebSocketsWrapper(state);

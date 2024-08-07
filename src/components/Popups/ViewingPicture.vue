@@ -23,8 +23,8 @@
     <img v-else :src="backendUrl + item.media[indexer].file" class="pictureView" ref="target" />
   </div>
 
-  <div class="bg-[#32303A] absolute right-0 w-[30vw] h-[93vh] overflow-auto pb-4" ref="target3">
-    <PictureViewData v-if="refreshBool" :item="item.media[indexer]" :indexer="indexer" :linksDictionary="undefined" />
+  <div class="bg-[#32303A] absolute right-0 w-[30vw] h-[96vh] overflow-auto pb-4" ref="target3">
+    <PictureViewData v-if="refreshBool" :item="item.media[indexer]" :indexer="indexer" />
   </div>
 </template>
 
@@ -156,16 +156,16 @@ class PicIndexer {
 }
 
 .pictureViewCardsContainerZero {
-  @apply flex gap-4 items-center justify-center;
+  @apply flex gap-4 items-center justify-center w-[fit-content];
 }
 
 .pictureViewCardsContainerLeft {
-  @apply flex-wrap ml-8 h-[84vh] w-[220px];
+  @apply flex-wrap ml-8 h-[84vh];
   direction: rtl;
 }
 
 .pictureViewCardsContainerBottom {
-  @apply h-[100px] w-[60vw];
+  @apply h-[100px];
 }
 
 .pictureViewCards {

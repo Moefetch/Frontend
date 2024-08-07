@@ -153,7 +153,7 @@ export interface INewAlbum {
   isHidden: boolean;
 }
 
-export interface IPicFormStockOverrides {
+export interface IMediaSubmitFormStockOverrides {
   thumbnailFile: IParam;
   compileAllLinksIntoOneEntry: IParam;
   addId: IParam;
@@ -161,7 +161,7 @@ export interface IPicFormStockOverrides {
   useProvidedFileName: IParam;
 }
 
-export const defaultPicFormStockOverrides: IPicFormStockOverrides = {
+export const defaultPicFormStockOverrides: IMediaSubmitFormStockOverrides = {
   thumbnailFile: {
     checkBox: {
       checkBoxDescription: "Use different link for cover image instead",
@@ -234,7 +234,31 @@ export const defaultPicFormStockOverrides: IPicFormStockOverrides = {
   },
 };
 
-export interface INewPic {
+export interface requestsQueueDictionary {
+  [id:string]: IRequestStatus
+}
+export interface downloadProgressbarsQueueDictionary {
+  [id:string]: number
+}
+export interface queueDictionary {
+  requests: requestsQueueDictionary;
+  downloadProgressBars: downloadProgressbarsQueueDictionary;
+}
+
+
+export interface IRequestStatus {
+  //add something like original input/ request so that you can retry 
+  id: string;
+  currentIndex?: number;
+  numberOfEntries?: number;
+  url?: string;
+  status: string;
+  error?: any;
+  thumbnail?: string;
+  //newSubmittion: INewMediaSubmittionItem;
+}
+
+export interface INewMediaSubmittionItem {
   files?: string[];
   tempFileStore?: {
     fileName: string,
@@ -247,8 +271,7 @@ export interface INewPic {
   thumbnailFile?: string;
   url: string;
   optionalOverrideParams?: IModelSpecialParam;
-  stockOptionalOverrides?: IPicFormStockOverrides;
-  has_results?: boolean;
+  stockOptionalOverrides?: IMediaSubmitFormStockOverrides;
   type?: AlbumSchemaType;
   album: string;
   isHidden?: boolean;

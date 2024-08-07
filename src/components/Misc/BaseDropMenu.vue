@@ -5,7 +5,7 @@
             <BaseDropMenuItem :item="currentItem" :class="`h-[14px] w-full`" id="currentlyDisplayed" />
             <Icon :icon="toggled ? 'up' : 'down'" class="w-4 h-4" />
         </div>
-        <div v-if="toggled" :class="`flex flex-col pr-[0.25rem] rounded-[0.125rem] rounded-t-none relative`"
+        <div v-if="toggled" :class="`flex flex-col pr-[0.25rem] rounded-[0.125rem] rounded-t-none relative  z-4`"
             :style="bgColorStyle">
             <BaseDropMenuItem v-for="item in dropdownItemsArray" :item="item"
                 class="h-[1.40rem] w-[14rem] cursor-pointer" @click="clickedType(item)" />

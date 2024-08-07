@@ -166,7 +166,7 @@ import { AppState } from "../../../state";
 
 import { api } from "../../services/api";
 import {
-  INewPic,
+  INewMediaSubmittionItem,
   AlbumSchemaType,
   IAlbum,
   ISettings,
@@ -213,7 +213,7 @@ const defaultSelectedAlbumType = ref("");
 
 let settingsForm = reactive<ISettings>(api.settings);
 
-const newPicForm: () => INewPic = () => ({
+const newPicForm: () => INewMediaSubmittionItem = () => ({
   files: undefined,
   tempFileStore: [],
   url: "",
@@ -227,10 +227,10 @@ const newPicForm: () => INewPic = () => ({
   optionalOverrideParams: undefined,
 })
 
-const picFormArray: INewPic[] = [newPicForm()]
+const picFormArray: INewMediaSubmittionItem[] = [newPicForm()]
 const picFormArrayLength = ref(1);
 
-const picForm = ref<INewPic>(picFormArray[entryIndexer.value]);
+const picForm = ref<INewMediaSubmittionItem>(picFormArray[entryIndexer.value]);
 
 let albumUUID: string | undefined = undefined;
 let optionalOverrideParams = settingsForm.paramsTree ?? {}
@@ -244,7 +244,7 @@ if (route.name == "album") {
     picForm.value.album = albumObj.name;
 
     defaultSelectedAlbumType.value = albumObj.type;
-    picForm.value.type = albumObj.type as INewPic["type"];
+    picForm.value.type = albumObj.type as INewMediaSubmittionItem["type"];
     setOptionalParams();
     albumUUID = albumObj.uuid;
   }
@@ -306,7 +306,6 @@ const onAddFiles = (event: any) => {
         filePreviewURL: URL.createObjectURL(newFiles[index])
       }]
     }
-
   }
 
 }
@@ -356,7 +355,7 @@ function addNewEntry() {
       picForm.value.album = albumObj.name;
 
       defaultSelectedAlbumType.value = albumObj.type;
-      picForm.value.type = albumObj.type as INewPic["type"];
+      picForm.value.type = albumObj.type as INewMediaSubmittionItem["type"];
       setOptionalParams();
       albumUUID = albumObj.uuid;
     }
@@ -424,7 +423,7 @@ async function submit() {
         isHidden: false,
       });
 
-      const tablesContentRes = await api.getTableOfContents();
+      const tablesContentRes = await api.getAlbums();
       localStorage.setItem("albums", JSON.stringify(tablesContentRes));
     }
   }
