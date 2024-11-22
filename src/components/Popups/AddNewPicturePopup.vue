@@ -390,23 +390,23 @@ async function submit() {
   for (let index = 0; index < picFormArray.length; index++) {
     const pic = picFormArray[index];
     //url errors brrrrrr
-    if (!pic.url && !pic.tempFileStore?.length) urlEmpty();
+    if (!pic.url && !pic.tempFileStore?.length) urlEmpty(index);
 
     //pic type errors brrrrrrrrrrrrrrrrrr
-    if (!pic.type) noTypeSelected();
+    if (!pic.type) noTypeSelected(index);
 
-    if (!pic.album && !pic.createAlbumToggle) noAlbumelected();
+    if (!pic.album && !pic.createAlbumToggle) noAlbumelected(index);
 
     if (
-      (pic.album == undefined || pic.album == "") &&
+      (pic.createAlbumName == undefined || pic.createAlbumName == "") &&
       pic.createAlbumToggle
     )
-      albumNameEmpty();
+      albumNameEmpty(index);
     if (pic.album && pic.createAlbumToggle) {
       if ((pic.album as string)[0].match(/[0-9]/))
-        albumNameStartsWithNumOrSpecial();
+        albumNameStartsWithNumOrSpecial(index);
     }
-    if (pic.album?.match(/[^A-Za-z0-9_\s]/g)) albumNameContainsSpecialChar();
+    if (pic.album?.match(/[^A-Za-z0-9_\s]/g)) albumNameContainsSpecialChar(index);
 
     if (
       picFormError.picAlbumError ||
@@ -421,7 +421,8 @@ async function submit() {
         type: pic.type,
         album_thumbnail_file: "",
         isHidden: false,
-      });
+      })
+      pic.album = pic.createAlbumName;
 
       const tablesContentRes = await api.getAlbums();
       localStorage.setItem("albums", JSON.stringify(tablesContentRes));
@@ -436,30 +437,36 @@ async function submit() {
   state.stateVariables.popup = ""; //disables the popup aka exits
 }
 
-function urlEmpty() {
+function urlEmpty(index: number) {
+  entryIndexer.value = index;
   picUrlErrorMessage.value = "Please provide a url to picture or upload";
 }
 
-function noTypeSelected() {
+function noTypeSelected(index: number) {
+  entryIndexer.value = index;
   picFormError.picTypeError = true;
 }
 
-function noAlbumelected() {
+function noAlbumelected(index: number) {
+  entryIndexer.value = index;
   picFormError.picAlbumError = true;
 }
 
 //when the new album inputed bla bla
-function albumNameEmpty() {
+function albumNameEmpty(index: number) {
+  entryIndexer.value = index;
   picFormError.picAlbumError = true;
   AlbumNameErrorMessage.value = "Please give a name to your new album";
 }
 
-function albumNameStartsWithNumOrSpecial() {
+function albumNameStartsWithNumOrSpecial(index: number) {
+  entryIndexer.value = index;
   picFormError.picAlbumError = true;
   AlbumNameErrorMessage.value = "album name must start with a leter";
 }
 
-function albumNameContainsSpecialChar() {
+function albumNameContainsSpecialChar(index: number) {
+  entryIndexer.value = index;
   picFormError.picAlbumError = true;
   AlbumNameErrorMessage.value = "album name cannot include special characters";
 }

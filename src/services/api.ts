@@ -163,10 +163,14 @@ class API {
   }
 
   public deletePicturesInAlbum = (album: string, entriesIDs: string[]) =>
+  {
+    console.log(entriesIDs);
+    
     this.backendRequest("delete", "/delete-entry-by-id", {
       album: album,
       entriesIDs: entriesIDs,
     });
+  }
 
   public handleHidingPicturesInAlbum = (
     album: string,

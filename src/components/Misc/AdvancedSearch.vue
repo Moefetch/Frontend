@@ -13,7 +13,7 @@
       </div>
       <div class="min-w-[10rem]">
         <FieldErrorSlot :showRedBorderOnlyBool="formErrors.noSortingSelected">
-          <BaseDropMenu defaultSelected="Sort by" :dropdownItemsArray="sortBy" bg-color-hex="#111112"
+          <BaseDropMenu defaultSelected="Newest First" :dropdownItemsArray="sortBy" bg-color-hex="#111112"
             @item-selected="(selected: string) => selectSorting(selected)"
             @click="formErrors.noSortingSelected = false" />
         </FieldErrorSlot>
@@ -55,7 +55,7 @@
         <div class="searchTagsContainer pictureViewDataText textRoundedBg" v-for="tag in searchForm.tags"
           @click="removeTag(tag)">
           <Icon icon="x" class="w-4 h-4 cursor-pointer" />
-          <h2 class="h-[fit-content] whitespace-nowrap pb-1">
+          <h2 class="h-[fit-content] whitespace-nowrap">
             {{ tag }}
           </h2>
         </div>
@@ -77,6 +77,10 @@ import { AppState } from "../../../state";
 import { AlbumSchemaType, IAutoCompleteTags } from "../../services/types";
 
 const defaultSelectedAlbumType = ref<string | undefined>("");
+const props = defineProps<{
+  albums: { albumName: string; albumUUID: string; type: string }[];
+  defaultSelected: string;
+}>();
 
 const modelTypesArray = ref(["All Categories"]);
 const state = inject("state") as AppState;
@@ -86,12 +90,13 @@ const tagsAutocomplete = ref<IAutoCompleteTags[]>([]);
 
 const searchForm = reactive<{
   album: string;
-  sortBy?: string;
+  sortBy: string;
   nameIncludes?: string;
   showNSFW: boolean;
   tags?: Set<string>;
 }>({
   album: "",
+  sortBy: "Newest First",
   showNSFW: true,
   tags: new Set([]),
 });
@@ -101,10 +106,7 @@ const formErrors = reactive({
   noSortingSelected: false,
 });
 
-const props = defineProps<{
-  albums: { albumName: string; albumUUID: string; type: string }[];
-  defaultSelected: string;
-}>();
+
 if (props.defaultSelected !== "Home") {
   searchForm.album = props.defaultSelected
 };
@@ -112,7 +114,7 @@ if (props.defaultSelected !== "Home") {
 function typeSelect(a: AlbumSchemaType) {
   albumType.value = a
 }
-const sortBy = ["Name", "Date Added", "Date Created"];
+const sortBy = ["Newest First", "Oldest First"];
 
 function removeTag(value: string) {
   searchForm.tags?.delete(value);
@@ -152,33 +154,31 @@ async function invokeSearchTags(tagSearch: string) {
       tagsAutocomplete.value = (
         await api.getTagsForSearchAutocomplete(tagSearch, albumType.value)
       ).tags;
-      console.log(tagsAutocomplete.value);
     } else tagsAutocomplete.value = [];
   }, 900);
 }
 
 function submit() {
-  if (!searchForm.album) formErrors.noAlbumSelectedError = true;
-  if (!searchForm.sortBy) formErrors.noSortingSelected = true;
 
-  if (searchForm.album && searchForm.sortBy) {
+  if (!searchForm.album) formErrors.noAlbumSelectedError = true;
+  //if (!searchForm.sortBy) formErrors.noSortingSelected = true;
+
+  if (searchForm.album) {
     searchForm.album =
-      props.albums.find((album) => (album.albumName = searchForm.album))
+      props.albums.find((album) => (album.albumName == searchForm.album))
         ?.albumUUID ?? searchForm.album;
     if (searchForm.tags) {
       state.stateVariables.advancedSearchOptions.tags =
         Array.from(searchForm.tags) ?? undefined;
     }
-
     state.stateVariables.advancedSearchOptions.nameIncludes =
       searchForm.nameIncludes;
-    state.stateVariables.advancedSearchOptions.sortBy = searchForm.sortBy
-      .replace(" ", "_")
-      .toLocaleLowerCase();
+    state.stateVariables.advancedSearchOptions.sortBy = searchForm.sortBy;
 
     state.stateVariables.albums[searchForm.album].getPictures(
       state.stateVariables.advancedSearchOptions
     );
+
     router.push({ name: "search", params: { albumUUID: searchForm.album } });
   }
 }

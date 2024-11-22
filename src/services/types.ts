@@ -288,6 +288,7 @@ type IStockSettings = {
   blur_nsfw: IParam;
   show_hidden: IParam;
   thumbnail_list_to_left: IParam;
+  immidiately_apply_settings_after_import: IParam;
 };
 
 export interface ISettings {
@@ -340,9 +341,9 @@ export const stockSettings: IStockSettings = {
     type: "setting",
     valueType: "checkBox",
     checkBox: {
-      checkBoxValue: false,
+      checkBoxValue: true,
       checkBoxDescription: "Blur NSFW tagged posts",
-      defaultValue: false
+      defaultValue: true
     },
   },
   show_hidden: {
@@ -358,9 +359,18 @@ export const stockSettings: IStockSettings = {
     type: "setting",
     valueType: "checkBox",
     checkBox: {
-      checkBoxValue: false,
+      checkBoxValue: true,
       checkBoxDescription: "Show NSFW tagged posts",
-      defaultValue: false
+      defaultValue: true
+    },
+  },
+  immidiately_apply_settings_after_import: {
+    type: "setting",
+    valueType: "checkBox",
+    checkBox: {
+      checkBoxValue: true,
+      checkBoxDescription: "Immidiately apply settings after import",
+      defaultValue: true
     },
   },
 };

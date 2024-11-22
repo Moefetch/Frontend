@@ -1,9 +1,9 @@
 <template>
     <div class="h-[2rem]" ref="target">
-        <div :class="`flex mt-auto mb-auto flex-row h-[2rem] pr-[0.25rem] rounded-[0.2rem] cursor-pointer items-center ${toggled ? 'rounded-b-none' : ''}`"
+        <div :class="`flex mt-auto mb-auto flex-row h-[2rem] pr-2 rounded-[0.2rem] cursor-pointer items-center ${toggled ? 'rounded-b-none' : ''}`"
             @click="dropDownToggle()" :style="bgColorStyle">
             <BaseDropMenuItem :item="currentItem" :class="`h-[14px] w-full`" id="currentlyDisplayed" />
-            <Icon :icon="toggled ? 'up' : 'down'" class="w-4 h-4" />
+            <Icon :icon="toggled ? 'up' : 'down'" class="w-3 h-3" />
         </div>
         <div v-if="toggled" :class="`flex flex-col pr-[0.25rem] rounded-[0.125rem] rounded-t-none relative  z-4`"
             :style="bgColorStyle">

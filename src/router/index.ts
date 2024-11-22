@@ -50,14 +50,19 @@ const routes = [
         component: () => import("../components/SettingsPages/Appearance.vue")
       },
       {
-        name: "behavior",
-        path: "behavior",
-        component: () => import("../components/SettingsPages/Behavior.vue")
+        name: "behaviour",
+        path: "behaviour",
+        component: () => import("../components/SettingsPages/Behaviour.vue")
       },
       {
         name: "parameters",
         path: "parameters",
         component: () => import("../components/SettingsPages/Parameters.vue")
+      },
+      {
+        name: "Export Or Import Settings",
+        path: "export_or_import_settings",
+        component: () => import("../components/SettingsPages/ExportAndImport.vue")
       },
       {
         name: "keys",

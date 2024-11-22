@@ -1,7 +1,7 @@
 <template>
   <div class="p-4 flex flex-row">
     <div class="p-4">
-      <div class="rounded-t-[4px] h-[fit-content] w-[fit-content] overflow-hidden">
+      <div class="rounded-t-[4px] h-[calc(100%-32px)] w-[fit-content] overflow-hidden">
         <SettingsMenuItem v-for="setting in settings" :name="setting" />
       </div>
     </div>
@@ -21,7 +21,7 @@ import VerticalSeparator from "../components/Misc/VerticalSeparator.vue";
 import SettingsbuttonPanel from "../components/Misc/SettingsbuttonPanel.vue";
 const route = useRoute()
 
-const settings = ["Connections", "Appearance", "Behavior", "Parameters", "Keys"]
+const settings = ["Connections", "Appearance", "Behaviour", "Parameters", "Keys", "Export/Import Settings"]
 /* defineProps<{}>();
 defineEmits([]);
  */

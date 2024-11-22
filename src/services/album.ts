@@ -32,7 +32,7 @@ export class Album extends SelectableItem implements IAlbum {
       .getPicsInAlbum(this.uuid, {
         showNSFW: state.stateVariables.showNSFW,
         showHidden: state.stateVariables.showHidden,
-        sortBy: options?.sortBy ?? "date_added",
+        sortBy: options?.sortBy ?? "Newest First",
         tags: options?.tags,
         nameIncludes: options?.nameIncludes,
       })
@@ -46,11 +46,17 @@ export class Album extends SelectableItem implements IAlbum {
    * deleteSelectedPics
    */
   public deleteSelectedPics() {
+    let picIDs:string[] = [];
+    //inverted search; from last to first
+    for (let index = this.pictures.length-1; index >= 0; index--) {
+       if (this.pictures[index].isSelected) {
+        const id = this.pictures.splice(index,1)[0].id;
+        picIDs.push(id);
+      }
+    }
+
     api.deletePicturesInAlbum(
-      this.name,
-      this.pictures
-        .filter((p, index) => p.isSelected && this.pictures.splice(index, 1))
-        .map((p) => p.id)
+      this.name, picIDs
     );
 
     state.stateVariables.isEditing = false;
@@ -61,7 +67,7 @@ export class Album extends SelectableItem implements IAlbum {
   public addPictures(pictures: IEntry[]) {
     pictures.forEach((pic) => {
       const pictureInstance = new Picture(pic);
-      this.pictures.push(pictureInstance);
+      this.pictures.unshift(pictureInstance);
     });
   }
   /**

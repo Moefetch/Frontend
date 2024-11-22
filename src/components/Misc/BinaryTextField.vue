@@ -3,8 +3,7 @@
     <div v-if="value.checkBox"
       class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
       <div class="h-[24px] right-0 flex flex-row items-center">
-        <button class="checkBoxButtonSelected checkbox_option"
-          @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue">
+        <button class="checkbox_option" @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue">
           <Icon :icon="value.checkBox.checkBoxValue
       ? 'checked_checkbox'
       : 'unchecked_checkbox'
@@ -43,7 +42,9 @@ defineEmits([]);
 </script>
 
 <style scoped lang="postcss">
-.checkBoxButtonSelected:focus {
-  @apply border-2 border-[#2458CB];
+.checkbox_option {
+  @apply text-12px flex flex-row items-center h-[24px] align-middle w-[35rem] gap-1 cursor-pointer;
+  font-family: "Work Sans", sans-serif;
+  color: white;
 }
 </style>

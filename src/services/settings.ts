@@ -21,6 +21,7 @@ export class Settings implements ISettings {
     blur_nsfw: IParam;
     show_hidden: IParam;
     thumbnail_list_to_left: IParam;
+    immidiately_apply_settings_after_import: IParam;
   };
   public special_params?: IModelSpecialParam;
   public special_settings?: IModelSpecialParam;
