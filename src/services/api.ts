@@ -108,7 +108,7 @@ class API {
     //await this.backendRequest<void>("post", "/download-files", formData);
     return this.backendRequest<[IEntry]>("post", "/add-pictures", formData);
   }
-  public async createNewAlbum(data: INewAlbum) {
+  private albumDataRawToFormData(data: INewAlbum){
     const { name, album_thumbnail_file, type, isHidden } = data;
 
     const formData = new FormData();
@@ -118,7 +118,18 @@ class API {
     album_thumbnail_file &&
       formData.append("album_thumbnail_file", album_thumbnail_file);
     isHidden && formData.append("isHidden", isHidden ? "1" : "");
+    return formData;
+  }
+  public async editAlbum(uuid: string, data: INewAlbum, estimatedPicCount: number) {
+    const formData = this.albumDataRawToFormData(data);
+    uuid && formData.append("uuid", uuid);
+    estimatedPicCount && formData.append("estimatedPicCount", `${estimatedPicCount}`);
+    return await this.backendRequest<IAlbum>("post", "/edit-album", formData);
+    //add error handling or whatever tf idk
+  }
 
+  public async createNewAlbum(data: INewAlbum) {
+    const formData = this.albumDataRawToFormData(data);
     return await this.backendRequest<IAlbum>("post", "/create-album", formData);
     //add error handling or whatever tf idk
   }

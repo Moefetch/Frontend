@@ -21,6 +21,7 @@ export class AppState {
     isEditing: false,
     albums: {} as Record<string, Album>,
     popup: "",
+    editedAlbumUUID: "",
     selectedEntriesIndexes: new Set<number>(),
     advancedSearch: false,
     advancedSearchOptions: {} as IFilterObj,

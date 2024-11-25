@@ -11,6 +11,7 @@ export interface IAlbum {
   uuid: string;
   type: string;
   estimatedPicCount: number;
+  isHidden: boolean;
 }
 export interface IPostLinks {
   pixiv?: string;
@@ -149,7 +150,7 @@ export type AlbumSchemaType = string;
 export interface INewAlbum {
   name: string;
   type: AlbumSchemaType | undefined;
-  album_thumbnail_file: "" | File;
+  album_thumbnail_file: string | File;
   isHidden: boolean;
 }
 

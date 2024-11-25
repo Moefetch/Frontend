@@ -1,83 +1,43 @@
 <template>
   <div class="popup_container">
     <div class="text-[12px] flex flex-col gap-[0.5rem]">
-      <div
-        :class="`${
-          albumFormError.albumCoverError ? 'error' : ''
-        } rounded-[4px] border-[#3D3D3D] border-[4px] cursor-pointer `"
-        @click="
-          albumFormError.albumCoverError = false;
-          albumCover?.click();
-        "
-      >
-        <img
-          :src="newAlbumCoverPreview"
-          alt=""
-          class="album_thumbnail_preview h-[100px] w-[100px] max-h-[100px] max-w-[100px]"
-        />
+      <div :class="`${albumFormError.albumCoverError ? 'error' : ''
+        } rounded-[4px] border-[#3D3D3D] border-[4px] cursor-pointer `" @click="
+        albumFormError.albumCoverError = false;
+      albumCover?.click();
+      ">
+        <img :src="newAlbumCoverPreview" alt=""
+          class="album_thumbnail_preview h-[100px] w-[100px] max-h-[100px] max-w-[100px]" />
       </div>
-      <input
-        type="file"
-        @change="OnAlbumCoverChange"
-        style="display: none"
-        id="albumcover"
-        name="albumCover"
-        ref="albumCover"
-        accept="image/*"
-      />
-      
+      <input type="file" @change="OnAlbumCoverChange" style="display: none" id="albumcover" name="albumCover"
+        ref="albumCover" accept="image/*" />
+
     </div>
     <div class="flex flex-col gap-2">
-      <h2
-        class="text-red-500 indent-2px text-14px"
-        :style="`${albumFormError.albumNameError ? '' : 'display: none;'}`"
-      >
+      <h2 class="text-red-500 indent-2px text-14px" :style="`${albumFormError.albumNameError ? '' : 'display: none;'}`">
         {{ nameErrorMessage }}
       </h2>
       <div :class="`${albumFormError.albumNameError ? 'error' : ''}`">
-        <input
-          v-model="albumForm.name"
-          class="inputField"
-          type="text"
-          pattern="[A-Za-z0-9_\s]{1,64}"
-          title="Starts with a letter and doesnt contain special characters"
-          placeholder="Name"
-          min="1"
-          max="64"
-          @click="
-            albumFormError.albumNameError = false;
-            albumFormError.albumAlreadyExistError = false;
-          "
-        />
+        <input v-model="albumForm.name" class="inputField" type="text" pattern="[A-Za-z0-9_\s]{1,64}"
+          title="Starts with a letter and doesnt contain special characters" placeholder="Name" min="1" max="64" @click="
+        albumFormError.albumNameError = false;
+      albumFormError.albumAlreadyExistError = false;
+      " />
       </div>
-      <BaseDropMenu
-        :dropdownItemsArray="modelTypesArray"
-        :selectedType="albumForm.type"
-        @item-selected="typeSelect"
-        :class="`${albumFormError.albumTypeError ? 'error' : ''} box-content`"
-        @click="albumFormError.albumTypeError = false"
-      />
-      <h2
-        class="text-red-500 indent-2px text-14px"
-        :style="`${
-          albumFormError.albumAlreadyExistError ? '' : 'display: none;'
-        }`"
-      >
+      <BaseDropMenu :dropdownItemsArray="modelTypesArray" :selectedType="albumForm.type" @item-selected="typeSelect"
+        :default-selected="albumForm.type" :class="`${albumFormError.albumTypeError ? 'error' : ''} box-content`"
+        @click="albumFormError.albumTypeError = false" />
+      <h2 class="text-red-500 indent-2px text-14px" :style="`${albumFormError.albumAlreadyExistError ? '' : 'display: none;'
+        }`">
         Album already exists, please enter a different name
       </h2>
       <div class="checkbox_option w-[16rem]" @click="toggleAlbumIsHidden">
-        <Icon
-          :icon="albumForm.isHidden ? 'checked_checkbox' : 'unchecked_checkbox'"
-        />
+        <Icon :icon="albumForm.isHidden ? 'checked_checkbox' : 'unchecked_checkbox'" />
         <h2>Hidden album</h2>
       </div>
 
-      <Button
-        text="Submit"
-        color="#4d6d8d"
-        class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]"
-        @click="submit()"
-      />
+      <Button :text="editedAlbumUUID ? 'Update' : 'Submit'" color="#4d6d8d"
+        class="absolute bottom-8 right-8 w-[fit-content] rounded-[8px]" @click="submit()" />
     </div>
   </div>
 </template>
@@ -93,6 +53,11 @@ import Icon from "../Misc/Icon.vue";
 import { api } from "../../services/api";
 import type { INewAlbum, AlbumSchemaType, IAlbum } from "../../services/types";
 import { Album } from "../../services/album";
+let newAlbumCover: File | string = "";
+
+const props = defineProps<{
+  editedAlbumUUID?: string;
+}>();
 
 const state = (inject("state") as AppState).stateVariables;
 
@@ -106,6 +71,20 @@ const albumForm = reactive<INewAlbum>({
   type: undefined,
   isHidden: false,
 });
+
+if (props.editedAlbumUUID) {
+  const album = state.albums[props.editedAlbumUUID];
+  if (album) {
+    albumForm.name = album.name;
+    albumForm.type = album.type;
+    albumForm.isHidden = album.isHidden;
+    if (album.albumCoverImage != 'album_thumbnail_files/image.svg') { //aka the default blank icon
+      newAlbumCoverPreview.value = api.backendUrl + '/' + album.albumCoverImage;
+      newAlbumCover = album.albumCoverImage;
+      albumForm.album_thumbnail_file = album.albumCoverImage;
+    }
+  }
+}
 
 function toggleAlbumIsHidden() {
   albumForm.isHidden = !albumForm.isHidden;
@@ -131,13 +110,11 @@ onMounted(async () => {
   );
 });
 
-let newAlbumCover: File | "" = "";
-
 const OnAlbumCoverChange = (event: any) => {
   newAlbumCover = event.target.files[0];
-  
+
   if (typeof newAlbumCover != "string")
-  newAlbumCoverPreview.value = URL.createObjectURL(newAlbumCover);
+    newAlbumCoverPreview.value = URL.createObjectURL(newAlbumCover);
   else newAlbumCoverPreview.value = newAlbumCover;
 };
 
@@ -159,27 +136,42 @@ async function submit() {
   //album type errors brrrrrrrrrrrrrrrrrr
   if (!albumForm.type) noTypeSelected();
 
-  if (Object.values(state.albums).some((a) => a.name == albumForm.name))
-    albumFormError.albumAlreadyExistError = true;
-
   if (
-    albumFormError.albumAlreadyExistError ||
     albumFormError.albumCoverError ||
     albumFormError.albumTypeError ||
     albumFormError.albumNameError
   )
     return;
 
-  //the actual submit function
+  if (props.editedAlbumUUID) {
+    const response = await api.editAlbum(
+      props.editedAlbumUUID,
+      {
+        name: albumForm.name,
+        type: albumForm.type,
+        album_thumbnail_file: newAlbumCover,
+        isHidden: albumForm.isHidden,
+      }, state.albums[props.editedAlbumUUID].estimatedPicCount);
+    state.albums[response.uuid] = new Album(response);
+  } else {
 
-  const response = await api.createNewAlbum({
-    name: albumForm.name,
-    type: albumForm.type,
-    album_thumbnail_file: newAlbumCover,
-    isHidden: albumForm.isHidden,
-  });
-  state.albums[response.uuid] = new Album(response);
+    if (Object.values(state.albums).some((a) => a.name == albumForm.name)) {
+      albumFormError.albumAlreadyExistError = true;
+      return
+    }
+
+    //the actual submit function: create new album
+
+    const response = await api.createNewAlbum({
+      name: albumForm.name,
+      type: albumForm.type,
+      album_thumbnail_file: newAlbumCover,
+      isHidden: albumForm.isHidden,
+    });
+    state.albums[response.uuid] = new Album(response);
+  }
   state.popup = "";
+  state.editedAlbumUUID = "";
 }
 
 function nameEmpty() {
@@ -223,6 +215,7 @@ function noTypeSelected() {
   border-radius: 4px;
   background-color: rgba(42, 45, 52, 1);
 }
+
 .album_thumbnail_preview {
   @apply h-[12.4vh] w-[12.4vh];
   object-fit: cover;
@@ -234,6 +227,7 @@ function noTypeSelected() {
   font-family: "Work Sans", sans-serif;
   color: white;
 }
+
 .error {
   @apply border-rose-600 border-width-[2px] !important;
 }

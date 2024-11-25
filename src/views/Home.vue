@@ -2,20 +2,17 @@
   <div class="page-container flex">
     <div class="albums_container m-auto gap-16">
       <AlbumAddCard @click="state.stateVariables.popup = 'CreateNewAlbumPopup'" />
-      <AlbumCard
-        v-for="item in state.stateVariables.albums"
-        :album="item"
-      />
-      
-      <PopupSlot v-if="state.stateVariables.popup == 'CreateNewAlbumPopup'">
-        <CreateNewAlbumPopup/>
+      <AlbumCard v-for="item in state.stateVariables.albums" :album="item" />
+
+      <PopupSlot
+        v-if="state.stateVariables.popup == 'CreateNewAlbumPopup' || state.stateVariables.popup == 'EditAlbum'">
+        <CreateNewAlbumPopup
+          :editedAlbumUUID="state.stateVariables.popup == 'EditAlbum' ? state.stateVariables.editedAlbumUUID : ''" />
       </PopupSlot>
-      
-    <EditControls 
-    :deleteSelection="() => state.deleteSelectedAlbums()" 
-    :hideSelection="() => state.handleHidingAlbumsByUUIDS(true)" 
-    :unhideSelection="() => state.handleHidingAlbumsByUUIDS(false)" 
-    v-if="state.stateVariables.isEditing" />
+
+      <EditControls :deleteSelection="() => state.deleteSelectedAlbums()"
+        :hideSelection="() => state.handleHidingAlbumsByUUIDS(true)"
+        :unhideSelection="() => state.handleHidingAlbumsByUUIDS(false)" v-if="state.stateVariables.isEditing" />
     </div>
   </div>
 </template>
@@ -25,7 +22,7 @@
 import PopupSlot from "../components/Misc/PopupSlot.vue";
 import EditControls from "../components/Misc/EditControls.vue";
 
-import { ref, inject} from "vue";
+import { ref, inject } from "vue";
 
 import { AppState } from '../../state'
 

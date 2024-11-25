@@ -11,6 +11,7 @@ export class Album extends SelectableItem implements IAlbum {
   public uuid: string;
   public type: string;
   public estimatedPicCount: number;
+  public isHidden: boolean;
 
   public pictures: Picture[] = [];
 
@@ -21,6 +22,7 @@ export class Album extends SelectableItem implements IAlbum {
     this.uuid = properties.uuid;
     this.type = properties.type;
     this.estimatedPicCount = properties.estimatedPicCount;
+    this.isHidden = properties.isHidden;
   }
 
   public getPictures(options?: {
