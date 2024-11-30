@@ -2,7 +2,7 @@ import { api } from "./api";
 import { SelectableItem } from "./selectableItem";
 import { IImageDataArray, IEntry, IPostIds, IPostLinks, IMediaItem, ISizeCalculationResult } from "./types";
 
-export class Picture extends SelectableItem implements IEntry {
+export class Entry extends SelectableItem implements IEntry {
   public id: string;
   public indexer: number;
   public media: MediaItem[];
@@ -21,9 +21,6 @@ export class Picture extends SelectableItem implements IEntry {
     
     this.album = parameters.album;
     
-    
-    
-    
     this.isHidden = parameters.isHidden;
     this.hasNSFW = parameters.hasNSFW;
     
@@ -31,10 +28,25 @@ export class Picture extends SelectableItem implements IEntry {
     
   }
   /**
+   * updateEntry
+   */
+  public updateEntry(parameters: IEntry) {
+    this.id = parameters.id;
+    this.indexer = parameters.indexer;
+    this.thumbnailFile = parameters.thumbnailFile;
+    this.media = parameters.media.map(m=> (new MediaItem(m)));
+    
+    this.album = parameters.album;
+    
+    this.isHidden = parameters.isHidden;
+    this.hasNSFW = parameters.hasNSFW;
+    
+  }
+  /**
    * delete
    */
   public delete() {
-    api.deletePicturesInAlbum(this.album, [this.id]);
+    api.deleteEntriesInAlbum(this.album, [this.id]);
   }
 }
 
@@ -53,6 +65,8 @@ export class MediaItem implements IMediaItem {
   public ids?: IPostIds;
   public date_created?: number;
   public text?: string;
+  public id: string;
+  public album: string;
   
   constructor(parameters: IMediaItem){
     this.file = parameters.file;
@@ -68,5 +82,7 @@ export class MediaItem implements IMediaItem {
     this.ids = parameters.ids;
     this.date_created = parameters.date_created;
     this.text = parameters.text;
+    this.id = parameters.id;
+    this.album = parameters.album;
   }
 }

@@ -6,34 +6,21 @@
           <Icon icon="multi_image" />
           <h2>{{ vIfVar }}</h2>
         </div>
-        <SelectSlot
-          :selected="selected"
-          :checkboxStyle="vIfVar > 1 ? 'top: -26px;' : 'top: 0px'"
-          :slotStyle="`bottom: ${
-            (vIfVar > 1 ? 26 : 0) + (state.isEditing ? 28 : 0)
-          }px; `"
-        >
-          <div
-            :class="'w-[fit-content] h-[fit-content] overflow-hidden relative rounded-[0.2rem] '"
-          >
-            <img v-if="!(picture.media[picture.indexer].isVideo && !thumbnailFile)"
-              :src="backendUrl + pictureURL"
-              :class="
-                'pictureCard overflow-hidden ' +
+        <SelectSlot :selected="selected" :checkboxStyle="vIfVar > 1 ? 'top: -26px;' : 'top: 0px'" :slotStyle="`bottom: ${(vIfVar > 1 ? 26 : 0) + (state.isEditing ? 28 : 0)
+          }px; `">
+          <div :class="'w-[fit-content] h-[fit-content] overflow-hidden relative rounded-[0.2rem] '">
+            <img
+              v-if="!(entry.media[entry.indexer].isVideo && !(props.entry.thumbnailFile ?? props.entry.media[props.entry.indexer].thumbnailFile))"
+              :src="backendUrl + (props.entry.thumbnailFile ?? props.entry.media[props.entry.indexer].thumbnailFile)"
+              :class="'pictureCard overflow-hidden ' +
                 `${doBlurBool ? 'blurPicture' : ''}`
-              "
-              :draggable="false"
-            />
-            <video 
-            v-if="picture.media[picture.indexer].isVideo && !thumbnailFile"
-            :src="backendUrl + pictureURL"
-            :class="
-                'pictureCard overflow-hidden ' +
+                " :draggable="false" />
+            <video
+              v-if="entry.media[entry.indexer].isVideo && !(props.entry.thumbnailFile ?? props.entry.media[props.entry.indexer].thumbnailFile)"
+              :src="backendUrl + (props.entry.thumbnailFile ?? props.entry.media[props.entry.indexer].thumbnailFile)"
+              :class="'pictureCard overflow-hidden ' +
                 `${doBlurBool ? 'blurPicture' : ''}`
-              "
-              :draggable="false"
-            />
-    
+                " :draggable="false" />
           </div>
         </SelectSlot>
       </div>
@@ -47,24 +34,20 @@ import { api } from "../../services/api";
 import Icon from "../Misc/Icon.vue";
 import SelectSlot from "../Misc/SelectSlot.vue";
 import { AppState } from "../../../state";
-import { Picture } from "../../services/picture";
+import { Entry } from "../../services/entry";
 const state = (inject("state") as AppState).stateVariables;
 
 const props = defineProps<{
-  picture: Picture;
+  entry: Entry;
   selected?: boolean;
 }>();
-const thumbnailFile = props.picture.thumbnailFile;
-const pictureURL =
-  thumbnailFile ||
-  props.picture.media[props.picture.indexer].thumbnailFile;
 
-const vIfVar = props.picture.media.length;
+const vIfVar = props.entry.media.length;
 const backendUrl = api.getBackendUrl();
 const settings = api.getSettings();
 
 const doBlurBool =
-  props.picture.hasNSFW && settings.stock_settings.blur_nsfw.checkBox?.checkBoxValue;
+  props.entry.hasNSFW && settings.stock_settings.blur_nsfw.checkBox?.checkBoxValue;
 </script>
 
 <style lang="postcss">
@@ -75,6 +58,7 @@ const doBlurBool =
   object-fit: cover;
   column-gap: 1rem;
 }
+
 .muliImageNum {
   @apply relative p-[2px] rounded-[6px];
   background-color: rgba(134, 134, 134, 0.575);
@@ -86,6 +70,7 @@ const doBlurBool =
   flex-direction: row;
   gap: 4px;
 }
+
 .selectedTopLeft {
   @apply relative p-[2px] rounded-[6px];
   background-color: rgba(134, 134, 134, 0.575);
@@ -102,7 +87,9 @@ const doBlurBool =
   position: relative;
   bottom: 26px;
 }
+
 .blurPicture {
   filter: blur(10px);
 }
 </style>
+../../services/entry

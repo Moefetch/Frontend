@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { AppState } from "../../../state";
 import { ref, inject } from "vue";
-import { onClickOutside } from "@vueuse/core";
+import { onClickOutside, onKeyStroke } from "@vueuse/core";
 
 const target = ref(null);
 const props = defineProps<{
@@ -18,6 +18,13 @@ const props = defineProps<{
 onClickOutside(target, (e) => {
   if (!(e.target as HTMLElement).id) state.popup = "";
 });
+
+onKeyStroke("Escape", (e) => {
+  state.popup = "";
+  e.preventDefault();
+}
+);
+
 const state = (inject("state") as AppState).stateVariables;
 </script>
 

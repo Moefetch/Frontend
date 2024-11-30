@@ -1,5 +1,5 @@
 import { api } from "./api";
-import { Picture } from "./picture";
+import { Entry } from "./entry";
 import { IAlbum, IEntry } from "./types";
 import { SelectableItem } from "./selectableItem";
 
@@ -13,7 +13,7 @@ export class Album extends SelectableItem implements IAlbum {
   public estimatedPicCount: number;
   public isHidden: boolean;
 
-  public pictures: Picture[] = [];
+  public pictures: Entry[] = [];
 
   public constructor(properties: IAlbum) {
     super();
@@ -31,7 +31,7 @@ export class Album extends SelectableItem implements IAlbum {
     nameIncludes?: string;
   }) {
     api
-      .getPicsInAlbum(this.uuid, {
+      .getEntriesInAlbum(this.uuid, {
         showNSFW: state.stateVariables.showNSFW,
         showHidden: state.stateVariables.showHidden,
         sortBy: options?.sortBy ?? "Newest First",
@@ -39,7 +39,7 @@ export class Album extends SelectableItem implements IAlbum {
         nameIncludes: options?.nameIncludes,
       })
       .then((pictures) => {
-        this.pictures = pictures.map((pic) => new Picture(pic));
+        this.pictures = pictures.map((pic) => new Entry(pic));
       })
       .catch(console.log);
   }
@@ -57,7 +57,7 @@ export class Album extends SelectableItem implements IAlbum {
       }
     }
 
-    api.deletePicturesInAlbum(
+    api.deleteEntriesInAlbum(
       this.name, picIDs
     );
 
@@ -68,7 +68,7 @@ export class Album extends SelectableItem implements IAlbum {
    */
   public addPictures(pictures: IEntry[]) {
     pictures.forEach((pic) => {
-      const pictureInstance = new Picture(pic);
+      const pictureInstance = new Entry(pic);
       this.pictures.unshift(pictureInstance);
     });
   }
@@ -76,7 +76,7 @@ export class Album extends SelectableItem implements IAlbum {
    * deleteSelectedPics
    */
   public handleHiding(hide: boolean) {
-    api.handleHidingPicturesInAlbum(
+    api.handleHidingEntriesInAlbum(
       this.name,
       this.pictures.filter((p) => p.isSelected).map((p) => p.id),
       hide

@@ -26,11 +26,11 @@
         <div class="flex flex-col gap-1">
           <FieldErrorSlot :errorMessage="picUrlErrorMessage">
             <input v-if="!editBulkToggle" v-model="picForm.url" class="inputField" type="text"
-              :disabled="!!picForm.tempFileStore?.length" placeholder="Image URL or post URL"
+              :disabled="!!picForm.tempFileStore?.length" placeholder="Image URL or Post URL"
               @click="picUrlErrorMessage = ''" />
             <textarea v-else v-model="picForm.url" class="inputField" :style="`height: ${calculateHeightForTextArea(
-            picForm.url.split('\n').length * 11.6 + 20
-          )}px`" type="text" :disabled="!!picForm.tempFileStore?.length" placeholder="Image URL or post URL"
+              picForm.url.split('\n').length * 11.6 + 20
+            )}px`" type="text" :disabled="!!picForm.tempFileStore?.length" placeholder="Image URL or Post URL"
               @click="picUrlErrorMessage = ''" />
           </FieldErrorSlot>
         </div>
@@ -43,8 +43,8 @@
         @click="picFormError.picTypeError = false;" />
 
       <BaseDropMenu v-if="!picForm.createAlbumToggle" :dropdownItemsArray="albumsNamesArray"
-        :defaultSelected="defaultSelectedAlbumName" :specialItem="'Create New Album'" @item-selected="albumSelect"
-        @special-item-selected="toggleCreateNewAblum"
+        :defaultSelected="defaultSelectedAlbumName" :specialItem="albumName ? undefined : 'Create New Album'"
+        @item-selected="albumSelect" @special-item-selected="toggleCreateNewAblum"
         :class="`${picFormError.picAlbumError ? 'error' : ''} box-content`"
         @click="picFormError.picAlbumError = false" />
 
@@ -63,16 +63,16 @@
 
       <div v-if="picForm.stockOptionalOverrides && advancedOptionsToggle">
         <div v-for="(value, key) in picForm.stockOptionalOverrides">
-          <div class="flex flex-col gap-[0.5rem]">
+          <div class="flex flex-col gap-[0.5rem]" v-if="!value.hide">
             <div v-if="value.checkBox"
               class="checkbox_option_container pl-[6px] pr-[6px] pt-[8px] pb-[8px] h-[32px] flex flex-row items-center">
               <div class="h-[24px] right-0 flex flex-row items-center">
                 <div class="checkbox_option w-[16rem]"
-                  @click="value.checkBox.checkBoxValue = !value.checkBox.checkBoxValue">
+                  @click="toggleCheckbox(value.checkBox, value.disabledForEditing)">
                   <Icon :icon="value.checkBox.checkBoxValue
-            ? 'checked_checkbox'
-            : 'unchecked_checkbox'
-            " />
+                    ? 'checked_checkbox'
+                    : 'unchecked_checkbox'
+                    " />
                   <h2>{{ value.checkBox.checkBoxDescription }}</h2>
                 </div>
               </div>
@@ -80,21 +80,21 @@
 
             <FieldErrorSlot :errorMessage="value.errorMessage" v-if="value.textField">
               <input v-if="!value.useTextArea && !editBulkToggle" :class="`${value.checkBox ?
-            value.checkBox?.checkBoxValue
-              ? 'addNewImageInputField'
-              : 'addNewImageInputFieldDisabled'
-            : 'addNewImageInputField'
-            }`" type="text" v-model="value.textField.value" :placeholder="value.textField.fieldPlaceholder"
+                value.checkBox?.checkBoxValue
+                  ? 'addNewImageInputField'
+                  : 'addNewImageInputFieldDisabled'
+                : 'addNewImageInputField'
+                }`" type="text" v-model="value.textField.value" :placeholder="value.textField.fieldPlaceholder"
                 :disabled="value.checkBox ? !value.checkBox?.checkBoxValue : false" @click="value.errorMessage = ''" />
               <textarea v-else v-model="value.textField.value" :class="`${value.checkBox ?
-            value.checkBox?.checkBoxValue
-              ? 'addNewImageInputField'
-              : 'addNewImageInputFieldDisabled'
-            : 'addNewImageInputField'
-            }`" :style="`height: ${calculateHeightForTextArea(
-            value.textField.value.split('\n').length * 11.6 + 20,
-            value.textField.fieldPlaceholder
-          )}px`" type="text" :placeholder="value.textField.fieldPlaceholder"
+                value.checkBox?.checkBoxValue
+                  ? 'addNewImageInputField'
+                  : 'addNewImageInputFieldDisabled'
+                : 'addNewImageInputField'
+                }`" :style="`height: ${calculateHeightForTextArea(
+                  value.textField.value.split('\n').length * 11.6 + 20,
+                  value.textField.fieldPlaceholder
+                )}px`" type="text" :placeholder="value.textField.fieldPlaceholder"
                 :disabled="value.checkBox ? !value.checkBox?.checkBoxValue : false" @click="value.errorMessage = ''" />
 
             </FieldErrorSlot>
@@ -119,9 +119,9 @@
                 <div class="checkbox_option w-[16rem]"
                   @click="value.checkBox.checkBoxValue = !value.checkBox?.checkBoxValue">
                   <Icon :icon="value.checkBox.checkBoxValue
-            ? 'checked_checkbox'
-            : 'unchecked_checkbox'
-            " />
+                    ? 'checked_checkbox'
+                    : 'unchecked_checkbox'
+                    " />
                   <h2>{{ value.checkBox.checkBoxDescription }}</h2>
                 </div>
               </div>
@@ -129,22 +129,24 @@
 
             <FieldErrorSlot :errorMessage="value.errorMessage" v-if="value.textField">
               <input :class="`${value.checkBox ?
-            value.checkBox?.checkBoxValue
-              ? 'addNewImageInputField'
-              : 'addNewImageInputFieldDisabled'
-            : 'addNewImageInputField'
-            }`" type="text" v-model="value.textField.value" :placeholder="value.textField.fieldPlaceholder"
+                value.checkBox?.checkBoxValue
+                  ? 'addNewImageInputField'
+                  : 'addNewImageInputFieldDisabled'
+                : 'addNewImageInputField'
+                }`" type="text" v-model="value.textField.value" :placeholder="value.textField.fieldPlaceholder"
                 :disabled="value.checkBox ? !value.checkBox?.checkBoxValue : false" @click="value.errorMessage = ''" />
             </FieldErrorSlot>
           </div>
         </div>
       </div>
+      <div>
 
-      <Button text="" icon="remove" color="#991b1b" :disabled="(entryIndexer == 0 && picFormArray.length == 1)"
-        class="absolute bottom-8 left-8 w-[32px] rounded-[8px]" @click="removeCurrentEntrt()" />
+        <Button text="" icon="remove" color="#991b1b" :disabled="(entryIndexer == 0 && picFormArray.length == 1)"
+          class="absolute bottom-8 left-8 w-[32px] rounded-[8px]" @click="removeCurrentEntrt()" />
 
-      <Button text="" icon="plus" color="#4d6d8d" class="absolute bottom-8 left-17 w-[32px] rounded-[8px]"
-        @click="addNewEntry()" />
+        <Button text="" icon="plus" color="#4d6d8d" class="absolute bottom-8 left-17 w-[32px] rounded-[8px]"
+          @click="addNewEntry()" />
+      </div>
 
       <Button text="" icon="bulk_edit" color="#4d6d8d" class="absolute bottom-8 right-30 w-[32px] rounded-[8px]"
         @click="editBulkToggle = !editBulkToggle" />
@@ -171,7 +173,17 @@ import {
   IAlbum,
   ISettings,
   defaultPicFormStockOverrides,
+  IParam,
+  IMediaSubmitFormStockOverrides,
+  IEntryEditingState,
 } from "../../services/types";
+
+const props = defineProps<{
+  addingToPreExistingPost_UUID?: string; //if instanciated with this on then it's editng a preExisting post and adding to it
+  addingToExistingPicFormStockOverrides?: IMediaSubmitFormStockOverrides;
+  albumName?: string;
+  editingState?: IEntryEditingState;
+}>();
 
 const state = inject("state") as AppState;
 
@@ -183,6 +195,7 @@ let defaultAlbumCollection: IAlbum = {
   uuid: "",
   type: "",
   estimatedPicCount: 0,
+  isHidden: false
 };
 function calculateHeightForTextArea(something: number, placeholder?: string) {
   if (placeholder && placeholder?.length > 45) {
@@ -222,7 +235,7 @@ const newPicForm: () => INewMediaSubmittionItem = () => ({
   type: undefined,
   album: "",
   stockOptionalOverrides: JSON.parse(
-    JSON.stringify(defaultPicFormStockOverrides)
+    JSON.stringify(props.addingToExistingPicFormStockOverrides ?? defaultPicFormStockOverrides)
   ) as typeof defaultPicFormStockOverrides,
   optionalOverrideParams: undefined,
 })
@@ -248,6 +261,10 @@ if (route.name == "album") {
     setOptionalParams();
     albumUUID = albumObj.uuid;
   }
+}
+if (props.albumName) {
+  picForm.value.album = props.albumName;
+  albumsNamesArray = [props.albumName]
 }
 
 const picFormError = reactive({
@@ -331,6 +348,11 @@ function setOptionalParams() {
 function albumSelect(a: string) {
   if ((a as string) == "Select Album") picForm.value.album = "";
   else picForm.value.album = a;
+}
+
+function toggleCheckbox(checkBox: IParam["checkBox"], disabledForEditing: boolean | undefined) {
+  //disabledForEditing is by default undefined
+  if (!disabledForEditing && checkBox) checkBox.checkBoxValue = !checkBox?.checkBoxValue;
 }
 
 function toggleCreateNewAblum() {
@@ -430,11 +452,15 @@ async function submit() {
   }
   //the actual submit function
   api
-    .addPictures(picFormArray)
+    .addEntries(picFormArray)
     .then((result) => {
-      if (albumUUID) state.stateVariables.albums[albumUUID].addPictures(result);
+      if (props.addingToPreExistingPost_UUID && props.editingState?.entry && result[0].id == props.editingState.entry.id) props.editingState.entry.updateEntry(result[0])
+      else if (albumUUID) state.stateVariables.albums[albumUUID].addPictures(result);
     });
-  state.stateVariables.popup = ""; //disables the popup aka exits
+  if (!props.addingToPreExistingPost_UUID) state.stateVariables.popup = ""; //disables the popup aka exits
+  if (props.editingState?.addingPicture) {
+    props.editingState.addingPicture = false;
+  }
 }
 
 function urlEmpty(index: number) {

@@ -1,13 +1,13 @@
 <template>
   <div class="pictures_container grid" v-if="album && album.pictures" @mouseup="mouseRelease()"
     @mousedown="mouseClickBackground">
-    <PictureItem v-for="(picture, index) in album.pictures" :picture="picture" :key="picture.id"
+    <PictureItem v-for="(picture, index) in album.pictures" :entry="picture" :key="picture.id"
       @click="(e: Event) => handleMouseClick(e, picture, index)" @mousedown="holdDownMouseStart"
       :selected="picture.isSelected && state.stateVariables.isEditing" @mouseup="mouseDownBool = false"
       @mouseover="hoverOverPics(picture)" @mouseleave="handleMouseLeave(picture)" />
 
     <PopupSlot v-if="state.stateVariables.popup == 'ViewingPicture'">
-      <ViewingPicture :item="album.pictures[picIndexer.value.value]" :backendUrl="backendUrl" :indexer="picIndexer"
+      <ViewingPicture :entry="album.pictures[picIndexer.value.value]" :backendUrl="backendUrl" :indexer="picIndexer"
         :maxIndex="album.pictures.length - 1" />
     </PopupSlot>
 
@@ -28,7 +28,7 @@ import ViewingPicture from "../components/Popups/ViewingPicture.vue";
 import PopupSlot from "../components/Misc/PopupSlot.vue";
 
 import { AppState } from "../../state";
-import { Picture } from "../services/picture";
+import { Entry } from "../services/entry";
 import { onKeyStroke } from "@vueuse/core";
 
 const backendUrl = api.getBackendUrl();
@@ -85,7 +85,7 @@ onMounted(async () => {
   state.clearAdvancedSearchOptions();
 });
 
-function toggleSelection(picture: Picture) {
+function toggleSelection(picture: Entry) {
   if (picture.isSelected) picture.deselect();
   else picture.select();
 }
@@ -94,7 +94,7 @@ function turnOffMouseDown() {
   mouseDownBool.value = false;
   mouseDownOnPic.value = false;
 }
-function handleMouseClick(e: Event, picture: Picture, index: number) {
+function handleMouseClick(e: Event, picture: Entry, index: number) {
   e.stopPropagation()
   if (!state.stateVariables.isEditing) {
     turnOffMouseDown();
@@ -116,13 +116,13 @@ function holdDownMouseStart(e: Event) {
   }
 }
 
-function hoverOverPics(picture: Picture) {
+function hoverOverPics(picture: Entry) {
   if (mouseDownBool.value && state.stateVariables.isEditing) {
     toggleSelection(picture);
   }
 }
 //selects first image when not editing then enables editing
-function handleMouseLeave(picture: Picture) {
+function handleMouseLeave(picture: Entry) {
   if (!state.stateVariables.isEditing && mouseDownBool.value) {
     state.stateVariables.isEditing = true;
     //toggleSelection(picture)
@@ -152,3 +152,4 @@ watch(
   @apply flex flex-wrap gap-2 p-3;
 }
 </style>
+../services/entry

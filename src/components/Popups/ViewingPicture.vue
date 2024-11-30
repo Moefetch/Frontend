@@ -4,41 +4,56 @@
     : 'flex-col-reverse'
     }  `">
     <div :class="`pictureViewCardsContainerZero nice_scroll ${api.settings.stock_settings.thumbnail_list_to_left.checkBox?.checkBoxValue
-    ? 'pictureViewCardsContainerLeft'
-    : 'pictureViewCardsContainerBottom'
-    }`" ref="target2">
-      <div v-for="(pic, index) in item.media">
-        <img v-if="item && (pic.thumbnailFile || !pic.isVideo)" :src="backendUrl + pic.thumbnailFile" :class="`pictureViewCards ${indexer == index ? 'pictureViewCardSelected' : ''
-    } h-20`" @click="setIndexer(index)" />
-
-        <video v-if="item && (!pic.thumbnailFile && pic.isVideo)" :src="backendUrl + pic.thumbnailFile ?? pic.file"
+      ? 'pictureViewCardsContainerLeft'
+      : 'pictureViewCardsContainerBottom'
+      }`" ref="target2">
+      <div v-for="(pic, index) in entry.media">
+        <img v-if="entry && (pic.thumbnailFile || !pic.isVideo)"
+          :src="editingState.newItemThumbnailURL && indexer == index ? editingState.newItemThumbnailURL : backendUrl + (pic.thumbnailFile ?? pic.file)"
           :class="`pictureViewCards ${indexer == index ? 'pictureViewCardSelected' : ''
-    } h-20`" @click="setIndexer(index)">
-        </video>
+            } h-20`" @click="setIndexer(index)" />
       </div>
     </div>
-    <div v-if="item.media[indexer].isVideo" class="pictureView">
-      <video :src="backendUrl + item.media[indexer].file" controls="true" class="pictureView" ref="target" />
+    <div v-if="entry.media[indexer].isVideo" class="pictureView">
+      <video :src="backendUrl + entry.media[indexer].file" controls="true" class="pictureView" ref="target" />
     </div>
-    <img v-else :src="backendUrl + item.media[indexer].file" class="pictureView" ref="target" />
+    <img v-else :src="backendUrl + entry.media[indexer].file" class="pictureView" ref="target" />
   </div>
 
-  <div class="bg-[#32303A] absolute right-0 w-[30vw] h-[96vh] overflow-auto pb-4" ref="target3">
-    <PictureViewData v-if="refreshBool" :item="item.media[indexer]" :indexer="indexer" />
+  <div class="bg-[#32303A] absolute right-0 w-[30vw] h-[96vh] overflow-visible pb-4" ref="target3">
+    <PictureViewData v-if="refreshBool" :item="entry.media[indexer]" :indexer="indexer" :editingState="editingState" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { IEntry } from "../../services/types";
+import { IEntry, IEntryEditingState } from "../../services/types";
 import { api } from "../../services/api";
 import PictureViewData from "../Misc/PictureViewData.vue";
 import { onClickOutside, onKeyStroke } from "@vueuse/core";
 
-import { ref, inject } from "vue";
+import { ref, inject, reactive, watch } from "vue";
 
 import { AppState } from "../../../state";
+import { Entry } from "../../services/entry";
 
 const state = (inject("state") as AppState).stateVariables;
+
+
+const props = defineProps<{
+  entry: Entry;
+  backendUrl: string;
+  indexer: PicIndexer;
+  maxIndex: number;
+}>();
+
+const editingState = reactive<IEntryEditingState>({
+  albumName: props.entry.album,
+  editedPostID: props.entry.id,
+  editing: false,
+  addingPicture: false,
+  newItemThumbnailURL: "",
+  entry: props.entry,
+})
 
 const target = ref(null);
 const target2 = ref(null);
@@ -80,13 +95,8 @@ function clickOutsideFunc(ofWhich: "first" | "second" | "third") {
   }, 10);
 }
 
-const props = defineProps<{
-  item: IEntry;
-  backendUrl: string;
-  indexer: PicIndexer;
-  maxIndex: number;
-}>();
-const indexer = ref(props.item.indexer);
+
+const indexer = ref(props.entry.indexer);
 const refreshBool = ref(true);
 
 function setIndexer(params: number) {
@@ -106,7 +116,7 @@ onKeyStroke("ArrowLeft", (e) => {
       setIndexer(0);
       props.indexer.set(props.indexer.value.value - 1);
       setTimeout(() => {
-        setIndexer(props.item.media.length - 1)
+        setIndexer(props.entry.media.length - 1)
       }, 10);
 
     }
@@ -115,7 +125,7 @@ onKeyStroke("ArrowLeft", (e) => {
 });
 
 onKeyStroke("ArrowRight", (e) => {
-  if (indexer.value < (props.item.media.length - 1)) {
+  if (indexer.value < (props.entry.media.length - 1)) {
     setIndexer(indexer.value + 1)
     e.preventDefault();
   } else if (state.popup != "AddNewPicturePopup") {

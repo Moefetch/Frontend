@@ -5,22 +5,22 @@
         <Button icon="home" @click="state.clearAdvancedSearchOptions()" />
       </router-link>
       <CollectionDropMenu v-if="state.stateVariables.albums" :albums="[
-          defaultAlbumCollection,
-          ...Object.values(state.stateVariables.albums),
-        ]" :currentAlbum="getCurrentItemFromUUID(route.params.albumUUID)" />
+        defaultAlbumCollection,
+        ...Object.values(state.stateVariables.albums),
+      ]" :currentAlbum="getCurrentItemFromUUID(route.params.albumUUID)" />
       <div class="m-auto flex-row flex items-center justify-center">
 
       </div>
       <Button icon="plus" @click="togglePopup('AddNewPicturePopup')" buttonID="addNewPictureButton" />
       <Button icon="queue" @click="togglePopup('queuePopup')" buttonID="queueButton" />
       <Button icon="filter" @click="
-          state.stateVariables.advancedSearch =
-          !state.stateVariables.advancedSearch
-          " />
+        state.stateVariables.advancedSearch =
+        !state.stateVariables.advancedSearch
+        " />
       <Button :icon="`${state.stateVariables.isEditing ? 'cancel_editing' : 'edit'}`" :class="`${state.stateVariables.isEditing ? 'bg-[#B6222D] rounded-8px' : ''
-          }`" @click="
-          state.stateVariables.isEditing = !state.stateVariables.isEditing
-          " buttonID="editButton" />
+        }`" @click="
+            state.stateVariables.isEditing = !state.stateVariables.isEditing
+            " buttonID="editButton" />
       <router-link to="/settings/">
         <Button icon="settings" buttonID="menuButton" />
       </router-link>
@@ -66,6 +66,7 @@ const defaultAlbumCollection: IAlbum = {
   estimatedPicCount: 0,
   type: "",
   uuid: "",
+  isHidden: false,
 };
 
 function mapAlbumsToNamesArray(albums: IAlbum[]) {

@@ -1,3 +1,5 @@
+import { Entry } from "./entry";
+
 export interface IAutoCompleteTags {
   tag: string;
   category?: string;
@@ -51,12 +53,14 @@ export interface IPostIds {
 }
 
 export interface IMediaItem  {
+  id: string;
   file: string;
   thumbnailFile?: string;
   isVideo: boolean;
   alternative_names?: string[];
   imageSize?: ISizeCalculationResult;
   index: number;
+  album: string;
   tags?: string[];
   artists?: string[];
   isNSFW?: boolean;
@@ -160,6 +164,7 @@ export interface IMediaSubmitFormStockOverrides {
   addId: IParam;
   addTags: IParam;
   useProvidedFileName: IParam;
+  addToExistingEntry: IParam;
 }
 
 export const defaultPicFormStockOverrides: IMediaSubmitFormStockOverrides = {
@@ -186,21 +191,6 @@ export const defaultPicFormStockOverrides: IMediaSubmitFormStockOverrides = {
     },
     type: "param",
     valueType: "both",
-  },
-  addId: {
-    checkBox: {
-      checkBoxDescription: "Add ID to entry",
-      checkBoxValue: false,
-      defaultValue: false,
-    },
-    type: "param",
-    valueType: "both",
-    useTextArea: true,
-    textField: {
-      value: "",
-      defaultValue: "",
-      fieldPlaceholder: "IDs seperated by new line",
-    },
   },
   addTags: {
     checkBox: {
@@ -231,6 +221,37 @@ export const defaultPicFormStockOverrides: IMediaSubmitFormStockOverrides = {
       value: "",
       defaultValue:"",
       fieldPlaceholder: "File names for each entry seperated by a new line",
+    },
+  },
+  addId: {
+    checkBox: {
+      checkBoxDescription: "Add ID to entry",
+      checkBoxValue: false,
+      defaultValue: false,
+    },
+    type: "param",
+    valueType: "both",
+    useTextArea: true,
+    textField: {
+      value: "",
+      defaultValue: "",
+      fieldPlaceholder: "IDs seperated by new line",
+    },
+  },
+  addToExistingEntry: {
+    checkBox: {
+      checkBoxDescription: "Add to an already Existing Post",
+      checkBoxValue: false,
+      defaultValue: false,
+    },
+    type: "param",
+    valueType: "both",
+    hide: true,
+    useTextArea: true,
+    textField: {
+      value: "",
+      defaultValue:"",
+      fieldPlaceholder: "Entry/Post UUID",
     },
   },
 };
@@ -403,14 +424,16 @@ export interface IParam {
     valueType: "checkBox" | "textField" | "both"
     useTextArea?: boolean;
     checkBox?: {
-        checkBoxValue: boolean;
-        checkBoxDescription: string;
-        defaultValue: boolean;
-    }
+      checkBoxValue: boolean;
+      checkBoxDescription: string;
+      defaultValue: boolean;
+    };
+    disabledForEditing?: boolean;
+    hide?: boolean;
     textField?: {
-        value: string;
-        fieldPlaceholder: string;
-        defaultValue: string;
+      value: string;
+      fieldPlaceholder: string;
+      defaultValue: string;
     }
     errorMessage?: string;
     checkValid?: (
@@ -465,7 +488,15 @@ export interface IHelpContent {
     content: IHelpElement[];
   };
 }
+export interface IEntryEditingState {
+  albumName: string;
+  editedPostID: string;
+  editing: boolean;
+  addingPicture: boolean;
+  newItemThumbnailURL: string;
+  entry: Entry;
 
+}
 /* export interface ITableOfContents extends IAlbum {
     id:  string;
     name: string;

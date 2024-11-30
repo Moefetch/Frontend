@@ -9,11 +9,11 @@
             :style="bgColorStyle">
             <BaseDropMenuItem v-for="item in dropdownItemsArray" :item="item"
                 class="h-[1.40rem] w-[14rem] cursor-pointer" @click="clickedType(item)" />
-            <div v-if="specialItem" class="flex flex-row  w-[14rem] gap-4">
+            <div v-if="specialItem" class="flex flex-row  w-[100%] gap-4">
                 <BaseDropMenuItem :item="specialItem"
                     class="h-[1.5rem] w-full rounded-[0.125rem] rounded-t-none cursor-pointer"
                     @click="emit('special-item-selected')" />
-                <Icon icon="plus" class="h-[1.2rem] w-[1.2rem] m-auto mr-1" />
+                <Icon icon="plus" class="h-[1.2rem] w-[1.2rem] m-auto " />
             </div>
         </div>
     </div>
@@ -36,7 +36,7 @@ const props = defineProps<{
 }>();
 
 const bgColorStyle = props.bgColorHex ? `background-color: ${props.bgColorHex};` : 'background-color: #3d3d3d';
-const target = ref(null)
+const target = ref(null);
 onClickOutside(target, () => {
     if (toggled.value) toggled.value = !toggled.value;
 })

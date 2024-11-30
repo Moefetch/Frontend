@@ -12,6 +12,7 @@ import type {
   ILogicSpecialParamsDictionary,
   IModelSpecialParam,
   IAutoCompleteTags,
+  IMediaItem,
 } from "./types";
 import { stockSettings } from "./types";
 import { Settings } from "./settings";
@@ -86,27 +87,27 @@ class API {
     this.backendUrl = this.localStorageSettings.backend_url;
   }
 
-  public async addPictures(data: INewMediaSubmittionItem[]) {
+  public async addEntries(data: INewMediaSubmittionItem[]) {
     let filesArray: File[] = [];
     const formData = new FormData();
-    data.forEach(picFormElement => {
-      picFormElement.files = [];
-      if (picFormElement.tempFileStore?.length) {
-        picFormElement.tempFileStore.forEach((el, index) => {
+    data.forEach(entryFormElement => {
+      entryFormElement.files = [];
+      if (entryFormElement.tempFileStore?.length) {
+        entryFormElement.tempFileStore.forEach((el, index) => {
           filesArray.push(el.fileBlob);
-          picFormElement.files?.push(el.fileName);
+          entryFormElement.files?.push(el.fileName);
         })
 
-        delete picFormElement.tempFileStore;
-        delete picFormElement.createAlbumName;
-        delete picFormElement.createAlbumToggle;
+        delete entryFormElement.tempFileStore;
+        delete entryFormElement.createAlbumName;
+        delete entryFormElement.createAlbumToggle;
       }
     })
     formData.append("entries", JSON.stringify(data));
     filesArray.forEach(file => formData.append("temp_download", file))
     
     //await this.backendRequest<void>("post", "/download-files", formData);
-    return this.backendRequest<[IEntry]>("post", "/add-pictures", formData);
+    return this.backendRequest<[IEntry]>("post", "/add-new-entries", formData);
   }
   private albumDataRawToFormData(data: INewAlbum){
     const { name, album_thumbnail_file, type, isHidden } = data;
@@ -116,9 +117,33 @@ class API {
     name && formData.append("name", name);
     type && formData.append("type", type);
     album_thumbnail_file &&
-      formData.append("album_thumbnail_file", album_thumbnail_file);
+    formData.append("album_thumbnail_file", album_thumbnail_file);
     isHidden && formData.append("isHidden", isHidden ? "1" : "");
     return formData;
+  }
+
+  /**
+   * changeEntryThumbnail
+   */
+  public async changeEntryThumbnail(albumName: string, entryUUID: string,  newEntryThumbnailFile: string | File | undefined) {
+    const formData = new FormData();
+    formData.append("entryUUID", entryUUID);
+    formData.append("albumName", albumName);
+
+    newEntryThumbnailFile && formData.append("temp_download", newEntryThumbnailFile);
+
+    return this.backendRequest<IEntry>("post", "/change-entry-thumbnail", formData);
+  }
+
+  /**
+   * editEntry
+   */
+  public async editItem(item: IMediaItem, newItemThumbnailFile: string | File | undefined) {
+    const formData = new FormData();
+    formData.append("item", JSON.stringify(item));
+    newItemThumbnailFile && formData.append("temp_download", newItemThumbnailFile);
+
+    return await this.backendRequest<IMediaItem>("post", "/edit-media-item", formData);
   }
   public async editAlbum(uuid: string, data: INewAlbum, estimatedPicCount: number) {
     const formData = this.albumDataRawToFormData(data);
@@ -173,7 +198,7 @@ class API {
     );
   }
 
-  public deletePicturesInAlbum = (album: string, entriesIDs: string[]) =>
+  public deleteEntriesInAlbum = (album: string, entriesIDs: string[]) =>
   {
     console.log(entriesIDs);
     
@@ -183,12 +208,12 @@ class API {
     });
   }
 
-  public handleHidingPicturesInAlbum = (
+  public handleHidingEntriesInAlbum = (
     album: string,
     entriesIDs: string[],
     hide: boolean
   ) =>
-    this.backendRequest("post", "/handle-hide-pictures", {
+    this.backendRequest("post", "/handle-hide-entries", {
       album: album,
       entriesIDs: entriesIDs,
       hide: hide,
@@ -203,7 +228,7 @@ class API {
       type: type,
     });
 
-  public getPicsInAlbum = (album: string, options: IFilterObj) => {
+  public getEntriesInAlbum = (album: string, options: IFilterObj) => {
     return this.backendRequest<[IEntry]>("post", `/search`, {
       album: album,
       options,
